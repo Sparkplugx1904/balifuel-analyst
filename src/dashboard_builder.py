@@ -1227,14 +1227,13 @@ def build_dashboard(target: str = "pages") -> str:
 
         index_file = os.path.join(DOCS_DIR, "index.html")
         html_content = INDEX_HTML_TEMPLATE.format(
-            css_path="./style.css",
-            config_path="./config.js",
+            css_path="./style.css?v=2.1.2",
+            config_path="./config.js?v=2.1.2",
             embedded_data_script="",
-            app_js_path="./app.js"
+            app_js_path="./app.js?v=2.1.2"
         )
         with open(index_file, "w", encoding="utf-8") as f:
             f.write(html_content)
-
         print(f"[+] GitHub Pages assets generated in {DOCS_DIR}:")
         print(f"    - index.html    ({len(html_content):,} B)")
         print(f"    - style.css     ({len(STYLE_CSS):,} B)")

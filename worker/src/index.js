@@ -68,13 +68,39 @@ export default {
 
     // 1. CORS Preflight
     if (method === "OPTIONS") {
-      if (path.startsWith("/latest/")) {
+      if (path.startsWith("/latest/") || path === "/debug") {
         return new Response(null, { status: 204, headers: corsHeaders() });
       }
       return new Response(null, { status: 405 });
     }
 
-    // 2. Public Data Board: GET /latest/<key>
+    // 2. Public Debug Telemetry: GET /debug
+    if (path === "/debug" && method === "GET") {
+      const now = new Date();
+      const metaObj = await env.BUCKET.get("latest/meta.json");
+      let meta = null;
+      if (metaObj) {
+        try { meta = await metaObj.json(); } catch (e) {}
+      }
+
+      const keys = ["latest/meta.json", "latest/summary.json", "latest/stations.json", "latest/history.json", "state/balifuel.db"];
+      const r2Status = {};
+      for (const k of keys) {
+        const obj = await env.BUCKET.get(k);
+        r2Status[k] = obj ? { exists: true, size: obj.size, etag: obj.etag, uploaded: obj.uploaded } : { exists: false };
+      }
+
+      return jsonResponse({
+        status: "healthy",
+        worker_time_utc: now.toISOString(),
+        worker_time_wita: new Date(now.getTime() + 8 * 3600 * 1000).toISOString().replace("Z", "+08:00"),
+        latest_meta: meta,
+        r2_storage: r2Status,
+        cron_schedule: "*/10 * * * * (Every 10 minutes)"
+      }, 200, corsHeaders());
+    }
+
+    // 3. Public Data Board: GET /latest/<key>
     if (path.startsWith("/latest/")) {
       if (method !== "GET") {
         return jsonResponse({ error: "Method Not Allowed" }, 405, corsHeaders());
