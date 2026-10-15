@@ -271,8 +271,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
   <link rel="stylesheet" href="{css_path}">
-  <script src="{config_path}"></script>
-</head>
+  <script src="{config_path}" charset="utf-8"></script>
 <body>
 
   <header class="navbar">
@@ -551,8 +550,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
 
   </main>
 
-  {embedded_data_script}
-  <script src="{app_js_path}"></script>
+  <script src="{app_js_path}" charset="utf-8"></script>
 </body>
 </html>
 """
@@ -708,10 +706,10 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
     // Box Values
     document.getElementById("boxMedianDate").textContent = meta.median_recovery_wita || "18 Okt 2026, 05:00 WITA";
     if (meta.ci50 && meta.ci50.length >= 2) {
-      document.getElementById("boxCi50").textContent = `${meta.ci50[0].split(' ')[0]} — ${meta.ci50[1].split(' ')[0]}`;
+      document.getElementById("boxCi50").textContent = `${meta.ci50[0].split(' ')[0]} \\u2014 ${meta.ci50[1].split(' ')[0]}`;
     }
     if (meta.ci80 && meta.ci80.length >= 2) {
-      document.getElementById("boxCi80").textContent = `${meta.ci80[0].split(' ')[0]} — ${meta.ci80[1].split(' ')[0]}`;
+      document.getElementById("boxCi80").textContent = `${meta.ci80[0].split(' ')[0]} \\u2014 ${meta.ci80[1].split(' ')[0]}`;
     }
     document.getElementById("pillCount").textContent = `${stList.length} Titik`;
 
@@ -737,26 +735,16 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
 
   function initMap(stations, hours) {
     if (!mapInstance) {
+      const mapEl = document.getElementById("map");
+      if (!mapEl) return;
+
       mapInstance = L.map("map", { attributionControl: true }).setView([-8.48, 115.18], 10);
 
-      // Basemap Layer Switcher (Leaflet Tile Layers)
-      const darkLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        maxZoom: 18, subdomains: 'abcd', attribution: '&copy; CartoDB &copy; OpenStreetMap'
+      // OpenStreetMap Standard Tiles (BEBAS API KEY, sama seperti route-planner template)
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(mapInstance);
-
-      const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 18, attribution: '&copy; OpenStreetMap contributors'
-      });
-
-      const satelliteLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-        maxZoom: 18, attribution: 'Tiles &copy; Esri'
-      });
-
-      L.control.layers({
-        "Terminal Gelap (Carto)": darkLayer,
-        "Peta Jalan (OpenStreetMap)": osmLayer,
-        "Satelit (Esri World)": satelliteLayer
-      }, null, { position: 'topright' }).addTo(mapInstance);
 
       // Terminal Pins
       const termIcon = (title) => L.divIcon({
@@ -789,10 +777,10 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
             alert("Geolocation tidak didukung oleh browser Anda.");
             return;
           }
-          btnLocate.textContent = "📍 Mencari...";
+          btnLocate.textContent = "\\uD83D\\uDCCD Mencari...";
           navigator.geolocation.getCurrentPosition(
             (pos) => {
-              btnLocate.textContent = "📍 Lokasi Saya";
+              btnLocate.textContent = "\\uD83D\\uDCCD Lokasi Saya";
               const userLat = pos.coords.latitude;
               const userLng = pos.coords.longitude;
               mapInstance.setView([userLat, userLng], 14);
@@ -805,7 +793,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
               }).addTo(mapInstance).bindPopup("<b>Lokasi Anda Saat Ini</b>").openPopup();
             },
             (err) => {
-              btnLocate.textContent = "📍 Lokasi Saya";
+              btnLocate.textContent = "\\uD83D\\uDCCD Lokasi Saya";
               alert("Gagal membaca lokasi GPS: " + err.message);
             },
             { enableHighAccuracy: true, timeout: 8000 }
@@ -822,11 +810,12 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
         opt.textContent = a;
         areaSelect.appendChild(opt);
       });
+
+      setTimeout(() => mapInstance.invalidateSize(), 200);
     }
 
     renderMapPins(stations, hours);
 
-    // Select default SPBU
     if (stations.length > 0) {
       selectStation(stations[0], hours);
     }
@@ -847,7 +836,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
 
       const kind = s.kind || "spbu";
       const area = s.area || "Bali";
-      const p = s.p_now != null ? s.p_now : (s.prob_pertalite != null ? s.prob_pertalite : 0.5);
+      const p = s.p_now != null ? parseFloat(s.p_now) : (s.prob_pertalite != null ? parseFloat(s.prob_pertalite) : 0.5);
 
       if (fKind !== "all" && kind !== fKind) return;
       if (fArea !== "all" && area !== fArea) return;
@@ -862,10 +851,11 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
 
       const isSpbu = kind === "spbu";
       const marker = L.circleMarker([lat, lng], {
-        radius: isSpbu ? 6.5 : 4.0,
+        radius: isSpbu ? 7.0 : 4.5,
         fillColor: color,
         color: "#000000",
-        weight: 1,
+        weight: 1.5,
+        opacity: 1.0,
         fillOpacity: 0.9
       });
 
@@ -875,7 +865,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
       const popupHtml = `
         <div style="font-size:11px; line-height:1.5;">
           <div style="font-weight:700; color:var(--accent); font-size:12px; margin-bottom:2px;">${s.name || 'SPBU'}</div>
-          <div style="color:var(--ink-3); margin-bottom:6px;">${area} · [${kind.toUpperCase()}]</div>
+          <div style="color:var(--ink-3); margin-bottom:6px;">${area} \\u00B7 [${kind.toUpperCase()}]</div>
           <div style="border-top:1px solid var(--line-strong); padding-top:6px;">
             <div>PELUANG STOK: <b style="color:${color}">${Math.round(p * 100)}%</b></div>
             <div>EST. ANTREAN: <b>${qText}</b></div>
@@ -1053,8 +1043,6 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
     timeline.forEach(evt => {
       const div = document.createElement("div");
       div.style.padding = "10px 14px";
-      div.style.background = "var(--surface)";
-      div.style.border = "1px solid var(--line)";
       div.style.borderRadius = "var(--r-sm)";
       div.innerHTML = `
         <div style="font-size:11px; font-weight:700; color:var(--accent); margin-bottom:2px;">[${evt.date} ${evt.time_wita || ''} WITA] — ${evt.source || 'Pertamina'}</div>
@@ -1105,16 +1093,18 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
 
   // THEME TOGGLE
   const themeBtn = document.getElementById("themeToggleBtn");
-  themeBtn.addEventListener("click", () => {
-    const cur = document.documentElement.getAttribute("data-theme");
-    if (cur === "light") {
-      document.documentElement.removeAttribute("data-theme");
-      themeBtn.textContent = "☀";
-    } else {
-      document.documentElement.setAttribute("data-theme", "light");
-      themeBtn.textContent = "☾";
-    }
-  });
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const cur = document.documentElement.getAttribute("data-theme");
+      if (cur === "light") {
+        document.documentElement.removeAttribute("data-theme");
+        themeBtn.textContent = "\\u2600";
+      } else {
+        document.documentElement.setAttribute("data-theme", "light");
+        themeBtn.textContent = "\\u263E";
+      }
+    });
+  }
 
   // START
   try {
@@ -1227,10 +1217,10 @@ def build_dashboard(target: str = "pages") -> str:
 
         index_file = os.path.join(DOCS_DIR, "index.html")
         html_content = INDEX_HTML_TEMPLATE.format(
-            css_path="./style.css?v=2.1.2",
-            config_path="./config.js?v=2.1.2",
+            css_path="./style.css?v=2.1.4",
+            config_path="./config.js?v=2.1.4",
             embedded_data_script="",
-            app_js_path="./app.js?v=2.1.2"
+            app_js_path="./app.js?v=2.1.4"
         )
         with open(index_file, "w", encoding="utf-8") as f:
             f.write(html_content)
