@@ -1,10 +1,9 @@
 name: BaliFuel Data Pipeline Runner
 
 on:
-  # Jalankan otomatis tiap 6 jam sebagai keepalive (batas minimum GitHub = 5 menit).
-  # Loop internal di dalam job akan berjalan tiap 2 menit selama ~350 menit per run.
+  # Lapis 3 keepalive: setiap 6 jam (failsafe jika lapis 1+2 gagal)
   schedule:
-    - cron: '0 */6 * * *'   # Setiap 6 jam: 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: '0 */6 * * *'
   workflow_dispatch:
     inputs:
       interval_seconds:
@@ -23,7 +22,7 @@ concurrency:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 360       # 6 jam — batas maksimum GitHub Actions per job
+    timeout-minutes: 360      # 6 jam — batas maksimum GitHub Actions per job
 
     steps:
       - name: Checkout Repository
@@ -51,6 +50,7 @@ jobs:
             echo "::warning::WORKER_URL or INGEST_TOKEN not set. Bootstrapping state fresh."
           fi
 
+      # ── LAPIS 1: Loop permanen tiap 2 menit selama ~350 menit ─────────────
       - name: Run Pipeline Loop (tiap 2 menit, hingga 350 menit)
         env:
           WORKER_URL: ${{ secrets.WORKER_URL }}
@@ -84,7 +84,46 @@ jobs:
           INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
         run: |
           if [ -n "$WORKER_URL" ] && [ -n "$INGEST_TOKEN" ]; then
-            python src/publish.py --save-state --worker-url "$WORKER_URL" --token "$INGEST_TOKEN"
+            python src/publish.py --save-state \
+              --worker-url "$WORKER_URL" \
+              --token "$INGEST_TOKEN"
+          fi
+
+      # ── LAPIS 1 (estafet): Runner memicu sendiri via Worker sebelum mati ──
+      # Worker yang relay ke GitHub API agar GH_TOKEN tidak perlu ada di Actions
+      - name: Estafet — Trigger Next Runner via Cloudflare Worker
+        if: always()
+        env:
+          WORKER_URL: ${{ secrets.WORKER_URL }}
+          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+        run: |
+          if [ -z "$WORKER_URL" ] || [ -z "$INGEST_TOKEN" ]; then
+            echo "::warning::WORKER_URL or INGEST_TOKEN not set. Estafet skipped."
+            exit 0
+          fi
+
+          echo "[ESTAFET] Requesting next runner via Cloudflare Worker watchdog..."
+          HTTP_STATUS=$(curl -s -o /tmp/estafet_resp.json -w "%{http_code}" \
+            -X POST "${WORKER_URL}/trigger-runner" \
+            -H "Authorization: Bearer ${INGEST_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{"source":"self-relay"}')
+
+          echo "[ESTAFET] Worker responded HTTP ${HTTP_STATUS}:"
+          cat /tmp/estafet_resp.json
+          echo ""
+
+          TRIGGERED=$(python3 -c "import json,sys; d=json.load(open('/tmp/estafet_resp.json')); print(d.get('triggered','?'))" 2>/dev/null || echo "?")
+          REASON=$(python3 -c "import json,sys; d=json.load(open('/tmp/estafet_resp.json')); print(d.get('reason','?'))" 2>/dev/null || echo "?")
+
+          echo "[ESTAFET] Triggered: ${TRIGGERED} | Reason: ${REASON}"
+
+          if [ "$TRIGGERED" = "False" ] && echo "$REASON" | grep -qi "already active"; then
+            echo "[ESTAFET] Next runner already running — estafet chain intact."
+          elif [ "$TRIGGERED" = "True" ]; then
+            echo "[ESTAFET] ✓ Next runner queued successfully."
+          else
+            echo "::warning::[ESTAFET] Trigger result unclear. Lapis 2 (Cron Watchdog) akan mengambil alih dalam ≤10 menit."
           fi
 
       - name: Runner Debug & Freshness Audit

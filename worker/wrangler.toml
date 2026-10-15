@@ -2,11 +2,17 @@ name = "balifuel-worker"
 main = "src/index.js"
 compatibility_date = "2024-09-23"
 
+# Cron Trigger: smart watchdog tiap 10 menit
+# Hanya memicu runner baru bila tidak ada run in_progress/queued di GitHub Actions
 [triggers]
 crons = ["*/10 * * * *"]
 
 [vars]
 GH_REPO = "Sparkplugx1904/balifuel-analyst"
+
+# Secret yang wajib di-set via: wrangler secret put GH_TOKEN
+# GH_TOKEN = Personal Access Token dengan scope: actions:write, workflow
+# INGEST_TOKEN = Bearer token sama dengan secret INGEST_TOKEN di GitHub Actions
 
 [[r2_buckets]]
 binding = "BUCKET"
