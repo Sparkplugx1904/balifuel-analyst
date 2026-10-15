@@ -272,6 +272,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
 
   <link rel="stylesheet" href="{css_path}">
   <script src="{config_path}" charset="utf-8"></script>
+</head>
 <body>
 
   <header class="navbar">
@@ -563,7 +564,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
   let POLL_TIMER = null;
 
   function getFeedUrl() {
-    let u = window.FEED_URL || "";
+    let u = window.FEED_URL || "https://balifuel-worker.anandapradnyana68.workers.dev";
     return u.replace(/\\/+$/, "");
   }
 
@@ -1217,10 +1218,10 @@ def build_dashboard(target: str = "pages") -> str:
 
         index_file = os.path.join(DOCS_DIR, "index.html")
         html_content = INDEX_HTML_TEMPLATE.format(
-            css_path="./style.css?v=2.1.4",
-            config_path="./config.js?v=2.1.4",
+            css_path="./style.css?v=2.1.5",
+            config_path="./config.js?v=2.1.5",
             embedded_data_script="",
-            app_js_path="./app.js?v=2.1.4"
+            app_js_path="./app.js?v=2.1.5"
         )
         with open(index_file, "w", encoding="utf-8") as f:
             f.write(html_content)

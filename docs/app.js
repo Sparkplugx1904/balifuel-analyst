@@ -5,7 +5,7 @@
   let POLL_TIMER = null;
 
   function getFeedUrl() {
-    let u = window.FEED_URL || "";
+    let u = window.FEED_URL || "https://balifuel-worker.anandapradnyana68.workers.dev";
     return u.replace(/\/+$/, "");
   }
 
