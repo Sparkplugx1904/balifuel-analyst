@@ -1124,6 +1124,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
   }
   loadData();
   startPolling();
+})();
 """
 
 
