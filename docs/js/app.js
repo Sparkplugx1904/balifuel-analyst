@@ -148,4 +148,8 @@
   } else {
     setupSearch();
   }
+
+  window.BaliApp = {
+    refresh: () => window.dispatchEvent(new CustomEvent("dataupdated", { detail: LATEST_DATA }))
+  };
 })();
