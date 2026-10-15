@@ -205,6 +205,8 @@ button { cursor: pointer; }
 .user-pill:hover { color: var(--ink); }
 .user-pill.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
 .user-pill small { color: var(--ink-3); font-size: 10px; }
+.user-pill.locked { opacity: 0.72; }
+.user-pill.locked:hover { opacity: 1; color: var(--accent); }
 
 /* ---- Section Wrapper ---- */
 .dash-section {

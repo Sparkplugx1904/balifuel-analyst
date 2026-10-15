@@ -177,9 +177,8 @@
     initMap();
     updateAreaDropdown(STATIONS_DATA);
     renderMapPins();
-
-    if (STATIONS_DATA.length > 0 && window.BaliCharts && window.BaliCharts.selectStation) {
-      window.BaliCharts.selectStation(STATIONS_DATA[0], HOURS_DATA);
+    if (window.BaliCharts && window.BaliCharts.initHours) {
+      window.BaliCharts.initHours(HOURS_DATA);
     }
   }
 

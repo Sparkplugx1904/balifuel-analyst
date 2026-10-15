@@ -117,7 +117,7 @@
     <!-- TAB / USER PILLS BAR -->
     <nav class="user-pills-bar">
       <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA REAL-TIME (LEAFLET) ] <small id="pillCount">876 Titik</small></button>
-      <button class="user-pill" onclick="switchTab('tabForecast')">[ 02 // PREDIKSI 72 JAM ] <small>Per SPBU</small></button>
+      <button id="pillForecastBtn" class="user-pill locked" onclick="switchTab('tabForecast')">[ 02 // PREDIKSI 72 JAM ] <small id="pillForecastLabel">&#x1F512; Pilih di Peta</small></button>
       <button class="user-pill" onclick="switchTab('tabAreas')">[ 03 // 14 AREA MAKRO ] <small>Analisis CSI</small></button>
       <button class="user-pill" onclick="switchTab('tabSimulation')">[ 04 // SIMULASI MONTE CARLO ] <small>Fan Chart</small></button>
       <button class="user-pill" onclick="switchTab('tabHotspots')">[ 05 // 20 HOTSPOT RENTAN ] <small>Ranking</small></button>
@@ -198,7 +198,21 @@
         </div>
       </div>
 
-      <div class="spbu-grid">
+      <!-- EMPTY STATE JIKA BELUM MEMILIH SPBU -->
+      <div id="forecastEmptyState" class="terminal-card" style="text-align:center; padding:44px 20px; border:1px dashed var(--line-strong); margin-top:14px;">
+        <div style="font-size:32px; margin-bottom:12px;">🗺️ ➔ 📈</div>
+        <h3 style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:8px;">
+          PILIH SPBU PADA PETA TERLEBIH DAHULU
+        </h3>
+        <p style="font-size:12px; color:var(--ink-2); max-width:540px; margin:0 auto 20px; line-height:1.6;">
+          Grafik 72 jam adalah kurva proyeksi stok spesifik per <b>masing-masing SPBU</b> (bukan nilai rata-rata agregat pulau). Silakan buka <b>Tab 01 // PETA REAL-TIME</b> lalu klik salah satu penanda SPBU dan pilih <b>[ INSPEKSI GRAFIK 72 JAM ]</b>, atau gunakan kotak pencarian di bilah navigasi atas.
+        </p>
+        <button class="btn btn-primary" onclick="switchTab('tabMap')">
+          ⟵ Buka Tab 01 (Peta Real-Time) untuk Memilih SPBU
+        </button>
+      </div>
+
+      <div id="spbuGridContainer" class="spbu-grid" style="display:none;">
         <div class="spec-box">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <span id="cardBadgeKind" style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:var(--r-sm); background:var(--accent-soft); color:var(--accent);">SPBU PERTAMINA</span>

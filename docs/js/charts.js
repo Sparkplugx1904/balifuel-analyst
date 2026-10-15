@@ -12,11 +12,38 @@
     };
   }
 
+  function updateEmptyState() {
+    const emptyCard = document.getElementById("forecastEmptyState");
+    const gridContainer = document.getElementById("spbuGridContainer");
+    const pill = document.getElementById("pillForecastBtn");
+    const label = document.getElementById("pillForecastLabel");
+
+    if (!CURRENT_STATION) {
+      if (emptyCard) emptyCard.style.display = "block";
+      if (gridContainer) gridContainer.style.display = "none";
+      if (pill) pill.classList.add("locked");
+      if (label) label.textContent = "\uD83D\uDD12 Pilih di Peta";
+    } else {
+      if (emptyCard) emptyCard.style.display = "none";
+      if (gridContainer) gridContainer.style.display = "grid";
+      if (pill) pill.classList.remove("locked");
+      if (label) {
+        const shortName = CURRENT_STATION.name ? CURRENT_STATION.name.slice(0, 18) : "SPBU Terpilih";
+        label.textContent = `\uD83D\uDCCD ${shortName}`;
+      }
+    }
+  }
+
+  function initHours(hours) {
+    if (hours && hours.length > 0) CURRENT_HOURS = hours;
+    updateEmptyState();
+  }
+
   function selectStation(st, hours) {
     if (!st) return;
     CURRENT_STATION = st;
     if (hours && hours.length > 0) CURRENT_HOURS = hours;
-
+    updateEmptyState();
     const badge = document.getElementById("cardBadgeKind");
     const code = document.getElementById("cardCode");
     const name = document.getElementById("cardName");
@@ -150,6 +177,9 @@
   window.BaliCharts = {
     selectStation: selectStation,
     renderAreaChart: renderAreaChart,
-    renderMonteCarlo: renderMonteCarlo
+    renderMonteCarlo: renderMonteCarlo,
+    initHours: initHours,
+    getSelectedStation: () => CURRENT_STATION,
+    updateEmptyState: updateEmptyState
   };
 })();

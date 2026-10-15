@@ -88,8 +88,35 @@
     });
   }
 
-  // Global Tab Switcher
+  // Terminal Toast Notification
+  function showToast(msg) {
+    let t = document.getElementById("terminalToast");
+    if (!t) {
+      t = document.createElement("div");
+      t.id = "terminalToast";
+      t.style.cssText = "position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--surface); color:var(--ink); border:1px solid var(--accent); padding:10px 18px; border-radius:var(--r-md); font-size:12px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,0.5); z-index:99999; transition:opacity 0.3s ease; opacity:0; pointer-events:none;";
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = "1";
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => {
+      t.style.opacity = "0";
+    }, 3500);
+  }
+  window.showToast = showToast;
+
+  // Global Tab Switcher dengan Validasi Dependensi
   window.switchTab = function (tabId) {
+    // Tab Forecast mewajibkan pemilihan SPBU di Peta terlebih dahulu
+    if (tabId === 'tabForecast') {
+      const selectedStation = window.BaliCharts ? window.BaliCharts.getSelectedStation() : null;
+      if (!selectedStation) {
+        showToast("⚠️ Silakan pilih salah satu SPBU di Peta Real-Time (Tab 01) terlebih dahulu untuk melihat prediksi 72 jam.");
+        tabId = 'tabMap';
+      }
+    }
+
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.user-pill').forEach(el => el.classList.remove('active'));
 
@@ -108,7 +135,9 @@
         Plotly.relayout('fanPlotlyChart', { autosize: true });
         Plotly.relayout('histPlotlyChart', { autosize: true });
       }
-      if (tabId === 'tabForecast') Plotly.relayout('spbuPlotlyChart', { autosize: true });
+      if (tabId === 'tabForecast' && window.BaliCharts && window.BaliCharts.getSelectedStation()) {
+        Plotly.relayout('spbuPlotlyChart', { autosize: true });
+      }
     }
   };
 
