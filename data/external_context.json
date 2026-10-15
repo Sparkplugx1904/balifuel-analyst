@@ -1,0 +1,91 @@
+{
+  "crisis_timeline": [
+    {
+      "date": "2026-10-07",
+      "time_wita": "06:00",
+      "event": "Kedatangan kapal tanker pengangkut 5.000 KL di TBBM Manggis, cadangan stok Bali berada pada ambang batas tipis (1,5 hari).",
+      "source": "BaliFuelWatch & Pertamina Internal Logistics",
+      "impact": "Stok awal menipis sebelum keterlambatan terjadi."
+    },
+    {
+      "date": "2026-10-11",
+      "time_wita": "06:30",
+      "event": "Kendala teknis jangkar kapal tanker BBM di TBBM Sanggaran; bongkar muat tertunda dari 06:30 hingga 22:00 WITA (delay 16 jam).",
+      "source": "Kompas & The Stance (Pernyataan Dirut Pertamina Simon Aloysius Mantiri)",
+      "impact": "Distribusi truk tangki dari terminal ke SPBU terhenti selama beberapa ritase, memicu kekosongan di 65%+ SPBU."
+    },
+    {
+      "date": "2026-10-12",
+      "time_wita": "10:00",
+      "event": "Kedatangan Kapal 1 dari program 26.200 KL di TBBM Sanggaran (sekitar 6.000 KL Pertalite/Pertamax). Panic buying mulai merebak.",
+      "source": "Detik Bali & Bloomberg Technoz",
+      "impact": "Konsumsi harian melonjak dari 2.100 KL menjadi 2.600+ KL/hari. Antrean kendaraan roda dua & empat mengular 1-2 km."
+    },
+    {
+      "date": "2026-10-13",
+      "time_wita": "09:00",
+      "event": "Pertamina Patra Niaga Regional Jatimbalinus mengumumkan penambahan suplai darurat dan SPBU siaga 24 jam.",
+      "source": "CNN Indonesia & Antara News",
+      "impact": "Pertamini di pinggir jalan menjual Pertalite eceran dengan harga Rp 20.000 - Rp 40.000/liter."
+    },
+    {
+      "date": "2026-10-14",
+      "time_wita": "10:00",
+      "event": "Kedatangan Kapal 2 dari program 26.200 KL di TBBM Manggis (sekitar 6.000 KL). Pertamina datangkan lagi alokasi 57,9 juta liter.",
+      "source": "Antara Bali & Bali Post",
+      "impact": "Distribusi ke area timur dan tengah Bali mulai menerima pasokan ritase truk tambahan dari Banyuwangi."
+    },
+    {
+      "date": "2026-10-15",
+      "time_wita": "12:00",
+      "event": "Tingkat keterisian SPBU perlahan membaik ke level 45-50%, antrean bergeser dari status 'lama' ke 'singkat' di sebagian Denpasar dan Badung.",
+      "source": "Laporan Komunitas BaliFuelWatch & BensinBali",
+      "impact": "Pemulihan stok mulai tampak, namun disparitas antarwilayah pinggiran masih tinggi."
+    },
+    {
+      "date": "2026-10-16",
+      "time_wita": "10:00",
+      "event": "Kedatangan Kapal 3 dari program 26.200 KL di TBBM Sanggaran (6.000 KL) untuk normalisasi total.",
+      "source": "Detik Bali & Pertamina Patra Niaga",
+      "impact": "Pasokan terminal kembali ke kondisi aman, bottleneck berpindah ke throughput pompa dan waktu penguraian antrean."
+    }
+  ],
+  "logistics_parameters": {
+    "normal_daily_demand_pertalite_kl": 2200,
+    "crisis_panic_demand_pertalite_kl": 2650,
+    "trucking_throughput_capacity_kl_day": 2700,
+    "avg_spbu_tank_pertalite_kl": 24,
+    "total_spbu_pertamina_bali": 212,
+    "total_pertamini_mapped": 664,
+    "terminals": [
+      {
+        "id": "sanggaran",
+        "name": "TBBM Sanggaran (Denpasar)",
+        "lat": -8.7262,
+        "lon": 115.212,
+        "capacity_days": 2.5
+      },
+      {
+        "id": "manggis",
+        "name": "TBBM Manggis (Karangasem)",
+        "lat": -8.5115,
+        "lon": 115.53,
+        "capacity_days": 4.0
+      }
+    ]
+  },
+  "comparative_crises": [
+    {
+      "event": "Krisis Distribusi BBM Labuan Bajo (2023)",
+      "cause": "Gelombang tinggi menghambat kapal tanker bersandar selama 4 hari.",
+      "recovery_duration_days": 6,
+      "lesson": "Setelah kapal bersandar, butuh 48 jam tambahan bagi armada truk untuk mengurai antrean karena kepanikan warga."
+    },
+    {
+      "event": "Kelangkaan Solar SPBU Pantura Jawa (2022)",
+      "cause": "Keterlambatan kuota subsidi dan panic buying angkutan logistik.",
+      "recovery_duration_days": 8,
+      "lesson": "SPBU di jalur arteri utama pulih 3x lebih cepat dibanding SPBU pedalaman/wisata karena prioritas ritase Pertamina."
+    }
+  ]
+}
