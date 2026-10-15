@@ -3,6 +3,8 @@
   let CURRENT_RUN_ID = null;
   let DATA_CACHE = null;
   let POLL_TIMER = null;
+  let ALL_STATIONS = [];
+  let ALL_HOURS = [];
 
   function getFeedUrl() {
     let u = window.FEED_URL || "https://balifuel-worker.anandapradnyana68.workers.dev";
@@ -35,17 +37,17 @@
     if (age > 30 || meta.status === "stale") {
       dot.className = "status-dot";
       dot.style.background = "var(--warning)";
-      text.textContent = `DATA USANG (${ageStr})`;
+      text.textContent = `DATA USANG (${ageStr}) \u00B7 60s`;
       badge.style.borderColor = "var(--warning)";
     } else if (meta.status === "degraded") {
       dot.className = "status-dot";
       dot.style.background = "var(--warning)";
-      text.textContent = `DEGRADED (${ageStr})`;
+      text.textContent = `DEGRADED (${ageStr}) \u00B7 60s`;
       badge.style.borderColor = "var(--warning)";
     } else {
       dot.className = "status-dot green";
       dot.style.background = "var(--success)";
-      text.textContent = `LIVE (${ageStr})`;
+      text.textContent = `LIVE (${ageStr}) \u00B7 60s`;
       badge.style.borderColor = "var(--line-strong)";
     }
   }
@@ -107,18 +109,16 @@
     }
   }
 
+  const REFRESH_INTERVAL_MS = 60000; // 60 detik (1 menit sekali)
+
   function startPolling() {
     if (POLL_TIMER) clearTimeout(POLL_TIMER);
-    const baseMs = 140000;
-    const jitter = (Math.random() - 0.5) * 40000;
-    const delay = Math.max(90000, baseMs + jitter);
-
     POLL_TIMER = setTimeout(async () => {
       if (document.visibilityState === "visible") {
         await loadData();
       }
       startPolling();
-    }, delay);
+    }, REFRESH_INTERVAL_MS);
   }
 
   document.addEventListener("visibilitychange", () => {
@@ -154,6 +154,8 @@
       document.getElementById("boxCi80").textContent = `${meta.ci80[0].split(' ')[0]} \u2014 ${meta.ci80[1].split(' ')[0]}`;
     }
     document.getElementById("pillCount").textContent = `${stList.length} Titik`;
+    ALL_STATIONS = stList || [];
+    ALL_HOURS = hours || [];
 
     // Leaflet Map Render
     initMap(stList, hours);
@@ -199,9 +201,9 @@
 
       markersLayer = L.layerGroup().addTo(mapInstance);
 
-      document.getElementById("filterKind").addEventListener("change", () => renderMapPins(stations, hours));
-      document.getElementById("filterArea").addEventListener("change", () => renderMapPins(stations, hours));
-      document.getElementById("filterStatus").addEventListener("change", () => renderMapPins(stations, hours));
+      document.getElementById("filterKind").addEventListener("change", () => renderMapPins());
+      document.getElementById("filterArea").addEventListener("change", () => renderMapPins());
+      document.getElementById("filterStatus").addEventListener("change", () => renderMapPins());
 
       // Reset Map Button
       const btnReset = document.getElementById("btnResetMap");
@@ -256,27 +258,30 @@
       setTimeout(() => mapInstance.invalidateSize(), 200);
     }
 
-    renderMapPins(stations, hours);
+    renderMapPins();
 
-    if (stations.length > 0) {
-      selectStation(stations[0], hours);
+    if (ALL_STATIONS.length > 0) {
+      selectStation(ALL_STATIONS[0], ALL_HOURS);
     }
   }
 
-  function renderMapPins(stations, hours) {
+  function renderMapPins() {
     if (!markersLayer) return;
     markersLayer.clearLayers();
 
-    const fKind = document.getElementById("filterKind").value;
-    const fArea = document.getElementById("filterArea").value;
-    const fStatus = document.getElementById("filterStatus").value;
+    const fKind = document.getElementById("filterKind") ? document.getElementById("filterKind").value : "all";
+    const fArea = document.getElementById("filterArea") ? document.getElementById("filterArea").value : "all";
+    const fStatus = document.getElementById("filterStatus") ? document.getElementById("filterStatus").value : "all";
+
+    const stations = ALL_STATIONS;
+    if (!stations || stations.length === 0) return;
 
     stations.forEach(s => {
       const lat = s.lat != null ? parseFloat(s.lat) : (s.latitude != null ? parseFloat(s.latitude) : null);
       const lng = s.lng != null ? parseFloat(s.lng) : (s.lon != null ? parseFloat(s.lon) : (s.longitude != null ? parseFloat(s.longitude) : null));
       if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) return;
 
-      const kind = s.kind || "spbu";
+      const kind = (s.kind || "spbu").toLowerCase();
       const area = s.area || "Bali";
       const p = s.p_now != null ? parseFloat(s.p_now) : (s.prob_pertalite != null ? parseFloat(s.prob_pertalite) : 0.5);
 
@@ -324,7 +329,7 @@
         const btn = document.getElementById(`popBtn_${s.id}`);
         if (btn) {
           btn.onclick = () => {
-            selectStation(s, hours);
+            selectStation(s, ALL_HOURS);
             switchTab('tabForecast');
           };
         }
@@ -545,6 +550,17 @@
         document.documentElement.setAttribute("data-theme", "light");
         themeBtn.textContent = "\u263E";
       }
+    });
+  }
+  // CLICK BADGE TO FORCE REFRESH
+  const badgeEl = document.getElementById("dataAgeBadge");
+  if (badgeEl) {
+    badgeEl.style.cursor = "pointer";
+    badgeEl.title = "Klik untuk segarkan data sekarang (Pembaruan otomatis tiap 60 detik)";
+    badgeEl.addEventListener("click", () => {
+      const text = document.getElementById("badgeText");
+      if (text) text.textContent = "MEMPERBARUI...";
+      loadData();
     });
   }
 
