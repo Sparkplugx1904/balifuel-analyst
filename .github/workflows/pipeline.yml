@@ -60,3 +60,7 @@ jobs:
           if [ -n "$WORKER_URL" ] && [ -n "$INGEST_TOKEN" ]; then
             python src/publish.py --save-state --worker-url "$WORKER_URL" --token "$INGEST_TOKEN"
           fi
+      - name: Runner Debug & Freshness Audit
+        if: always()
+        run: |
+          python src/debug_runner.py
