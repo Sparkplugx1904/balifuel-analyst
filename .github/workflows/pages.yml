@@ -1,0 +1,61 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy-pages:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Assemble Site
+        run: |
+          mkdir -p _site
+          cp -r docs/* _site/
+
+      - name: Inject Production FEED_URL into _site/config.js
+        env:
+          RAW_FEED_URL: ${{ vars.FEED_URL }}
+        run: |
+          python -c '
+          import os, sys, json
+          raw = os.environ.get("RAW_FEED_URL", "").strip()
+          clean_url = raw.rstrip("/")
+          if not clean_url:
+              print("::error::Repository variable vars.FEED_URL is empty! Please configure vars.FEED_URL in GitHub Repo Settings -> Variables -> Actions.", file=sys.stderr)
+              sys.exit(1)
+          js_content = f"// Automatically injected by GitHub Actions Pages deployment\\nwindow.FEED_URL = {json.dumps(clean_url)};\\n"
+          with open("_site/config.js", "w", encoding="utf-8") as f:
+              f.write(js_content)
+          print("Successfully injected _site/config.js with FEED_URL:", clean_url)
+          '
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

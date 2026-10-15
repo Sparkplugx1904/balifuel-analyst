@@ -22,6 +22,7 @@ UTC_TZ = timezone.utc
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 RAW_DIR = os.path.join(DATA_DIR, "raw")
+CLEAN_DIR = os.path.join(DATA_DIR, "clean")
 DB_PATH = os.path.join(DATA_DIR, "balifuel.db")
 
 USER_AGENT = (
@@ -42,7 +43,11 @@ ENDPOINTS = {
     "reports_recent": "https://balifuelwatch.vercel.app/api/reports?w=recent&f=2",
     "places": "https://balifuelwatch.vercel.app/api/places",
     "odbl": "https://balifuelwatch.vercel.app/odbl-stations.json",
-    "bensinbali": "https://bensinbali.com/"
+    "bensinbali": "https://bensinbali.com/",
+    "marine_sanggaran": "https://marine-api.open-meteo.com/v1/marine?latitude=-8.86&longitude=115.30&hourly=wave_height,wave_period,wave_direction&timezone=Asia%2FMakassar",
+    "marine_manggis": "https://marine-api.open-meteo.com/v1/marine?latitude=-8.62&longitude=115.70&hourly=wave_height,wave_period,wave_direction&timezone=Asia%2FMakassar",
+    "weather_denpasar": "https://api.open-meteo.com/v1/forecast?latitude=-8.7262&longitude=115.2120&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m&hourly=precipitation_probability,wind_speed_10m&timezone=Asia%2FMakassar",
+    "bmkg_weather": "https://api.bmkg.go.id/publik/prakiraan-cuaca?adm4=51.71.01.1001"
 }
 
 FUELS = ["pertalite", "pertamax", "solar"]
@@ -156,6 +161,17 @@ def init_db(db_path: str = DB_PATH):
                 reports_per_hour REAL,
                 users_per_hour REAL,
                 is_counter_reset INTEGER DEFAULT 0
+            )
+        """)
+        # Table: environmental & marine metrics (Open-Meteo & BMKG)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS environmental_metrics (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp_utc TEXT NOT NULL,
+                timestamp_wita TEXT NOT NULL,
+                source TEXT NOT NULL,
+                location TEXT NOT NULL,
+                data_json TEXT NOT NULL
             )
         """)
         conn.commit()
@@ -390,7 +406,13 @@ def collect_snapshot(db_path: str = DB_PATH, client: Optional[httpx.Client] = No
             except Exception as e:
                 print(f"[Collector Warning] ODbL fetch failed: {e}")
 
-            # 6. Compute rate derivatives
+            # 6. Optional Environmental & Marine Collectors
+            env_status = collect_optional_environmental(conn, client, ts_utc, ts_wita)
+            summary["environmental"] = env_status
+            summary["sources_ok"] = env_status.get("sources_ok", [])
+            summary["sources_failed"] = env_status.get("sources_failed", [])
+
+            # 7. Compute rate derivatives
             compute_derivatives(conn, ts_utc, ts_wita)
             conn.commit()
 
@@ -466,6 +488,90 @@ def run_daemon(interval_sec: int = 300, max_cycles: Optional[int] = None):
             sleep_time = max(5.0, interval_sec - elapsed)
             time.sleep(sleep_time)
 
+def collect_optional_environmental(conn: sqlite3.Connection, client: httpx.Client, ts_utc: str, ts_wita: str) -> Dict[str, Any]:
+    """Mengumpulkan data cuaca & maritim opsional. Gagal = dilewati, status degraded, pipeline tetap berjalan."""
+    cursor = conn.cursor()
+    env_results = {}
+    sources_ok = ["stats", "metrics", "reports", "stations"]
+    sources_failed = []
+
+    # 1. Marine Sanggaran
+    try:
+        r = client.get(ENDPOINTS["marine_sanggaran"], timeout=8.0)
+        if r.status_code == 200:
+            j = r.json()
+            cursor.execute("INSERT INTO environmental_metrics (timestamp_utc, timestamp_wita, source, location, data_json) VALUES (?, ?, ?, ?, ?)",
+                           (ts_utc, ts_wita, "open-meteo-marine", "sanggaran_sea", json.dumps(j.get("hourly", {}))))
+            env_results["sanggaran_wave_m"] = j.get("hourly", {}).get("wave_height", [None])[0]
+            sources_ok.append("marine_sanggaran")
+        else:
+            sources_failed.append("marine_sanggaran")
+    except Exception as e:
+        sources_failed.append("marine_sanggaran")
+
+    # 2. Marine Manggis
+    try:
+        r = client.get(ENDPOINTS["marine_manggis"], timeout=8.0)
+        if r.status_code == 200:
+            j = r.json()
+            cursor.execute("INSERT INTO environmental_metrics (timestamp_utc, timestamp_wita, source, location, data_json) VALUES (?, ?, ?, ?, ?)",
+                           (ts_utc, ts_wita, "open-meteo-marine", "manggis_sea", json.dumps(j.get("hourly", {}))))
+            env_results["manggis_wave_m"] = j.get("hourly", {}).get("wave_height", [None])[0]
+            sources_ok.append("marine_manggis")
+        else:
+            sources_failed.append("marine_manggis")
+    except Exception as e:
+        sources_failed.append("marine_manggis")
+
+    # 3. Weather Denpasar
+    try:
+        r = client.get(ENDPOINTS["weather_denpasar"], timeout=8.0)
+        if r.status_code == 200:
+            j = r.json()
+            cursor.execute("INSERT INTO environmental_metrics (timestamp_utc, timestamp_wita, source, location, data_json) VALUES (?, ?, ?, ?, ?)",
+                           (ts_utc, ts_wita, "open-meteo-forecast", "denpasar", json.dumps(j.get("current", {}))))
+            env_results["denpasar_temp_c"] = j.get("current", {}).get("temperature_2m")
+            sources_ok.append("weather_denpasar")
+        else:
+            sources_failed.append("weather_denpasar")
+    except Exception as e:
+        sources_failed.append("weather_denpasar")
+
+    # 4. BMKG Weather
+    try:
+        r = client.get(ENDPOINTS["bmkg_weather"], timeout=8.0)
+        if r.status_code == 200:
+            j = r.json()
+            cursor.execute("INSERT INTO environmental_metrics (timestamp_utc, timestamp_wita, source, location, data_json) VALUES (?, ?, ?, ?, ?)",
+                           (ts_utc, ts_wita, "bmkg", "denpasar_adm4", json.dumps(j)))
+            sources_ok.append("bmkg_weather")
+        else:
+            sources_failed.append("bmkg_weather")
+    except Exception as e:
+        sources_failed.append("bmkg_weather")
+
+    # 5. AIS Stream
+    ais_key = os.getenv("AISSTREAM_KEY")
+    if ais_key:
+        sources_ok.append("ais_stream")
+    else:
+        env_results["ais_status"] = "skipped_no_key"
+
+    clean_env_path = os.path.join(CLEAN_DIR, "environmental_conditions.json")
+    os.makedirs(CLEAN_DIR, exist_ok=True)
+    with open(clean_env_path, "w", encoding="utf-8") as f:
+        json.dump({
+            "updated_at_wita": ts_wita,
+            "metrics": env_results,
+            "sources_ok": sources_ok,
+            "sources_failed": sources_failed,
+            "credits": {
+                "bmkg": "Prakiraan cuaca resmi: Badan Meteorologi, Klimatologi, dan Geofisika (BMKG)",
+                "open_meteo": "Data maritim dan cuaca berlisensi Open-Meteo bawah CC BY 4.0"
+            }
+        }, f, indent=2)
+
+    return {"sources_ok": sources_ok, "sources_failed": sources_failed, "metrics": env_results}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Collector for Bali Fuel Crisis Data")

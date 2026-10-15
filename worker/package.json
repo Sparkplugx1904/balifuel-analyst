@@ -1,0 +1,13 @@
+{
+  "name": "balifuel-worker",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker data board & runner trigger for Bali Fuel Crisis Analyst",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "keywords": ["cloudflare", "worker", "r2", "balifuel"],
+  "author": "Sparkplugx1904",
+  "license": "MIT"
+}

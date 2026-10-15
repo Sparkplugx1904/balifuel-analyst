@@ -1,0 +1,13 @@
+name = "balifuel-worker"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+[triggers]
+crons = ["*/10 * * * *"]
+
+[vars]
+GH_REPO = "Sparkplugx1904/balifuel-analyst"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "balifuel-storage"

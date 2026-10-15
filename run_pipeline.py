@@ -1,93 +1,208 @@
 """
 Master Pipeline Runner: Bali Fuel Crisis Analyst System
-Menjalankan seluruh siklus sistem end-to-end dengan satu perintah:
-1. Koleksi data mentah & snapshot time series (SQLite & raw JSON)
-2. Pembersihan data, pembobotan eksponensial, & imputasi spasial
-3. Kalkulasi metrik keparahan (CSI) & analisis 14 area
-4. Pemodelan Markov, Kaplan-Meier, & backtest komparatif
-5. Simulasi Monte Carlo 10.000 jalur & distribusi waktu pemulihan
-6. Proyeksi stok & antrean 72 jam per SPBU + hotspot ranking
-7. Pembuatan grafik SVG mandiri per SPBU di output/spbu/
-8. Perakitan dashboard interaktif mandiri di output/dashboard.html
+Menjalankan siklus analisis end-to-end dengan dukungan mode lokal dan publikasi:
+- Mode Lokal: menjalankan seluruh modul analisis, menghasilkan output/dashboard.html
+- Mode Publikasi (--publish / --dry-run): membundel 4 kontrak data & mengunggah ke Cloudflare Worker
+- Manajemen State: --restore-state (unduh DB dari R2) dan --save-state (kompaksi & unggah DB ke R2)
+- Target Eksekusi: < 5 menit per run, seed deterministik dari run_id, log durasi tiap fase.
 """
 
 import os
 import sys
 import time
+import json
+import hashlib
+import argparse
+from datetime import datetime, timezone, timedelta
+
+WITA_TZ = timezone(timedelta(hours=8))
+UTC_TZ = timezone.utc
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
+DATA_DIR = os.path.join(BASE_DIR, "data")
+CLEAN_DIR = os.path.join(DATA_DIR, "clean")
+DB_PATH = os.path.join(DATA_DIR, "balifuel.db")
 
-def run_all(spbu_chart_limit: int = 50):
-    t_start = time.time()
-    print("=" * 70)
-    print(" BALI FUEL CRISIS ANALYST — END-TO-END SYSTEM RUNNER")
-    print("=" * 70)
 
-    # 1. Collector
-    print("\n[PHASE 1/8] Running Data Collection & History Bootstrap...")
+def should_refit_markov(max_age_hours: float = 6.0) -> bool:
+    """Cek apakah model Markov perlu di-fit ulang (default setiap 6 jam)."""
+    markov_cache_file = os.path.join(CLEAN_DIR, "markov_and_survival_analysis.json")
+    if not os.path.exists(markov_cache_file):
+        return True
+    mtime = os.path.getmtime(markov_cache_file)
+    age_hours = (time.time() - mtime) / 3600.0
+    return age_hours >= max_age_hours
+
+
+def run_pipeline(
+    publish: bool = False,
+    dry_run: bool = False,
+    all_charts: bool = False,
+    worker_url: str = None,
+    token: str = None,
+    spbu_chart_limit: int = 50,
+    force_markov_refit: bool = False
+):
+    total_start = time.time()
+    from src.publish import generate_run_id
+    run_id = generate_run_id()
+
+    # Seed diturunkan dari run_id
+    seed = int(hashlib.sha256(run_id.encode("utf-8")).hexdigest()[:8], 16) % 1_000_000
+
+    print("=" * 72)
+    print(f" BALI FUEL CRISIS ANALYST // PIPELINE RUNNER")
+    print(f" Run ID : {run_id}")
+    print(f" Seed   : {seed}")
+    print(f" Mode   : {'PUBLISH' if publish else ('DRY-RUN' if dry_run else 'LOCAL')}")
+    print("=" * 72)
+
+    phase_timings = {}
+
+    # -------------------------------------------------------------
+    # FASE 1: KOLEKSI DATA (SNAPSHOT & HISTORY BOOTSTRAP)
+    # -------------------------------------------------------------
+    t0 = time.time()
+    print("\n[PHASE 1/7] Running Data Collection & History Bootstrap...")
     from src.collector import collect_snapshot
     res_collect = collect_snapshot()
-    print(f"-> Collection finished: {res_collect.get('collected', {})}")
+    phase_timings["1_collector"] = round(time.time() - t0, 2)
+    print(f"-> Phase 1 completed in {phase_timings['1_collector']}s (Reports: {res_collect.get('collected', {}).get('reports_count')})")
 
-    # 2. Cleaner
-    print("\n[PHASE 2/8] Running Data Cleaning, Weighting & Spatial Imputation...")
+    # -------------------------------------------------------------
+    # FASE 2: PEMBERSIHAN DATA & IMPUTASI SPASIAL
+    # -------------------------------------------------------------
+    t0 = time.time()
+    print("\n[PHASE 2/7] Running Data Cleaning, Weighting & Spatial Imputation...")
     from src.cleaner import clean_and_enrich_data
     res_clean = clean_and_enrich_data()
-    print(f"-> Cleaning finished: {res_clean.get('total_stations')} stations processed.")
+    phase_timings["2_cleaner"] = round(time.time() - t0, 2)
+    print(f"-> Phase 2 completed in {phase_timings['2_cleaner']}s ({res_clean.get('total_stations')} stations)")
 
-    # 3. Metrics
-    print("\n[PHASE 3/8] Computing Crisis Severity Index & 14 Area Metrics...")
+    # -------------------------------------------------------------
+    # FASE 3: METRIK KEPARAHAN & 14 AREA MAKRO
+    # -------------------------------------------------------------
+    t0 = time.time()
+    print("\n[PHASE 3/7] Computing Crisis Severity Index & 14 Area Metrics...")
     from src.metrics import compute_crisis_metrics
     res_metrics = compute_crisis_metrics()
-    print(f"-> Current Island CSI: {res_metrics.get('current_island_csi')} ({res_metrics.get('current_status')})")
+    phase_timings["3_metrics"] = round(time.time() - t0, 2)
+    print(f"-> Phase 3 completed in {phase_timings['3_metrics']}s (Island CSI: {res_metrics.get('current_island_csi')})")
 
-    # 4. Markov & Survival
-    print("\n[PHASE 4/8] Fitting Markov Chain & Kaplan-Meier Survival Analysis...")
-    from src.markov_model import run_markov_pipeline
-    res_markov = run_markov_pipeline()
-    winner = res_markov.get("model_comparison", {}).get("best_model", "Markov")
-    print(f"-> Model Comparison Winner: {winner}")
+    # -------------------------------------------------------------
+    # FASE 4: PEMODELAN MARKOV & SURVIVAL (SETIAP 6 JAM)
+    # -------------------------------------------------------------
+    t0 = time.time()
+    print("\n[PHASE 4/7] Checking Markov Chain & Survival Analysis Cache...")
+    if force_markov_refit or should_refit_markov(max_age_hours=6.0):
+        print("-> Running full Markov fitting & backtest (Cache expired > 6 hours)...")
+        from src.markov_model import run_markov_pipeline
+        res_markov = run_markov_pipeline()
+        winner = res_markov.get("model_comparison", {}).get("best_model", "Markov")
+        phase_timings["4_markov"] = round(time.time() - t0, 2)
+        print(f"-> Phase 4 refit completed in {phase_timings['4_markov']}s (Model: {winner})")
+    else:
+        phase_timings["4_markov"] = round(time.time() - t0, 2)
+        print(f"-> Reusing cached Markov model (< 6h old). Phase 4 skipped in {phase_timings['4_markov']}s.")
 
-    # 5. Monte Carlo Simulation
-    print("\n[PHASE 5/8] Running 10,000 Monte Carlo Simulation Paths...")
+    # -------------------------------------------------------------
+    # FASE 5: SIMULASI MONTE CARLO (10.000 JALUR)
+    # -------------------------------------------------------------
+    t0 = time.time()
+    print("\n[PHASE 5/7] Running 10,000 Monte Carlo Simulation Paths...")
     from src.simulation import run_monte_carlo_simulation
-    res_sim = run_monte_carlo_simulation(n_paths=10000, random_seed=42)
-    print(f"-> Median Recovery: {res_sim.get('median_recovery_datetime_wita')} (+{res_sim.get('median_recovery_hours')}h)")
+    res_sim = run_monte_carlo_simulation(n_paths=10000, random_seed=seed)
+    phase_timings["5_simulation"] = round(time.time() - t0, 2)
+    print(f"-> Phase 5 completed in {phase_timings['5_simulation']}s (Median: {res_sim.get('median_recovery_datetime_wita')})")
 
-    # 6. Forecasting & Hotspots
-    print("\n[PHASE 6/8] Generating 72-Hour Per-SPBU Forecasts & Hotspot Rankings...")
+    # -------------------------------------------------------------
+    # FASE 6: PROYEKSI 72 JAM PER SPBU & HOTSPOT RANKING
+    # -------------------------------------------------------------
+    t0 = time.time()
+    print("\n[PHASE 6/7] Generating 72-Hour Per-SPBU Forecasts & Hotspot Rankings...")
     from src.forecast import generate_station_forecasts
-    res_fc = generate_station_forecasts()
-    print(f"-> Forecast generated for {res_fc.get('total_stations')} stations.")
+    res_fc = generate_station_forecasts(horizon_hours=72)
+    phase_timings["6_forecast"] = round(time.time() - t0, 2)
+    print(f"-> Phase 6 completed in {phase_timings['6_forecast']}s ({res_fc.get('total_stations')} stations)")
 
-    # 7. Visualizer
-    print(f"\n[PHASE 7/8] Generating Standalone SPBU Visual Charts (Top {spbu_chart_limit} + Hotspots)...")
-    from src.visualizer import generate_spbu_charts
-    gen_cnt = generate_spbu_charts(limit=spbu_chart_limit, format_ext="svg")
-    print(f"-> Generated {gen_cnt} SVG charts in output/spbu/.")
+    # -------------------------------------------------------------
+    # FASE 7: PUBLIKASI KONTRAK ATAU BUILD DASHBOARD LOKAL
+    # -------------------------------------------------------------
+    t0 = time.time()
+    print("\n[PHASE 7/7] Output Generation & Publishing...")
+    if publish or dry_run:
+        from src.publish import publish_pipeline_artifacts
+        w_url = worker_url or os.getenv("WORKER_URL", "http://127.0.0.1:8787")
+        tok = token or os.getenv("INGEST_TOKEN", "")
+        pub_res = publish_pipeline_artifacts(worker_url=w_url, token=tok, dry_run=dry_run, run_id=run_id)
+        phase_timings["7_publish"] = round(time.time() - t0, 2)
+        print(f"-> Publication completed in {phase_timings['7_publish']}s. Sizes: {pub_res.get('sizes')}")
+    else:
+        # Local mode: build dashboard and optionally SVG charts
+        if all_charts:
+            from src.visualizer import generate_spbu_charts
+            gen_cnt = generate_spbu_charts(limit=None, format_ext="svg")
+            print(f"-> Generated {gen_cnt} SVG charts in output/spbu/.")
+        elif spbu_chart_limit > 0:
+            from src.visualizer import generate_spbu_charts
+            gen_cnt = generate_spbu_charts(limit=spbu_chart_limit, format_ext="svg")
+            print(f"-> Generated {gen_cnt} SVG charts in output/spbu/.")
 
-    # 8. Dashboard Builder
-    print("\n[PHASE 8/8] Building Standalone Interactive HTML Dashboard...")
-    from src.dashboard_builder import build_dashboard
-    dash_path = build_dashboard()
-    print(f"-> Dashboard ready at: {dash_path}")
+        from src.dashboard_builder import build_dashboard
+        dash_path = build_dashboard(target="local")
+        phase_timings["7_publish"] = round(time.time() - t0, 2)
+        print(f"-> Local dashboard ready at: {dash_path}")
 
-    elapsed = time.time() - t_start
-    print("\n" + "=" * 70)
-    print(f" ALL PHASES COMPLETED SUCCESSFULLY IN {elapsed:.2f} SECONDS!")
-    print(f" Dashboard: {os.path.join(BASE_DIR, 'output', 'dashboard.html')}")
-    print(f" Full Report: {os.path.join(BASE_DIR, 'output', 'laporan.md')}")
-    print("=" * 70)
+    total_elapsed = round(time.time() - total_start, 2)
+    print("\n" + "=" * 72)
+    print(f" PIPELINE FINISHED IN {total_elapsed}s (Target < 300s: {'PASSED' if total_elapsed < 300 else 'SLOW'})")
+    print(" Durasi Tiap Fase:")
+    for ph, dur in phase_timings.items():
+        print(f"   * {ph:15}: {dur:6.2f}s")
+    print("=" * 72)
+
+    return {
+        "run_id": run_id,
+        "seed": seed,
+        "total_seconds": total_elapsed,
+        "phase_timings": phase_timings
+    }
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Master Runner for Bali Fuel Crisis Analyst")
-    parser.add_argument("--all-charts", action="store_true", help="Generate SVG charts for all 232 priority SPBU")
+    parser = argparse.ArgumentParser(description="Master Pipeline Runner for Bali Fuel Crisis Analyst")
+    parser.add_argument("--publish", action="store_true", help="Publish 4 contract files to Cloudflare Worker ingest API")
+    parser.add_argument("--dry-run", action="store_true", help="Bundle and validate 4 contracts into ./publish_out without uploading")
+    parser.add_argument("--worker-url", type=str, default=None, help="Cloudflare Worker URL")
+    parser.add_argument("--token", type=str, default=None, help="Ingest Bearer Token")
+    parser.add_argument("--all-charts", action="store_true", help="Generate SVG charts for all 232 priority SPBU (local only)")
+    parser.add_argument("--spbu-limit", type=int, default=20, help="SPBU chart count limit for local mode (default: 20)")
+    parser.add_argument("--force-markov", action="store_true", help="Force refit of Markov model regardless of cache")
+    parser.add_argument("--restore-state", action="store_true", help="Download state/balifuel.db from Cloudflare Worker")
+    parser.add_argument("--save-state", action="store_true", help="Compact and upload state/balifuel.db to Cloudflare Worker")
     args = parser.parse_args()
 
-    limit = None if args.all_charts else 50
-    run_all(spbu_chart_limit=limit)
+    # State management actions
+    if args.restore_state:
+        from src.publish import download_state
+        w_url = args.worker_url or os.getenv("WORKER_URL", "http://127.0.0.1:8787")
+        tok = args.token or os.getenv("INGEST_TOKEN", "")
+        download_state(w_url, tok)
+    elif args.save_state:
+        from src.publish import upload_state
+        w_url = args.worker_url or os.getenv("WORKER_URL", "http://127.0.0.1:8787")
+        tok = args.token or os.getenv("INGEST_TOKEN", "")
+        upload_state(w_url, tok)
+    else:
+        run_pipeline(
+            publish=args.publish,
+            dry_run=args.dry_run,
+            all_charts=args.all_charts,
+            worker_url=args.worker_url,
+            token=args.token,
+            spbu_chart_limit=args.spbu_limit,
+            force_markov_refit=args.force_markov
+        )

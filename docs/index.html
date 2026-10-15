@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#000000">
+  <title>BaliFuel // Crisis Analyst — Pemulihan Distribusi BBM Bali 2026</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+  <link rel="stylesheet" href="./style.css">
+  <script src="./config.js"></script>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <span class="brand-logo">⚡</span>
+        <div>
+          <span class="brand-name">BALIFUEL // CRISIS_WATCH</span>
+          <span class="brand-tag">v2.1 · LIVE</span>
+        </div>
+      </a>
+
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Cari SPBU, nama jalan, area, atau kode..." autocomplete="off">
+      </div>
+
+      <div class="nav-right">
+        <div class="status-pill" id="dataAgeBadge" title="Status sinkronisasi data">
+          <span class="status-dot green" id="statusDot"></span>
+          <span id="badgeText">FEED: CONNECTING</span>
+        </div>
+        <button id="themeToggleBtn" class="btn btn-outline btn-icon" title="Toggle Tema">
+          ☀
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <section class="channel-header">
+      <div class="channel-title-row">
+        <h1 class="channel-name">BALI FUEL CRISIS ANALYST</h1>
+        <span class="verified-badge" title="Terkalibrasi Data Lapangan">✓</span>
+      </div>
+      <div class="channel-stats">
+        <span>STATUS: <b style="color:var(--warning)" id="hdrStatus">MEMUAT...</b></span>
+        <span>•</span>
+        <span>EST. PULIH: <b style="color:var(--accent)" id="hdrRecovery">-</b></span>
+        <span>•</span>
+        <span>SPBU KOSONG: <b style="color:var(--danger)" id="hdrEmptyPct">-</b></span>
+        <span>•</span>
+        <span>MONTE CARLO: <b>10.000 JALUR</b></span>
+      </div>
+    </section>
+
+    <div class="terminal-card">
+      <div class="term-prompt">simulation --horizon=384h --samples=10000 --rule="empty &lt; 10% sustained 48h"</div>
+      <div class="term-grid">
+        <div class="term-stat-item">
+          <div class="term-stat-label">Prediksi Tanggal Mereda (Median)</div>
+          <div class="term-stat-value" style="color:var(--accent)" id="boxMedianDate">Menghitung...</div>
+          <div class="term-stat-desc" id="boxMedianDesc">Estimasi titik balik ketersediaan BBM</div>
+        </div>
+        <div class="term-stat-item">
+          <div class="term-stat-label">50% Credible Interval (P25 - P75)</div>
+          <div class="term-stat-value" id="boxCi50">-</div>
+          <div class="term-stat-desc">Rentang probabilitas mayoritas (48 jam)</div>
+        </div>
+        <div class="term-stat-item">
+          <div class="term-stat-label">80% Credible Interval (P10 - P90)</div>
+          <div class="term-stat-value" id="boxCi80">-</div>
+          <div class="term-stat-desc">Cakupan variabilitas cuaca & logistik</div>
+        </div>
+        <div class="term-stat-item">
+          <div class="term-stat-label">Bottleneck Kritis Saat Ini</div>
+          <div class="term-stat-value" style="color:var(--warning)">Truk Tangki Darat</div>
+          <div class="term-stat-desc">Kapasitas 2.700 KL/hari vs antrean nosel</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="user-pills-bar">
+      <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA REAL-TIME ] <small id="pillCount">876 Titik</small></button>
+      <button class="user-pill" onclick="switchTab('tabForecast')">[ 02 // PREDIKSI 72 JAM ] <small>Per SPBU</small></button>
+      <button class="user-pill" onclick="switchTab('tabAreas')">[ 03 // 14 AREA MAKRO ] <small>Analisis CSI</small></button>
+      <button class="user-pill" onclick="switchTab('tabSimulation')">[ 04 // SIMULASI MONTE CARLO ] <small>Fan Chart</small></button>
+      <button class="user-pill" onclick="switchTab('tabHotspots')">[ 05 // 20 HOTSPOT RENTAN ] <small>Ranking</small></button>
+      <button class="user-pill" onclick="switchTab('tabGuide')">[ 06 // PANDUAN WARGA & TIMELINE ] <small>Praktis</small></button>
+    </nav>
+
+    <!-- TAB 1: PETA -->
+    <div id="tabMap" class="tab-content dash-section">
+      <div class="section-header">
+        <h2 class="section-title">SEBARAN SPBU & KIOS PERTAMINI REAL-TIME SE-BALI</h2>
+        <p class="section-desc">Peta ketersediaan bahan bakar hasil integrasi laporan pengemudi, bobot waktu (half-life 90m), dan imputasi spasial IDW.</p>
+      </div>
+
+      <div class="map-toolbar">
+        <div class="map-filters">
+          <select id="filterKind" class="filter-select">
+            <option value="all">Semua Titik (SPBU + Pertamini)</option>
+            <option value="spbu">Hanya SPBU Resmi (212)</option>
+            <option value="pertamini">Hanya Kios Pertamini (664)</option>
+          </select>
+          <select id="filterArea" class="filter-select">
+            <option value="all">Semua Area (14 Wilayah)</option>
+          </select>
+          <select id="filterStatus" class="filter-select">
+            <option value="all">Semua Status Ketersediaan</option>
+            <option value="avail">Pasti / Ada Stok (&ge;60%)</option>
+            <option value="warn">Menipis / Antre (35-60%)</option>
+            <option value="empty">Kosong (&lt;35%)</option>
+          </select>
+        </div>
+        <div style="font-size:11px; color:var(--ink-3);">
+          <span>● <span style="color:var(--success)">Ada Stok (&ge;60%)</span></span> &nbsp;
+          <span>● <span style="color:var(--warning)">Kritis (35-60%)</span></span> &nbsp;
+          <span>● <span style="color:var(--danger)">Kosong (&lt;35%)</span></span>
+        </div>
+      </div>
+
+      <div id="map"></div>
+    </div>
+
+    <!-- TAB 2: PREDIKSI PER SPBU -->
+    <div id="tabForecast" class="tab-content dash-section" style="display:none;">
+      <div class="section-header">
+        <h2 class="section-title">INSPEKTOR PREDIKSI 72 JAM PER SPBU (MARKOV KERNEL)</h2>
+        <p class="section-desc">Pilih stasiun di peta atau gunakan pencarian untuk melihat probabilitas stok, pita ketidakpastian 80%, dan estimasi antrean.</p>
+      </div>
+
+      <div class="spbu-grid">
+        <div class="spec-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span id="cardBadgeKind" style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:var(--r-sm); background:var(--accent-soft); color:var(--accent);">SPBU PERTAMINA</span>
+            <span id="cardCode" style="font-size:11px; color:var(--ink-3);">-</span>
+          </div>
+          <h3 id="cardName" style="font-size:15px; font-weight:700; margin-bottom:4px; color:var(--ink);">Pilih SPBU</h3>
+          <p id="cardAddress" style="font-size:11px; color:var(--ink-2); margin-bottom:14px;">-</p>
+
+          <div class="spec-row">
+            <span class="spec-label">Peluang Stok Saat Ini:</span>
+            <span class="spec-val" id="cardProb" style="color:var(--success);">-</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Estimasi Waktu Antre:</span>
+            <span class="spec-val" id="cardQueue" style="color:var(--warning);">-</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Jarak ke TBBM Suplai:</span>
+            <span class="spec-val" id="cardDist">-</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Prediksi Pulih Normal:</span>
+            <span class="spec-val" id="cardRecovery" style="color:var(--accent);">-</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Harga Pertalite:</span>
+            <span class="spec-val" id="cardPrice">-</span>
+          </div>
+        </div>
+
+        <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:12px;">
+          <div id="spbuPlotlyChart" style="height: 380px; width:100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: 14 AREA MAKRO -->
+    <div id="tabAreas" class="tab-content dash-section" style="display:none;">
+      <div class="section-header">
+        <h2 class="section-title">INDEKS KEPARAHAN KRISIS (CSI) DI 14 AREA MAKRO BALI</h2>
+        <p class="section-desc">Kompilasi tingkat kelangkaan, durasi antrean nosel, dan tingkat mark-up harga eceran kios informal.</p>
+      </div>
+
+      <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px; margin-bottom:20px;">
+        <div id="areaPlotlyChart" style="height: 360px;"></div>
+      </div>
+
+      <div class="terminal-table-wrap">
+        <table class="term-table">
+          <thead>
+            <tr>
+              <th>Wilayah Makro</th>
+              <th>Skor CSI</th>
+              <th>SPBU Resmi</th>
+              <th>Kios Pertamini</th>
+              <th>SPBU Kosong (%)</th>
+              <th>Rerata Antrean</th>
+              <th>Mark-Up Eceran</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="areaTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 4: SIMULASI MONTE CARLO -->
+    <div id="tabSimulation" class="tab-content dash-section" style="display:none;">
+      <div class="section-header">
+        <h2 class="section-title">SIMULASI PEMULIHAN MONTE CARLO (10.000 JALUR)</h2>
+        <p class="section-desc">Evolusi probabilitas ketersediaan BBM pulau melintasi 384 jam dan perbandingan 4 skenario logistik.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:20px;">
+        <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px;">
+          <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">FAN CHART PROYEKSI KETERSEDIAAN PULAU</div>
+          <div id="fanPlotlyChart" style="height: 320px;"></div>
+        </div>
+
+        <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px;">
+          <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">DISTRIBUSI FREKUENSI TANGGAL MEREDA (HISTOGRAM)</div>
+          <div id="histPlotlyChart" style="height: 320px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: 20 HOTSPOT PALING RENTAN -->
+    <div id="tabHotspots" class="tab-content dash-section" style="display:none;">
+      <div class="section-header">
+        <h2 class="section-title">PERINGKAT 20 TITIK SPBU & PERTAMINI PALING RENTAN</h2>
+        <p class="section-desc">Titik dengan waktu pemulihan terlama akibat hambatan jarak depot pengisian (>60 km) dan kepadatan komuter.</p>
+      </div>
+
+      <div class="terminal-table-wrap">
+        <table class="term-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nama Titik</th>
+              <th>Jenis</th>
+              <th>Area Makro</th>
+              <th>Jarak TBBM</th>
+              <th>Peluang Stok</th>
+              <th>Antrean</th>
+              <th>Skor Rentan</th>
+              <th>Prediksi Pulih</th>
+            </tr>
+          </thead>
+          <tbody id="hotspotTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 6: PANDUAN WARGA & TIMELINE -->
+    <div id="tabGuide" class="tab-content dash-section" style="display:none;">
+      <div class="section-header">
+        <h2 class="section-title">PANDUAN PRAKTIS WARGA BALI & REKONSTRUKSI FAKTA</h2>
+        <p class="section-desc">Rekomendasi matematis menghindari antrean dan perbandingan klaim resmi Pertamina dengan telemetri riil.</p>
+      </div>
+
+      <div class="layman-grid" style="margin-bottom:28px;">
+        <div class="layman-card">
+          <div class="layman-title"><span style="color:var(--success)">●</span> Jam Paling Aman Mencari BBM</div>
+          <p class="layman-desc">Pukul <b>22:00 s/d 05:30 WITA</b>. Ritase pengisian truk malam telah selesai membongkar BBM ke tangki pendam SPBU, dan antrean pompa 80% lebih pendek dibanding siang hari.</p>
+        </div>
+        <div class="layman-card">
+          <div class="layman-title"><span style="color:var(--accent)">●</span> Prioritaskan Jalur Protokol 24 Jam</div>
+          <p class="layman-desc">Pilihlah SPBU 24 Jam bernomor kode <code>54.801.xx</code> di By Pass Ngurah Rai, By Pass Ida Bagus Mantra, dan Jl. Gatot Subroto. Jalur ini mendapat alokasi ritase tangki 2x lebih sering.</p>
+        </div>
+        <div class="layman-card">
+          <div class="layman-title"><span style="color:var(--warning)">●</span> Waspada Harga Eceran Pertamini</div>
+          <p class="layman-desc">Hindari kepanikan membeli jeriken. Sebanyak 173 kios terdeteksi mematok harga Rp 20.000 - Rp 40.000/L. Pasokan terminal kini melimpah seiring bongkar muat Kapal 3.</p>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top:20px;">
+        <h3 class="section-title" style="font-size:14px;">KRONOLOGI KRISIS: FAKTA LAPANGAN VS KLAIM RESMI</h3>
+      </div>
+      <div id="timelineWrap" style="display:flex; flex-direction:column; gap:12px;"></div>
+    </div>
+
+    <footer class="term-footer">
+      <div>BALIFUEL // CRISIS_ANALYST — Independent Energy & Logistics Research Bali 2026</div>
+      <div>Source: BensinBali.com, BaliFuelWatch API, Pertamina Patra Niaga, OpenStreetMap ODbL</div>
+    </footer>
+
+  </main>
+
+  
+  <script src="./app.js"></script>
+</body>
+</html>

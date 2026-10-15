@@ -213,3 +213,30 @@ Berdasarkan data operasional Pertamina Patra Niaga dan model logistik Bali:
 - Polling endpoint `/api/stats` dan `/api/reports?w=recent&f=2` dilakukan tiap 5-15 menit (tidak melebihi s-maxage server).
 - Menyertakan header `User-Agent: BaliFuelCrisisResearch/1.0` yang jujur dan sopan.
 - Memanfaatkan caching `If-None-Match` (ETag) untuk mencegah transmisi payload berulang jika tidak ada perubahan data.
+
+---
+
+## 5. Sumber Data Lingkungan & Cuaca Maritim (Opsional)
+
+Jika salah satu sumber berikut gagal diakses, status pipeline ditandai `degraded` namun proses analisis utama tetap berjalan tanpa interupsi.
+
+### A. Open-Meteo Marine API (Kondisi Gelombang Laut Pendekat Terminal)
++- **TBBM Sanggaran Sea Point**:
+  * **URL**: `https://marine-api.open-meteo.com/v1/marine?latitude=-8.86&longitude=115.30&hourly=wave_height,wave_period,wave_direction&timezone=Asia%2FMakassar`
+  * **Metode**: `GET` (Tanpa API Key, Lisensi CC BY 4.0)
++- **TBBM Manggis / Selat Lombok Sea Point**:
+  * **URL**: `https://marine-api.open-meteo.com/v1/marine?latitude=-8.62&longitude=115.70&hourly=wave_height,wave_period,wave_direction&timezone=Asia%2FMakassar`
+  * **Metode**: `GET`
+
+### B. Open-Meteo Weather Forecast (Denpasar & Arteri Distribusi)
++- **URL**: `https://api.open-meteo.com/v1/forecast?latitude=-8.7262&longitude=115.2120&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m&hourly=precipitation_probability,wind_speed_10m&timezone=Asia%2FMakassar`
++- **Metode**: `GET`
+
+### C. BMKG Publik (Prakiraan Cuaca Resmi Terverifikasi)
++- **URL**: `https://api.bmkg.go.id/publik/prakiraan-cuaca?adm4=51.71.01.1001`
++- **Metode**: `GET`
++- **Atribusi Wajib**: *Badan Meteorologi, Klimatologi, dan Geofisika (BMKG)*.
+
+### D. AIS Stream (Pelacakan Kapal Tanker)
++- **Layanan**: `aisstream.io` (WebSocket)
++- **Konfigurasi**: Memerlukan secret `AISSTREAM_KEY`. Jika tidak dikonfigurasi, sistem menandai `ais_status: "skipped_no_key"`.
