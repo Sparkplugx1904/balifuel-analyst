@@ -1,2 +1,1 @@
-// Local dev fallback URL; injected dynamically in CI Pages deployment
-window.FEED_URL = "http://127.0.0.1:8787";
+window.FEED_URL = "https://balifuel-worker.anandapradnyana68.workers.dev";
