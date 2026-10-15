@@ -38,7 +38,7 @@ Dokumentasi arsitektur, diagram alur, konfigurasi Cloudflare Worker, dan estimas
    - **Pemicu**: Worker Cron Trigger setiap 10 menit memicu `.github/workflows/pipeline.yml` via GitHub API `workflow_dispatch`.
    - **Data Board Publik**: Worker menyajikan `/latest/meta.json` (<2 KB), `/latest/summary.json`, `/latest/stations.json` (<1.5 MB), dan `/latest/history.json` dengan CORS dan ETag caching 60 detik.
    - **State Persistence**: SQLite `balifuel.db` disimpan di R2 privat (`/state/balifuel.db`), diunduh di awal runner job, dipangkas retensi 14 hari + `VACUUM`, dan diunggah kembali di akhir job.
-   - **Frontend GitHub Pages**: Statis di direktori `docs/` (gaya terminal gelap Devtools-UI dengan JetBrains Mono & aksen orange `#FF8A3D`), mengambil data via polling live 120–180 detik.
+   - **Frontend GitHub Pages**: Statis di direktori `docs/` (terminal developer-tool aesthetic dengan JetBrains Mono & aksen orange `#FF8A3D`), mengambil data via polling live 120–180 detik.
 
 ---
 
@@ -54,7 +54,7 @@ balifuel-analyst/
 │   ├── src/index.js               # Route /latest, /ingest, /state, & scheduled handler
 │   ├── wrangler.toml              # Konfigurasi R2 bucket balifuel-storage & cron 10m
 │   └── package.json
-├── docs/                          # Frontend GitHub Pages (gaya terminal gelap Devtools-UI)
+├── docs/                          # Frontend GitHub Pages (terminal developer-tool aesthetic)
 │   ├── index.html                 # Halaman utama ramping (aset relatif)
 │   ├── style.css                  # Desain sistem monospace terminal
 │   ├── app.js                     # Controller live polling, map Leaflet, Plotly chart

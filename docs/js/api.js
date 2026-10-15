@@ -58,9 +58,7 @@
 
     // Label status + elapsed nyata
     const prefix = LAST_STATUS === "degraded" ? "DEGRADED" : "LIVE";
-    // Countdown ke refresh berikutnya
-    const nextRefreshSec = Math.max(0, Math.ceil((REFRESH_INTERVAL_MS - ageMs) / 1000));
-    text.textContent = `${prefix} · ${elapsed} · refresh ${nextRefreshSec}s`;
+    text.textContent = `${prefix} · ${elapsed}`;
   }
 
   function startTicker() {
