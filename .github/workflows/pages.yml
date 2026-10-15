@@ -46,9 +46,12 @@ jobs:
               print("::error::Repository variable vars.FEED_URL is empty! Please configure vars.FEED_URL in GitHub Repo Settings -> Variables -> Actions.", file=sys.stderr)
               sys.exit(1)
           js_content = f"window.FEED_URL = {json.dumps(clean_url)};\n"
+          os.makedirs("_site/js", exist_ok=True)
+          with open("_site/js/config.js", "w", encoding="utf-8") as f:
+              f.write(js_content)
           with open("_site/config.js", "w", encoding="utf-8") as f:
               f.write(js_content)
-          print("Successfully injected _site/config.js with FEED_URL:", clean_url)
+          print("Successfully injected _site/js/config.js with FEED_URL:", clean_url)
           '
 
       - name: Upload Pages Artifact

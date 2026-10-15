@@ -1,6 +1,7 @@
 /* ==========================================================================
-   BaliFuel Crisis Analyst — Terminal Design System (Gaya Devtools-UI)
+   BaliFuel Crisis Analyst — Modular Terminal Design System (Gaya Devtools-UI)
    Latar hitam pekat, monospace, garis tipis 1px, aksen orange #FF8A3D.
+   Dukungan penuh Mode Gelap (Default) & Mode Terang (Light Mode).
    ========================================================================== */
 
 :root {
@@ -34,20 +35,20 @@
 }
 
 [data-theme="light"] {
-  --bg: #FFFFFF;
-  --surface: #FAFAFA;
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
   --card: #FFFFFF;
-  --ink: #0A0A0A;
-  --ink-2: #525252;
-  --ink-3: #8A8A8A;
-  --line: #E8E8E8;
-  --line-strong: #D2D2D2;
-  --accent: #E4580B;
-  --accent-soft: rgba(228, 88, 11, 0.1);
-  --primary-bg: #0A0A0A;
+  --ink: #0F172A;
+  --ink-2: #475569;
+  --ink-3: #94A3B8;
+  --line: #E2E8F0;
+  --line-strong: #CBD5E1;
+  --accent: #EA580C;
+  --accent-soft: rgba(234, 88, 12, 0.12);
+  --primary-bg: #0F172A;
   --primary-ink: #FFFFFF;
-  --danger: #C23B2E;
-  --scrim: rgba(0, 0, 0, 0.5);
+  --danger: #DC2626;
+  --scrim: rgba(0, 0, 0, 0.4);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -60,6 +61,7 @@ body {
   background: var(--bg);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.15s, color 0.15s;
 }
 
 button, input, select { font: inherit; color: inherit; }
@@ -67,6 +69,7 @@ button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 ::selection { background: var(--accent); color: #000; }
 
+/* ---- Tombol ---- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   gap: 8px; height: 36px; padding: 0 14px;
@@ -81,6 +84,7 @@ button { cursor: pointer; }
 .btn-outline { background: transparent; border-color: var(--line-strong); color: var(--ink); }
 .btn-outline:hover { border-color: var(--ink-3); background: var(--surface); }
 
+/* ---- Navbar ---- */
 .navbar {
   position: sticky; top: 0; z-index: 50;
   background: color-mix(in srgb, var(--bg) 92%, transparent);
@@ -120,9 +124,11 @@ button { cursor: pointer; }
 .status-dot.green { background: var(--success); box-shadow: 0 0 6px var(--success); }
 .status-dot.red { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
 
+/* ---- Layout Kontainer Utama ---- */
 .main-container { max-width: var(--page-max); margin: 0 auto; padding: 24px var(--page-pad) 80px; }
 
-.channel-header { padding-top: 18px; margin-bottom: 24px; }
+/* ---- Header Saluran / Hero Typographic ---- */
+.channel-header { padding-top: 18px; margin-bottom: 20px; }
 .channel-title-row { display: flex; align-items: center; gap: 12px; }
 .channel-name { font-weight: 700; font-size: clamp(1.8rem, 4.5vw, 3.2rem); line-height: 1.05; letter-spacing: -0.04em; }
 .verified-badge {
@@ -132,18 +138,60 @@ button { cursor: pointer; }
 .channel-stats { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 12px; color: var(--ink-2); }
 .channel-stats b { color: var(--ink); }
 
+/* ---- Terminal Hero Prompt Box ---- */
 .terminal-card {
   padding: 20px; background: var(--surface);
-  border: 1px solid var(--line-strong); border-radius: var(--r-lg); margin: 20px 0;
+  border: 1px solid var(--line-strong); border-radius: var(--r-lg); margin: 18px 0;
 }
 .term-prompt { font-size: 12px; color: var(--ink-2); margin-bottom: 12px; }
 .term-prompt::before { content: "$ "; color: var(--accent); font-weight: 700; }
 .term-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .term-stat-item { padding: 12px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); }
-.term-stat-label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; }
+.term-stat-label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: space-between; }
 .term-stat-value { font-size: 18px; font-weight: 700; color: var(--ink); margin-top: 4px; }
 .term-stat-desc { font-size: 11px; color: var(--ink-2); margin-top: 2px; }
 
+/* ---- Tooltip / Info Tip Badge (Tanda Tanya Kecil [?]) ---- */
+.tip-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--accent);
+  color: var(--accent); font-size: 10px; font-weight: 700;
+  cursor: help; vertical-align: middle; margin-left: 6px;
+  position: relative; user-select: none;
+}
+.tip-badge:hover .tip-popover {
+  visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0);
+}
+.tip-popover {
+  visibility: hidden; opacity: 0; position: absolute;
+  bottom: 130%; left: 50%; transform: translateX(-50%) translateY(4px);
+  width: 270px; padding: 8px 12px;
+  background: var(--card); color: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: var(--r-md);
+  font-size: 11px; font-weight: 400; line-height: 1.45;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.7); z-index: 100;
+  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+  pointer-events: none; white-space: normal; text-align: left;
+}
+.tip-popover::after {
+  content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px;
+  border-width: 5px; border-style: solid;
+  border-color: var(--card) transparent transparent transparent;
+}
+
+/* ---- Callout Note / Penjelasan Langsung di Bawah Bagian ---- */
+.section-note {
+  margin: 10px 0 16px; padding: 10px 14px;
+  background: var(--surface); border-left: 3px solid var(--accent);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  font-size: 11.5px; color: var(--ink-2); line-height: 1.55;
+}
+.section-note b { color: var(--ink); }
+.section-note p { margin-top: 3px; }
+.section-note-icon { color: var(--accent); font-weight: 700; margin-right: 6px; }
+
+/* ---- Navigasi Tab / User Pills Bar ---- */
 .user-pills-bar {
   display: flex; gap: 4px; margin: 24px 0 20px;
   overflow-x: auto; border-bottom: 1px solid var(--line); scrollbar-width: thin;
@@ -158,21 +206,23 @@ button { cursor: pointer; }
 .user-pill.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
 .user-pill small { color: var(--ink-3); font-size: 10px; }
 
+/* ---- Section Wrapper ---- */
 .dash-section {
   margin-bottom: 32px; padding: 24px; background: var(--card);
   border: 1px solid var(--line); border-radius: var(--r-lg);
 }
 .section-header {
-  display: flex; flex-direction: column; gap: 4px; margin-bottom: 20px;
-  padding-bottom: 14px; border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--line);
 }
 .section-title {
-  font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
+  font-weight: 700; font-size: 15px; letter-spacing: -0.02em;
   display: flex; align-items: center; gap: 8px;
 }
 .section-title::before { content: "//"; color: var(--accent); font-weight: 800; }
 .section-desc { font-size: 12px; color: var(--ink-2); }
 
+/* ---- Peta Leaflet & Toolbar ---- */
 #map { height: 540px; width: 100%; border-radius: var(--r-md); border: 1px solid var(--line-strong); background: #050505; }
 .map-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .map-filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -186,21 +236,31 @@ button { cursor: pointer; }
 }
 .filter-select option { background: var(--surface); color: var(--ink); }
 
+/* Invert OpenStreetMap tiles in Dark Mode */
+.leaflet-tile {
+  filter: brightness(0.68) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.35) brightness(0.8);
+}
+[data-theme="light"] .leaflet-tile {
+  filter: none;
+}
+
 .leaflet-popup-content-wrapper {
-  background: #0D0D0D !important; color: #EDEDED !important;
+  background: var(--card) !important; color: var(--ink) !important;
   border-radius: var(--r-md) !important; border: 1px solid var(--line-strong) !important;
   box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important; font-family: var(--f-mono) !important;
 }
-.leaflet-popup-tip { background: #0D0D0D !important; }
+.leaflet-popup-tip { background: var(--card) !important; }
 
+/* ---- SPBU Detail Card & Chart ---- */
 .spbu-grid { display: grid; grid-template-columns: minmax(0, 380px) 1fr; gap: 20px; }
 @media (max-width: 900px) { .spbu-grid { grid-template-columns: 1fr; } }
 .spec-box { padding: 16px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-md); font-size: 12px; }
 .spec-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--line); }
 .spec-row:last-child { border-bottom: 0; }
-.spec-label { color: var(--ink-3); font-size: 11px; }
+.spec-label { color: var(--ink-3); font-size: 11px; display: flex; align-items: center; }
 .spec-val { font-weight: 600; color: var(--ink); }
 
+/* ---- Tabel Terminal Monospace ---- */
 .terminal-table-wrap { overflow-x: auto; border: 1px solid var(--line-strong); border-radius: var(--r-md); }
 .term-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
 .term-table th {
@@ -211,11 +271,13 @@ button { cursor: pointer; }
 .term-table td { padding: 9px 14px; border-bottom: 1px solid var(--line); color: var(--ink-2); }
 .term-table tr:hover td { background: var(--surface); color: var(--ink); }
 
+/* ---- Grid Rekomendasi Warga ---- */
 .layman-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .layman-card { padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); }
 .layman-title { font-weight: 700; font-size: 13px; color: var(--ink); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
 .layman-desc { font-size: 12px; color: var(--ink-2); line-height: 1.5; }
 
+/* ---- Footer ---- */
 .term-footer {
   margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);
   display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
