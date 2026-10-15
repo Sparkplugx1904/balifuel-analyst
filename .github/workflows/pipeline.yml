@@ -1,16 +1,29 @@
 name: BaliFuel Data Pipeline Runner
 
 on:
+  # Jalankan otomatis tiap 6 jam sebagai keepalive (batas minimum GitHub = 5 menit).
+  # Loop internal di dalam job akan berjalan tiap 2 menit selama ~350 menit per run.
+  schedule:
+    - cron: '0 */6 * * *'   # Setiap 6 jam: 00:00, 06:00, 12:00, 18:00 UTC
   workflow_dispatch:
+    inputs:
+      interval_seconds:
+        description: 'Interval antar iterasi (detik, default 120)'
+        required: false
+        default: '120'
+      max_runtime_seconds:
+        description: 'Batas total runtime loop (detik, default 21000 = 350 menit)'
+        required: false
+        default: '21000'
 
 concurrency:
   group: pipeline
-  cancel-in-progress: false
+  cancel-in-progress: false   # Jangan batalkan run yang sedang berjalan
 
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 360       # 6 jam — batas maksimum GitHub Actions per job
 
     steps:
       - name: Checkout Repository
@@ -38,17 +51,30 @@ jobs:
             echo "::warning::WORKER_URL or INGEST_TOKEN not set. Bootstrapping state fresh."
           fi
 
-      - name: Run Pipeline & Publish Contracts
+      - name: Run Pipeline Loop (tiap 2 menit, hingga 350 menit)
         env:
           WORKER_URL: ${{ secrets.WORKER_URL }}
           INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
           AISSTREAM_KEY: ${{ secrets.AISSTREAM_KEY }}
         run: |
+          INTERVAL=${{ github.event.inputs.interval_seconds || '120' }}
+          MAX_RT=${{ github.event.inputs.max_runtime_seconds || '21000' }}
+
           if [ -n "$WORKER_URL" ] && [ -n "$INGEST_TOKEN" ]; then
-            python run_pipeline.py --publish --worker-url "$WORKER_URL" --token "$INGEST_TOKEN"
+            python run_pipeline.py \
+              --publish \
+              --worker-url "$WORKER_URL" \
+              --token "$INGEST_TOKEN" \
+              --loop \
+              --interval "$INTERVAL" \
+              --max-runtime "$MAX_RT"
           else
-            echo "::warning::Running in dry-run mode because credentials are not configured."
-            python run_pipeline.py --dry-run
+            echo "::warning::Running in dry-run loop mode (credentials not configured)."
+            python run_pipeline.py \
+              --dry-run \
+              --loop \
+              --interval "$INTERVAL" \
+              --max-runtime "$MAX_RT"
           fi
 
       - name: Compact & Save State Database to R2
@@ -60,6 +86,7 @@ jobs:
           if [ -n "$WORKER_URL" ] && [ -n "$INGEST_TOKEN" ]; then
             python src/publish.py --save-state --worker-url "$WORKER_URL" --token "$INGEST_TOKEN"
           fi
+
       - name: Runner Debug & Freshness Audit
         if: always()
         run: |

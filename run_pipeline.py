@@ -183,9 +183,12 @@ if __name__ == "__main__":
     parser.add_argument("--force-markov", action="store_true", help="Force refit of Markov model regardless of cache")
     parser.add_argument("--restore-state", action="store_true", help="Download state/balifuel.db from Cloudflare Worker")
     parser.add_argument("--save-state", action="store_true", help="Compact and upload state/balifuel.db to Cloudflare Worker")
+    parser.add_argument("--loop", action="store_true", help="Loop terus-menerus sampai proses dihentikan (untuk runner CI/lokal)")
+    parser.add_argument("--interval", type=int, default=120, help="Interval antar iterasi loop dalam detik (default: 120)")
+    parser.add_argument("--max-runtime", type=int, default=21000, help="Batas total runtime loop dalam detik sebelum keluar bersih (default: 21000 = 350 menit)")
     args = parser.parse_args()
 
-    # State management actions
+    # State management actions (tidak masuk loop)
     if args.restore_state:
         from src.publish import download_state
         w_url = args.worker_url or os.getenv("WORKER_URL", "http://127.0.0.1:8787")
@@ -197,12 +200,49 @@ if __name__ == "__main__":
         tok = args.token or os.getenv("INGEST_TOKEN", "")
         upload_state(w_url, tok)
     else:
-        run_pipeline(
+        pipeline_kwargs = dict(
             publish=args.publish,
             dry_run=args.dry_run,
             all_charts=args.all_charts,
             worker_url=args.worker_url,
             token=args.token,
             spbu_chart_limit=args.spbu_limit,
-            force_markov_refit=args.force_markov
+            force_markov_refit=args.force_markov,
         )
+
+        if not args.loop:
+            # Eksekusi sekali
+            run_pipeline(**pipeline_kwargs)
+        else:
+            # Loop permanen: jalankan tiap --interval detik sampai --max-runtime tercapai
+            loop_start = time.time()
+            iteration = 0
+            print(f"[LOOP] Memulai loop permanen: interval={args.interval}s, max_runtime={args.max_runtime}s")
+            while True:
+                elapsed_total = time.time() - loop_start
+                if elapsed_total >= args.max_runtime:
+                    print(f"[LOOP] Batas runtime {args.max_runtime}s tercapai setelah {iteration} iterasi. Keluar bersih.")
+                    break
+
+                iteration += 1
+                iter_start = time.time()
+                print(f"\n{'='*72}")
+                print(f"[LOOP] ITERASI #{iteration} | Elapsed total: {int(elapsed_total)}s / {args.max_runtime}s")
+                print(f"{'='*72}")
+
+                try:
+                    run_pipeline(**pipeline_kwargs)
+                except Exception as exc:
+                    print(f"[LOOP] PERINGATAN: Iterasi #{iteration} gagal dengan error: {exc}")
+                    print("[LOOP] Melanjutkan ke iterasi berikutnya...")
+
+                iter_elapsed = time.time() - iter_start
+                sleep_sec = max(0, args.interval - iter_elapsed)
+                remaining = args.max_runtime - (time.time() - loop_start)
+
+                if remaining <= 0:
+                    print(f"[LOOP] Batas runtime tercapai. Keluar bersih setelah {iteration} iterasi.")
+                    break
+
+                print(f"[LOOP] Iterasi #{iteration} selesai dalam {iter_elapsed:.1f}s. Jeda {sleep_sec:.0f}s sebelum iterasi #{iteration+1}...")
+                time.sleep(min(sleep_sec, remaining))
