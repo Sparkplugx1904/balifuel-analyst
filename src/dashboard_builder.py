@@ -19,6 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
+from src.cleaner import sanitize_for_json
 DATA_DIR = os.path.join(BASE_DIR, "data")
 CLEAN_DIR = os.path.join(DATA_DIR, "clean")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
@@ -612,7 +613,10 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
   async function fetchJson(url) {
     const res = await fetch(url, { cache: "no-cache" });
     if (!res.ok) throw new Error(`HTTP ${res.status} on ${url}`);
-    return await res.json();
+    const text = await res.text();
+    // Client-side safeguard against NaN, Infinity, -Infinity
+    const sanitized = text.replace(/:\s*NaN\b/g, ': null').replace(/:\s*Infinity\b/g, ': null');
+    return JSON.parse(sanitized);
   }
 
   async function loadData() {
@@ -837,9 +841,9 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
     const fStatus = document.getElementById("filterStatus").value;
 
     stations.forEach(s => {
-      const lat = s.lat != null ? s.lat : s.latitude;
-      const lng = s.lng != null ? s.lng : (s.lon != null ? s.lon : s.longitude);
-      if (lat == null || lng == null) return;
+      const lat = s.lat != null ? parseFloat(s.lat) : (s.latitude != null ? parseFloat(s.latitude) : null);
+      const lng = s.lng != null ? parseFloat(s.lng) : (s.lon != null ? parseFloat(s.lon) : (s.longitude != null ? parseFloat(s.longitude) : null));
+      if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) return;
 
       const kind = s.kind || "spbu";
       const area = s.area || "Bali";
@@ -1113,9 +1117,13 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
   });
 
   // START
+  try {
+    initMap([], []);
+  } catch (mErr) {
+    console.warn("[Map Init] Pre-init warning:", mErr);
+  }
   loadData();
   startPolling();
-})();
 """
 
 
@@ -1147,9 +1155,9 @@ def build_dashboard(target: str = "pages") -> str:
             "context": context,
             "built_at_wita": datetime.now(WITA_TZ).strftime("%d %B %Y, %H:%M WITA")
         }
-        embedded_json = json.dumps(embedded_dict, ensure_ascii=False)
+        embedded_dict = sanitize_for_json(embedded_dict)
+        embedded_json = json.dumps(embedded_dict, ensure_ascii=False, allow_nan=False)
         embedded_script = f"<script>window.BALI_EMBEDDED_DATA = {embedded_json};</script>"
-
         out_html = INDEX_HTML_TEMPLATE.format(
             css_path="data:text/css;charset=utf-8," + STYLE_CSS.replace("\n", "%20").replace("#", "%23"),
             config_path="data:application/javascript;charset=utf-8,window.FEED_URL='';",
@@ -1212,8 +1220,9 @@ def build_dashboard(target: str = "pages") -> str:
             "hours": forecasts.get("hours_label", [])
         }
         fallback_file = os.path.join(DOCS_DIR, "fallback.json")
+        fallback_payload = sanitize_for_json(fallback_payload)
         with open(fallback_file, "w", encoding="utf-8") as f:
-            json.dump(fallback_payload, f, separators=(',', ':'), ensure_ascii=False)
+            json.dump(fallback_payload, f, separators=(',', ':'), ensure_ascii=False, allow_nan=False)
 
         index_file = os.path.join(DOCS_DIR, "index.html")
         html_content = INDEX_HTML_TEMPLATE.format(

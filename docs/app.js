@@ -53,7 +53,10 @@
   async function fetchJson(url) {
     const res = await fetch(url, { cache: "no-cache" });
     if (!res.ok) throw new Error(`HTTP ${res.status} on ${url}`);
-    return await res.json();
+    const text = await res.text();
+    // Client-side safeguard against NaN, Infinity, -Infinity
+    const sanitized = text.replace(/:\s*NaN/g, ': null').replace(/:\s*Infinity/g, ': null');
+    return JSON.parse(sanitized);
   }
 
   async function loadData() {
@@ -278,9 +281,9 @@
     const fStatus = document.getElementById("filterStatus").value;
 
     stations.forEach(s => {
-      const lat = s.lat != null ? s.lat : s.latitude;
-      const lng = s.lng != null ? s.lng : (s.lon != null ? s.lon : s.longitude);
-      if (lat == null || lng == null) return;
+      const lat = s.lat != null ? parseFloat(s.lat) : (s.latitude != null ? parseFloat(s.latitude) : null);
+      const lng = s.lng != null ? parseFloat(s.lng) : (s.lon != null ? parseFloat(s.lon) : (s.longitude != null ? parseFloat(s.longitude) : null));
+      if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) return;
 
       const kind = s.kind || "spbu";
       const area = s.area || "Bali";
@@ -554,6 +557,10 @@
   });
 
   // START
+  try {
+    initMap([], []);
+  } catch (mErr) {
+    console.warn("[Map Init] Pre-init warning:", mErr);
+  }
   loadData();
   startPolling();
-})();

@@ -11,12 +11,33 @@ Menerapkan:
 
 import os
 import sys
+import math
 import json
 import sqlite3
 import numpy as np
 import pandas as pd
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Tuple
+
+def sanitize_for_json(obj):
+    """Mengonversi np.nan, float('nan'), dan np.inf menjadi None (JSON null)."""
+    if isinstance(obj, float):
+        if math.isnan(obj) or math.isinf(obj):
+            return None
+        return obj
+    elif isinstance(obj, (np.floating, np.float64, np.float32)):
+        if np.isnan(obj) or np.isinf(obj):
+            return None
+        return float(obj)
+    elif isinstance(obj, (np.integer, np.int64, np.int32)):
+        return int(obj)
+    elif isinstance(obj, dict):
+        return {k: sanitize_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [sanitize_for_json(v) for v in obj]
+    elif isinstance(obj, np.ndarray):
+        return sanitize_for_json(obj.tolist())
+    return obj
 
 WITA_TZ = timezone(timedelta(hours=8))
 UTC_TZ = timezone.utc
@@ -391,13 +412,14 @@ def clean_and_enrich_data(db_path: str = DB_PATH) -> Dict[str, Any]:
     df_parquet["prices"] = df_parquet["prices"].apply(json.dumps)
     df_parquet.to_parquet(clean_stations_parquet, index=False)
     
+    sanitized_stations = sanitize_for_json(cleaned_stations)
     with open(clean_stations_json, "w", encoding="utf-8") as f:
-        json.dump(cleaned_stations, f, ensure_ascii=False, indent=2)
+        json.dump(sanitized_stations, f, ensure_ascii=False, indent=2, allow_nan=False)
 
+    sanitized_hourly = sanitize_for_json(df_hourly_clean.to_dict(orient="records"))
     df_hourly_clean.to_parquet(clean_hourly_parquet, index=False)
     with open(clean_hourly_json, "w", encoding="utf-8") as f:
-        json.dump(df_hourly_clean.to_dict(orient="records"), f, ensure_ascii=False, indent=2, default=str)
-
+        json.dump(sanitized_hourly, f, ensure_ascii=False, indent=2, default=str, allow_nan=False)
     print("\n[=== DATA CLEANING & QUALITY AUDIT SUMMARY ===]")
     print(f"Total Stations: {len(df_cleaned)}")
     print(f"  - Pertamina SPBU: {len(df_cleaned[df_cleaned['kind'] == 'spbu'])}")

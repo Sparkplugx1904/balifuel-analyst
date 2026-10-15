@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
-from src.cleaner import haversine_km
+from src.cleaner import haversine_km, sanitize_for_json
 from src.markov_model import BaliFuelMarkovEngine
 
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -183,7 +183,8 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
 
     # Sort hotspots
     df_vuln = pd.DataFrame(vulnerability_records).sort_values("vulnerability_score", ascending=False)
-    top_20_hotspots = df_vuln.head(20).to_dict(orient="records")
+    raw_hotspots = df_vuln.head(20).to_dict(orient="records")
+    top_20_hotspots = sanitize_for_json(raw_hotspots)
 
     # Save outputs
     out_forecast = {
@@ -195,12 +196,11 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
 
     forecast_json_path = os.path.join(CLEAN_DIR, "station_forecasts.json")
     with open(forecast_json_path, "w", encoding="utf-8") as f:
-        json.dump(out_forecast, f, ensure_ascii=False, indent=2)
+        json.dump(sanitize_for_json(out_forecast), f, ensure_ascii=False, indent=2, allow_nan=False)
 
     hotspots_json_path = os.path.join(CLEAN_DIR, "vulnerable_hotspots.json")
     with open(hotspots_json_path, "w", encoding="utf-8") as f:
-        json.dump(top_20_hotspots, f, ensure_ascii=False, indent=2)
-
+        json.dump(top_20_hotspots, f, ensure_ascii=False, indent=2, allow_nan=False)
     print(f"[+] Forecast generated for {len(forecasts)} stations.")
     print(f"[+] Top 5 Most Vulnerable Hotspots:")
     for h in top_20_hotspots[:5]:

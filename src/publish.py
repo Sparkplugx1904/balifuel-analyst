@@ -27,6 +27,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
+from src.cleaner import sanitize_for_json
+
 DATA_DIR = os.path.join(BASE_DIR, "data")
 CLEAN_DIR = os.path.join(DATA_DIR, "clean")
 DB_PATH = os.path.join(DATA_DIR, "balifuel.db")
@@ -269,10 +271,10 @@ def build_contracts(run_id: str) -> Dict[str, Any]:
     }
 
     return {
-        "meta.json": meta_payload,
-        "summary.json": summary_payload,
-        "stations.json": stations_payload,
-        "history.json": history_payload
+        "meta.json": sanitize_for_json(meta_payload),
+        "summary.json": sanitize_for_json(summary_payload),
+        "stations.json": sanitize_for_json(stations_payload),
+        "history.json": sanitize_for_json(history_payload)
     }
 
 
@@ -281,27 +283,26 @@ def validate_contracts(contracts: Dict[str, Any]) -> Dict[str, int]:
     sizes = {}
 
     # 1. meta.json
-    meta_bytes = json.dumps(contracts["meta.json"], separators=(',', ':')).encode("utf-8")
+    meta_bytes = json.dumps(contracts["meta.json"], separators=(',', ':'), allow_nan=False).encode("utf-8")
     sizes["meta.json"] = len(meta_bytes)
     if len(meta_bytes) > MAX_META_BYTES:
         print(f"[Contract Warning] meta.json size {len(meta_bytes)}B exceeds target {MAX_META_BYTES}B")
 
     # 2. summary.json
-    summary_bytes = json.dumps(contracts["summary.json"], separators=(',', ':')).encode("utf-8")
+    summary_bytes = json.dumps(contracts["summary.json"], separators=(',', ':'), allow_nan=False).encode("utf-8")
     sizes["summary.json"] = len(summary_bytes)
     if len(summary_bytes) > MAX_SUMMARY_BYTES:
         print(f"[Contract Warning] summary.json size {len(summary_bytes)/1024:.1f}KB exceeds {MAX_SUMMARY_BYTES/1024}KB")
 
     # 3. stations.json
-    stations_bytes = json.dumps(contracts["stations.json"], separators=(',', ':')).encode("utf-8")
+    stations_bytes = json.dumps(contracts["stations.json"], separators=(',', ':'), allow_nan=False).encode("utf-8")
     sizes["stations.json"] = len(stations_bytes)
     if len(stations_bytes) > MAX_STATIONS_BYTES:
         print(f"[Contract Warning] stations.json size {len(stations_bytes)/1024/1024:.2f}MB exceeds {MAX_STATIONS_BYTES/1024/1024}MB")
 
     # 4. history.json
-    history_bytes = json.dumps(contracts["history.json"], separators=(',', ':')).encode("utf-8")
+    history_bytes = json.dumps(contracts["history.json"], separators=(',', ':'), allow_nan=False).encode("utf-8")
     sizes["history.json"] = len(history_bytes)
-
     return sizes
 
 
@@ -312,7 +313,7 @@ def save_dry_run_files(contracts: Dict[str, Any], output_dir: str = PUBLISH_OUT)
     for filename, payload in contracts.items():
         filepath = os.path.join(output_dir, filename)
         with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(payload, f, separators=(',', ':'), ensure_ascii=False)
+            json.dump(payload, f, separators=(',', ':'), ensure_ascii=False, allow_nan=False)
         paths[filename] = filepath
     return paths
 
@@ -368,7 +369,7 @@ def publish_pipeline_artifacts(worker_url: Optional[str] = None, token: Optional
 
     with httpx.Client() as client:
         for fn in upload_order:
-            payload_bytes = json.dumps(contracts[fn], separators=(',', ':'), ensure_ascii=False).encode("utf-8")
+            payload_bytes = json.dumps(contracts[fn], separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode("utf-8")
             res = upload_contract(worker_url, token, fn, payload_bytes, client)
             upload_results[fn] = res
             print(f"  ✓ {fn} uploaded ({len(payload_bytes):,} B, ETag: {res.get('etag')})")
