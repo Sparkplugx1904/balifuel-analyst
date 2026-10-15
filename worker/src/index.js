@@ -185,8 +185,20 @@ export default {
         });
         return jsonResponse({ ok: true, key: key, size: obj.size });
       }
-
       return jsonResponse({ error: "Method Not Allowed" }, 405);
+    }
+
+    // 5. Trigger Runner On-Demand: POST /trigger-runner (Bearer INGEST_TOKEN)
+    if (path === "/trigger-runner") {
+      if (method !== "POST") {
+        return jsonResponse({ error: "Method Not Allowed" }, 405);
+      }
+      const auth = await verifyToken(request.headers.get("Authorization"), env.INGEST_TOKEN);
+      if (!auth) {
+        return jsonResponse({ error: "Unauthorized" }, 401);
+      }
+      const result = await triggerGitHubWorkflow(env);
+      return jsonResponse(result, result.ok ? 200 : 502);
     }
 
     // Default Fallback
@@ -195,25 +207,33 @@ export default {
 
   // Cron Trigger (every 10 minutes)
   async scheduled(event, env, ctx) {
-    if (!env.GH_TOKEN || !env.GH_REPO) {
-      console.warn("[Cron Warning] GH_TOKEN or GH_REPO not configured in Worker.");
-      return;
-    }
-    const url = `https://api.github.com/repos/${env.GH_REPO}/actions/workflows/pipeline.yml/dispatches`;
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "User-Agent": "BaliFuel-Worker/1.0",
-          "Authorization": `Bearer ${env.GH_TOKEN}`,
-          "Accept": "application/vnd.github.v3+json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ ref: "main" })
-      });
-      console.log(`[Cron Trigger] Workflow dispatch sent to ${env.GH_REPO}: Status ${res.status}`);
-    } catch (err) {
-      console.error(`[Cron Error] Failed to trigger workflow: ${err}`);
-    }
+    const res = await triggerGitHubWorkflow(env);
+    console.log(`[Cron Trigger] Workflow dispatch:`, JSON.stringify(res));
   }
 };
+
+async function triggerGitHubWorkflow(env) {
+  if (!env.GH_TOKEN || !env.GH_REPO) {
+    return { ok: false, error: "GH_TOKEN or GH_REPO not configured in Worker" };
+  }
+  const url = `https://api.github.com/repos/${env.GH_REPO}/actions/workflows/pipeline.yml/dispatches`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "User-Agent": "BaliFuel-Worker/1.0",
+        "Authorization": `Bearer ${env.GH_TOKEN}`,
+        "Accept": "application/vnd.github.v3+json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ ref: "main" })
+    });
+    return {
+      ok: res.status === 204 || res.status === 200,
+      status: res.status,
+      message: res.status === 204 ? "Workflow dispatch successful" : await res.text()
+    };
+  } catch (err) {
+    return { ok: false, error: String(err) };
+  }
+}

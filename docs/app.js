@@ -51,7 +51,6 @@
   }
 
   async function fetchJson(url) {
-    // PENTING: Jangan set custom headers agar tidak memicu preflight CORS
     const res = await fetch(url, { cache: "no-cache" });
     if (!res.ok) throw new Error(`HTTP ${res.status} on ${url}`);
     return await res.json();
@@ -73,7 +72,6 @@
         const meta = await fetchJson(`${feed}/latest/meta.json`);
         updateStatusBadge(meta, true);
 
-        // Jika run_id berubah atau data belum ada, ambil file lainnya
         if (meta.run_id !== CURRENT_RUN_ID) {
           CURRENT_RUN_ID = meta.run_id;
           const [summary, stations] = await Promise.all([
@@ -95,7 +93,7 @@
       }
     }
 
-    // 3. Fallback jika Worker offline / belum dikonfigurasi
+    // 3. Fallback jika Worker offline
     try {
       const fb = await fetchJson("./fallback.json");
       DATA_CACHE = fb;
@@ -108,7 +106,6 @@
 
   function startPolling() {
     if (POLL_TIMER) clearTimeout(POLL_TIMER);
-    // Polling 120 - 180 detik + jitter 20%
     const baseMs = 140000;
     const jitter = (Math.random() - 0.5) * 40000;
     const delay = Math.max(90000, baseMs + jitter);
@@ -138,7 +135,7 @@
     // Header Values
     const csiVal = meta.csi_island || sum.metrics?.current_island_csi || 50.0;
     const statusTxt = sum.metrics?.current_status || "Pemulihan Bertahap";
-    const recoveryTxt = meta.median_recovery_wita || sum.monte_carlo?.median_hours ? `${sum.monte_carlo?.median_hours} Jam` : "18 Okt 2026, 05:00 WITA";
+    const recoveryTxt = meta.median_recovery_wita || (sum.monte_carlo?.median_hours ? `${sum.monte_carlo?.median_hours} Jam` : "18 Okt 2026, 05:00 WITA");
     const emptyPct = sum.metrics?.latest_empty_spbu_pct || 48.2;
 
     document.getElementById("hdrStatus").textContent = `${statusTxt.toUpperCase()} (CSI: ${csiVal})`;
@@ -155,7 +152,7 @@
     }
     document.getElementById("pillCount").textContent = `${stList.length} Titik`;
 
-    // Map Render
+    // Leaflet Map Render
     initMap(stList, hours);
 
     // Area Chart & Table
@@ -165,22 +162,38 @@
     initMonteCarlo(sum.monte_carlo || {});
 
     // Hotspots Table
-    initHotspots(sum.hotspots || [], stList);
+    initHotspots(sum.hotspots || [], stList, hours);
 
     // Timeline
     initTimeline(sum.timeline || []);
   }
 
-  // MAP MODULE
+  // LEAFLET MAP MODULE
   let mapInstance = null;
   let markersLayer = null;
 
   function initMap(stations, hours) {
     if (!mapInstance) {
-      mapInstance = L.map("map", { attributionControl: false }).setView([-8.48, 115.18], 10);
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        maxZoom: 18, subdomains: 'abcd'
+      mapInstance = L.map("map", { attributionControl: true }).setView([-8.48, 115.18], 10);
+
+      // Basemap Layer Switcher (Leaflet Tile Layers)
+      const darkLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        maxZoom: 18, subdomains: 'abcd', attribution: '&copy; CartoDB &copy; OpenStreetMap'
       }).addTo(mapInstance);
+
+      const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18, attribution: '&copy; OpenStreetMap contributors'
+      });
+
+      const satelliteLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        maxZoom: 18, attribution: 'Tiles &copy; Esri'
+      });
+
+      L.control.layers({
+        "Terminal Gelap (Carto)": darkLayer,
+        "Peta Jalan (OpenStreetMap)": osmLayer,
+        "Satelit (Esri World)": satelliteLayer
+      }, null, { position: 'topright' }).addTo(mapInstance);
 
       // Terminal Pins
       const termIcon = (title) => L.divIcon({
@@ -196,6 +209,46 @@
       document.getElementById("filterKind").addEventListener("change", () => renderMapPins(stations, hours));
       document.getElementById("filterArea").addEventListener("change", () => renderMapPins(stations, hours));
       document.getElementById("filterStatus").addEventListener("change", () => renderMapPins(stations, hours));
+
+      // Reset Map Button
+      const btnReset = document.getElementById("btnResetMap");
+      if (btnReset) {
+        btnReset.addEventListener("click", () => {
+          mapInstance.setView([-8.48, 115.18], 10);
+        });
+      }
+
+      // Locate Me Button
+      const btnLocate = document.getElementById("btnLocateMe");
+      if (btnLocate) {
+        btnLocate.addEventListener("click", () => {
+          if (!navigator.geolocation) {
+            alert("Geolocation tidak didukung oleh browser Anda.");
+            return;
+          }
+          btnLocate.textContent = "📍 Mencari...";
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              btnLocate.textContent = "📍 Lokasi Saya";
+              const userLat = pos.coords.latitude;
+              const userLng = pos.coords.longitude;
+              mapInstance.setView([userLat, userLng], 14);
+              L.circleMarker([userLat, userLng], {
+                radius: 8,
+                fillColor: "#38BDF8",
+                color: "#FFFFFF",
+                weight: 2,
+                fillOpacity: 1.0
+              }).addTo(mapInstance).bindPopup("<b>Lokasi Anda Saat Ini</b>").openPopup();
+            },
+            (err) => {
+              btnLocate.textContent = "📍 Lokasi Saya";
+              alert("Gagal membaca lokasi GPS: " + err.message);
+            },
+            { enableHighAccuracy: true, timeout: 8000 }
+          );
+        });
+      }
 
       // Populate Area Dropdown
       const areaSelect = document.getElementById("filterArea");
@@ -400,7 +453,7 @@
   }
 
   // HOTSPOTS MODULE
-  function initHotspots(hotspots, stList) {
+  function initHotspots(hotspots, stList, hours) {
     const htb = document.getElementById("hotspotTableBody");
     if (!htb) return;
     htb.innerHTML = "";
@@ -410,7 +463,7 @@
       tr.onclick = () => {
         const match = stList.find(s => s.id === h.id);
         if (match) {
-          selectStation(match, DATA_CACHE?.hours || []);
+          selectStation(match, hours);
           switchTab('tabForecast');
         }
       };

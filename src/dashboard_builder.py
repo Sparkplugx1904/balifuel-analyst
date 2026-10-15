@@ -4,6 +4,8 @@ Mendukung dua target:
 1. --target local : Menghasilkan output/dashboard.html (monolitik data tertanam, bisa file://)
 2. --target pages : Menghasilkan docs/ (index.html ramping, style.css, app.js, config.js, fallback.json)
    dengan semua path aset RELATIF (./app.js, ./style.css) untuk sub-path GitHub Pages.
+Peta menggunakan Leaflet dengan layer switcher (Dark Matter, OpenStreetMap, Satelit Esri),
+filter interaktif, reset zoom, dan geolokasi.
 """
 
 import os
@@ -200,7 +202,7 @@ button { cursor: pointer; }
 
 #map { height: 540px; width: 100%; border-radius: var(--r-md); border: 1px solid var(--line-strong); background: #050505; }
 .map-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.map-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.map-filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
 .filter-select {
   height: 32px; padding: 0 28px 0 10px; background-color: var(--surface);
@@ -262,6 +264,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Leaflet Map CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -343,7 +346,7 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
     </div>
 
     <nav class="user-pills-bar">
-      <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA REAL-TIME ] <small id="pillCount">876 Titik</small></button>
+      <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA REAL-TIME (LEAFLET) ] <small id="pillCount">876 Titik</small></button>
       <button class="user-pill" onclick="switchTab('tabForecast')">[ 02 // PREDIKSI 72 JAM ] <small>Per SPBU</small></button>
       <button class="user-pill" onclick="switchTab('tabAreas')">[ 03 // 14 AREA MAKRO ] <small>Analisis CSI</small></button>
       <button class="user-pill" onclick="switchTab('tabSimulation')">[ 04 // SIMULASI MONTE CARLO ] <small>Fan Chart</small></button>
@@ -351,11 +354,11 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
       <button class="user-pill" onclick="switchTab('tabGuide')">[ 06 // PANDUAN WARGA & TIMELINE ] <small>Praktis</small></button>
     </nav>
 
-    <!-- TAB 1: PETA -->
+    <!-- TAB 1: PETA LEAFLET -->
     <div id="tabMap" class="tab-content dash-section">
       <div class="section-header">
-        <h2 class="section-title">SEBARAN SPBU & KIOS PERTAMINI REAL-TIME SE-BALI</h2>
-        <p class="section-desc">Peta ketersediaan bahan bakar hasil integrasi laporan pengemudi, bobot waktu (half-life 90m), dan imputasi spasial IDW.</p>
+        <h2 class="section-title">SEBARAN SPBU & KIOS PERTAMINI REAL-TIME SE-BALI (LEAFLET)</h2>
+        <p class="section-desc">Peta interaktif Leaflet: Carto Dark Matter, OpenStreetMap, dan Satelit Esri dengan filter status & pencarian geolokasi.</p>
       </div>
 
       <div class="map-toolbar">
@@ -374,6 +377,12 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
             <option value="warn">Menipis / Antre (35-60%)</option>
             <option value="empty">Kosong (&lt;35%)</option>
           </select>
+          <button id="btnResetMap" class="btn btn-outline btn-sm" title="Pusatkan Peta ke Bali">
+            ⟲ Bali
+          </button>
+          <button id="btnLocateMe" class="btn btn-outline btn-sm" title="Mencari SPBU di dekat posisi Anda">
+            📍 Lokasi Saya
+          </button>
         </div>
         <div style="font-size:11px; color:var(--ink-3);">
           <span>● <span style="color:var(--success)">Ada Stok (&ge;60%)</span></span> &nbsp;
@@ -601,7 +610,6 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
   }
 
   async function fetchJson(url) {
-    // PENTING: Jangan set custom headers agar tidak memicu preflight CORS
     const res = await fetch(url, { cache: "no-cache" });
     if (!res.ok) throw new Error(`HTTP ${res.status} on ${url}`);
     return await res.json();
@@ -623,7 +631,6 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
         const meta = await fetchJson(`${feed}/latest/meta.json`);
         updateStatusBadge(meta, true);
 
-        // Jika run_id berubah atau data belum ada, ambil file lainnya
         if (meta.run_id !== CURRENT_RUN_ID) {
           CURRENT_RUN_ID = meta.run_id;
           const [summary, stations] = await Promise.all([
@@ -645,7 +652,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
       }
     }
 
-    // 3. Fallback jika Worker offline / belum dikonfigurasi
+    // 3. Fallback jika Worker offline
     try {
       const fb = await fetchJson("./fallback.json");
       DATA_CACHE = fb;
@@ -658,7 +665,6 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
 
   function startPolling() {
     if (POLL_TIMER) clearTimeout(POLL_TIMER);
-    // Polling 120 - 180 detik + jitter 20%
     const baseMs = 140000;
     const jitter = (Math.random() - 0.5) * 40000;
     const delay = Math.max(90000, baseMs + jitter);
@@ -688,7 +694,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
     // Header Values
     const csiVal = meta.csi_island || sum.metrics?.current_island_csi || 50.0;
     const statusTxt = sum.metrics?.current_status || "Pemulihan Bertahap";
-    const recoveryTxt = meta.median_recovery_wita || sum.monte_carlo?.median_hours ? `${sum.monte_carlo?.median_hours} Jam` : "18 Okt 2026, 05:00 WITA";
+    const recoveryTxt = meta.median_recovery_wita || (sum.monte_carlo?.median_hours ? `${sum.monte_carlo?.median_hours} Jam` : "18 Okt 2026, 05:00 WITA");
     const emptyPct = sum.metrics?.latest_empty_spbu_pct || 48.2;
 
     document.getElementById("hdrStatus").textContent = `${statusTxt.toUpperCase()} (CSI: ${csiVal})`;
@@ -705,7 +711,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
     }
     document.getElementById("pillCount").textContent = `${stList.length} Titik`;
 
-    // Map Render
+    // Leaflet Map Render
     initMap(stList, hours);
 
     // Area Chart & Table
@@ -715,22 +721,38 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
     initMonteCarlo(sum.monte_carlo || {});
 
     // Hotspots Table
-    initHotspots(sum.hotspots || [], stList);
+    initHotspots(sum.hotspots || [], stList, hours);
 
     // Timeline
     initTimeline(sum.timeline || []);
   }
 
-  // MAP MODULE
+  // LEAFLET MAP MODULE
   let mapInstance = null;
   let markersLayer = null;
 
   function initMap(stations, hours) {
     if (!mapInstance) {
-      mapInstance = L.map("map", { attributionControl: false }).setView([-8.48, 115.18], 10);
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        maxZoom: 18, subdomains: 'abcd'
+      mapInstance = L.map("map", { attributionControl: true }).setView([-8.48, 115.18], 10);
+
+      // Basemap Layer Switcher (Leaflet Tile Layers)
+      const darkLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        maxZoom: 18, subdomains: 'abcd', attribution: '&copy; CartoDB &copy; OpenStreetMap'
       }).addTo(mapInstance);
+
+      const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18, attribution: '&copy; OpenStreetMap contributors'
+      });
+
+      const satelliteLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        maxZoom: 18, attribution: 'Tiles &copy; Esri'
+      });
+
+      L.control.layers({
+        "Terminal Gelap (Carto)": darkLayer,
+        "Peta Jalan (OpenStreetMap)": osmLayer,
+        "Satelit (Esri World)": satelliteLayer
+      }, null, { position: 'topright' }).addTo(mapInstance);
 
       // Terminal Pins
       const termIcon = (title) => L.divIcon({
@@ -746,6 +768,46 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
       document.getElementById("filterKind").addEventListener("change", () => renderMapPins(stations, hours));
       document.getElementById("filterArea").addEventListener("change", () => renderMapPins(stations, hours));
       document.getElementById("filterStatus").addEventListener("change", () => renderMapPins(stations, hours));
+
+      // Reset Map Button
+      const btnReset = document.getElementById("btnResetMap");
+      if (btnReset) {
+        btnReset.addEventListener("click", () => {
+          mapInstance.setView([-8.48, 115.18], 10);
+        });
+      }
+
+      // Locate Me Button
+      const btnLocate = document.getElementById("btnLocateMe");
+      if (btnLocate) {
+        btnLocate.addEventListener("click", () => {
+          if (!navigator.geolocation) {
+            alert("Geolocation tidak didukung oleh browser Anda.");
+            return;
+          }
+          btnLocate.textContent = "📍 Mencari...";
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              btnLocate.textContent = "📍 Lokasi Saya";
+              const userLat = pos.coords.latitude;
+              const userLng = pos.coords.longitude;
+              mapInstance.setView([userLat, userLng], 14);
+              L.circleMarker([userLat, userLng], {
+                radius: 8,
+                fillColor: "#38BDF8",
+                color: "#FFFFFF",
+                weight: 2,
+                fillOpacity: 1.0
+              }).addTo(mapInstance).bindPopup("<b>Lokasi Anda Saat Ini</b>").openPopup();
+            },
+            (err) => {
+              btnLocate.textContent = "📍 Lokasi Saya";
+              alert("Gagal membaca lokasi GPS: " + err.message);
+            },
+            { enableHighAccuracy: true, timeout: 8000 }
+          );
+        });
+      }
 
       // Populate Area Dropdown
       const areaSelect = document.getElementById("filterArea");
@@ -950,7 +1012,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
   }
 
   // HOTSPOTS MODULE
-  function initHotspots(hotspots, stList) {
+  function initHotspots(hotspots, stList, hours) {
     const htb = document.getElementById("hotspotTableBody");
     if (!htb) return;
     htb.innerHTML = "";
@@ -960,7 +1022,7 @@ APP_JS_CONTENT = """// BaliFuel Analyst — Client Controller & Live Poller (Gay
       tr.onclick = () => {
         const match = stList.find(s => s.id === h.id);
         if (match) {
-          selectStation(match, DATA_CACHE?.hours || []);
+          selectStation(match, hours);
           switchTab('tabForecast');
         }
       };
@@ -1062,7 +1124,6 @@ def build_dashboard(target: str = "pages") -> str:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     os.makedirs(DOCS_DIR, exist_ok=True)
 
-    # 1. Load cleaned data for embedding or fallback
     with open(os.path.join(CLEAN_DIR, "cleaned_stations.json"), "r", encoding="utf-8") as f:
         stations = json.load(f)
     with open(os.path.join(CLEAN_DIR, "crisis_metrics.json"), "r", encoding="utf-8") as f:
@@ -1077,7 +1138,6 @@ def build_dashboard(target: str = "pages") -> str:
         context = json.load(f)
 
     if target == "local":
-        # Monolithic output/dashboard.html
         embedded_dict = {
             "stations": stations,
             "metrics": metrics,
@@ -1090,7 +1150,6 @@ def build_dashboard(target: str = "pages") -> str:
         embedded_json = json.dumps(embedded_dict, ensure_ascii=False)
         embedded_script = f"<script>window.BALI_EMBEDDED_DATA = {embedded_json};</script>"
 
-        # In local mode, write inline or local css/js
         out_html = INDEX_HTML_TEMPLATE.format(
             css_path="data:text/css;charset=utf-8," + STYLE_CSS.replace("\n", "%20").replace("#", "%23"),
             config_path="data:application/javascript;charset=utf-8,window.FEED_URL='';",
@@ -1104,24 +1163,18 @@ def build_dashboard(target: str = "pages") -> str:
         return local_path
 
     elif target == "pages":
-        # Target: docs/ for GitHub Pages
-        # 1. Write docs/style.css
         css_file = os.path.join(DOCS_DIR, "style.css")
         with open(css_file, "w", encoding="utf-8") as f:
             f.write(STYLE_CSS)
 
-        # 2. Write docs/config.js (placeholder for local dev)
         config_file = os.path.join(DOCS_DIR, "config.js")
         with open(config_file, "w", encoding="utf-8") as f:
             f.write('// Local dev fallback URL; injected dynamically in CI Pages deployment\nwindow.FEED_URL = "http://127.0.0.1:8787";\n')
 
-        # 3. Write docs/app.js
         app_file = os.path.join(DOCS_DIR, "app.js")
         with open(app_file, "w", encoding="utf-8") as f:
             f.write(APP_JS_CONTENT)
 
-        # 4. Write docs/fallback.json (compact snapshot so page renders even if Worker is offline)
-        # Compact sample of stations
         compact_st = []
         for s in stations[:120]:
             compact_st.append({
@@ -1162,12 +1215,11 @@ def build_dashboard(target: str = "pages") -> str:
         with open(fallback_file, "w", encoding="utf-8") as f:
             json.dump(fallback_payload, f, separators=(',', ':'), ensure_ascii=False)
 
-        # 5. Write docs/index.html (RELATIVE PATHS ONLY!)
         index_file = os.path.join(DOCS_DIR, "index.html")
         html_content = INDEX_HTML_TEMPLATE.format(
             css_path="./style.css",
             config_path="./config.js",
-            embedded_data_script="",  # Empty in Pages mode
+            embedded_data_script="",
             app_js_path="./app.js"
         )
         with open(index_file, "w", encoding="utf-8") as f:

@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Leaflet Map CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -92,7 +93,7 @@
     </div>
 
     <nav class="user-pills-bar">
-      <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA REAL-TIME ] <small id="pillCount">876 Titik</small></button>
+      <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA REAL-TIME (LEAFLET) ] <small id="pillCount">876 Titik</small></button>
       <button class="user-pill" onclick="switchTab('tabForecast')">[ 02 // PREDIKSI 72 JAM ] <small>Per SPBU</small></button>
       <button class="user-pill" onclick="switchTab('tabAreas')">[ 03 // 14 AREA MAKRO ] <small>Analisis CSI</small></button>
       <button class="user-pill" onclick="switchTab('tabSimulation')">[ 04 // SIMULASI MONTE CARLO ] <small>Fan Chart</small></button>
@@ -100,11 +101,11 @@
       <button class="user-pill" onclick="switchTab('tabGuide')">[ 06 // PANDUAN WARGA & TIMELINE ] <small>Praktis</small></button>
     </nav>
 
-    <!-- TAB 1: PETA -->
+    <!-- TAB 1: PETA LEAFLET -->
     <div id="tabMap" class="tab-content dash-section">
       <div class="section-header">
-        <h2 class="section-title">SEBARAN SPBU & KIOS PERTAMINI REAL-TIME SE-BALI</h2>
-        <p class="section-desc">Peta ketersediaan bahan bakar hasil integrasi laporan pengemudi, bobot waktu (half-life 90m), dan imputasi spasial IDW.</p>
+        <h2 class="section-title">SEBARAN SPBU & KIOS PERTAMINI REAL-TIME SE-BALI (LEAFLET)</h2>
+        <p class="section-desc">Peta interaktif Leaflet: Carto Dark Matter, OpenStreetMap, dan Satelit Esri dengan filter status & pencarian geolokasi.</p>
       </div>
 
       <div class="map-toolbar">
@@ -123,6 +124,12 @@
             <option value="warn">Menipis / Antre (35-60%)</option>
             <option value="empty">Kosong (&lt;35%)</option>
           </select>
+          <button id="btnResetMap" class="btn btn-outline btn-sm" title="Pusatkan Peta ke Bali">
+            ⟲ Bali
+          </button>
+          <button id="btnLocateMe" class="btn btn-outline btn-sm" title="Mencari SPBU di dekat posisi Anda">
+            📍 Lokasi Saya
+          </button>
         </div>
         <div style="font-size:11px; color:var(--ink-3);">
           <span>● <span style="color:var(--success)">Ada Stok (&ge;60%)</span></span> &nbsp;
