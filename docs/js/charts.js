@@ -55,8 +55,17 @@
       prob.textContent = `${Math.round(p * 100)}%`;
       prob.style.color = p >= 0.60 ? "var(--success)" : (p >= 0.35 ? "var(--accent)" : "var(--danger)");
     }
+    function formatQueueTime(mins) {
+      if (mins == null || isNaN(mins)) return "-";
+      const m = Math.round(mins);
+      if (m <= 5) return "Lancar (≤5 mnt)";
+      if (m < 60) return `${m} menit`;
+      const h = Math.floor(m / 60);
+      const rem = m % 60;
+      return rem > 0 ? `${h} jam ${rem} mnt (${m} mnt)` : `${h} jam (${m} mnt)`;
+    }
 
-    if (qEl) qEl.textContent = st.queue != null ? `${st.queue} menit` : "15 menit";
+    if (qEl) qEl.textContent = formatQueueTime(st.queue);
     if (distEl) distEl.textContent = st.distance_to_terminal_km ? `${st.distance_to_terminal_km} km` : "-";
     if (recovEl) recovEl.textContent = st.recov || "-";
     if (priceEl) priceEl.textContent = st.price ? `Rp ${Number(st.price).toLocaleString()} / L` : (st.kind === 'spbu' ? "Rp 10.000 / L (HET)" : "-");

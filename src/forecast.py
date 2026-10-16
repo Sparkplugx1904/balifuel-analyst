@@ -111,7 +111,8 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
         p90 = []
         q_proj = []
 
-        q_initial = float(s.get("queue_mins") or 25.0)
+        # Jika data antrean SPBU belum tersedia tapi bensin ada, default kondisi krisis adalah ~180 menit (3 jam)
+        q_initial = float(s.get("queue_mins") or (180.0 if (s.get("prob_pertalite") or 0.5) >= 0.40 else 25.0))
 
         consec_high = 0
         recovery_hour = None
@@ -127,13 +128,13 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
             p10.append(round(lo, 3))
             p90.append(round(hi, 3))
 
-            # Queue evolution: selama antrean backlog belum tuntas, SPBU yang ada bensin tetap antre tinggi
+            # Queue evolution: selama antrean backlog belum tuntas, SPBU yang ada bensin tetap antre tinggi (bisa 4-6 jam)
             if p_val < 0.25:
-                q_h = max(0.0, q_initial * 0.30)  # SPBU kosong, antrean bubar
+                q_h = max(0.0, q_initial * 0.20)  # SPBU kosong, antrean bubar
             elif p_val < 0.70:
-                q_h = max(18.0, q_initial * (1.0 - h / 160.0))  # antre padat
+                q_h = max(30.0, q_initial * (1.0 - h / 160.0))  # antre padat mengular
             else:
-                q_h = max(5.0, q_initial * (0.85 - 0.45 * (h / horizon_hours)))  # mulai terurai bertahap
+                q_h = max(8.0, q_initial * (0.85 - 0.55 * (h / horizon_hours)))  # mulai terurai bertahap
             q_proj.append(round(float(q_h), 1))
 
             # Single SPBU sustained stability check within 72h window

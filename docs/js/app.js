@@ -69,17 +69,19 @@
     areas.forEach(a => {
       const tr = document.createElement("tr");
       const statusColor = a.status === 'Kritis' ? 'var(--danger)' : (a.status === 'Waspada' ? 'var(--warning)' : 'var(--success)');
+      const qFormatted = a.avg_queue_minutes != null ? (
+        a.avg_queue_minutes >= 60 ? `${Math.floor(a.avg_queue_minutes/60)}j ${Math.round(a.avg_queue_minutes%60)}m` : `${Math.round(a.avg_queue_minutes)} mnt`
+      ) : '-';
       tr.innerHTML = `
         <td style="font-weight:600; color:var(--ink);">${a.area}</td>
         <td style="font-weight:700; color:${a.area_csi >= 65 ? 'var(--danger)' : (a.area_csi >= 45 ? 'var(--warning)' : 'var(--success)')};">${a.area_csi != null ? a.area_csi : '-'}</td>
         <td>${a.spbu_count != null ? a.spbu_count : '-'}</td>
         <td>${a.pertamini_count != null ? a.pertamini_count : '-'}</td>
         <td style="color:${a.pct_empty_stations >= 40 ? 'var(--danger)' : 'var(--ink)'}; font-weight:600;">${a.pct_empty_stations != null ? a.pct_empty_stations + '%' : '-'}</td>
-        <td>${a.avg_queue_minutes != null ? Math.round(a.avg_queue_minutes) + ' mnt' : '-'}</td>
+        <td style="font-weight:600; color:${a.avg_queue_minutes >= 120 ? 'var(--danger)' : (a.avg_queue_minutes >= 45 ? 'var(--warning)' : 'var(--ink)')};">${qFormatted}</td>
         <td>${a.price_gouging_rate_pct != null ? a.price_gouging_rate_pct + '% (' + (a.price_gouged_pertamini_count || 0) + ' kios)' : '-'}</td>
         <td><span style="font-size:10px; font-weight:700; color:${statusColor};">[${(a.status || 'NORMAL').toUpperCase()}]</span></td>
       `;
-      atb.appendChild(tr);
     });
   }
   function renderHotspots(hotspots, stList, hours) {
@@ -101,6 +103,9 @@
           }, 150);
         }
       };
+      const qHotspot = h.queue_mins != null ? (
+        h.queue_mins >= 60 ? `${Math.floor(h.queue_mins/60)}j ${Math.round(h.queue_mins%60)}m` : `${h.queue_mins} mnt`
+      ) : '-';
       tr.innerHTML = `
         <td style="color:var(--ink-3); font-weight:700;">#${idx + 1}</td>
         <td style="font-weight:600; color:var(--ink);">${h.name}</td>
@@ -108,7 +113,7 @@
         <td>${h.area}</td>
         <td>${h.distance_terminal_km || h.distance_to_terminal_km || '-'} km</td>
         <td style="color:var(--danger); font-weight:700;">${Math.round((h.current_p_pertalite || 0.3) * 100)}%</td>
-        <td>${h.queue_mins != null ? h.queue_mins + ' mnt' : '-'}</td>
+        <td style="font-weight:600; color:${h.queue_mins >= 120 ? 'var(--danger)' : 'var(--ink)'};">${qHotspot}</td>
         <td style="color:var(--accent); font-weight:700;">${h.vulnerability_score || '-'}</td>
         <td>${h.estimated_recovery_date || '-'}</td>
       `;

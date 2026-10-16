@@ -330,26 +330,28 @@ def clean_and_enrich_data(db_path: str = DB_PATH) -> Dict[str, Any]:
         p_sol = station_avail_map.get((s_id, "solar"), None)
 
         # Queue wait time resolution
+        # Queue wait time resolution terkalibrasi kondisi antrean riil krisis (hingga 4-6 jam)
         q_mins = row["queue_mins"]
         if pd.isna(q_mins) or q_mins is None:
             if s_id in station_queue_reports:
                 q_code = station_queue_reports[s_id]
-                q_mins = 0 if q_code == 0 else (15 if q_code == 1 else 45)
+                # 0 = singkat (~15 mnt), 1 = lama 1-2 jam (~90 mnt), 2 = sangat lama / parah 4-6 jam (~300 mnt)
+                q_mins = 15 if q_code == 0 else (90 if q_code == 1 else 300)
             elif pd.notnull(row["busy_live"]) and pd.notnull(row["busy_usual"]):
                 ratio = (row["busy_live"] + 1) / (row["busy_usual"] + 1)
-                q_mins = int(np.clip(ratio * 15, 5, 60))
+                # Lonjakan kerumunan live Google di SPBU saat krisis mencapai 4-6 jam
+                q_mins = int(np.clip(ratio * 75, 10, 360))
             else:
                 q_mins = None
 
         if q_mins is None:
             queue_cat = "tidak_diketahui"
-        elif q_mins <= 5:
+        elif q_mins <= 15:
             queue_cat = "tanpa_antre"
-        elif q_mins <= 20:
+        elif q_mins <= 45:
             queue_cat = "antre_singkat"
         else:
             queue_cat = "antre_panjang"
-
         prices = bb_prices_map.get(s_id, {})
         pertalite_price = prices.get("pertalite")
         is_price_gouged = False
