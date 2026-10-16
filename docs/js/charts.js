@@ -70,7 +70,7 @@
 
     const traceP90 = { x: CURRENT_HOURS, y: p90, type: 'scatter', mode: 'lines', line: { width: 0 }, showlegend: false, hoverinfo: 'skip' };
     const traceP10 = { x: CURRENT_HOURS, y: p10, type: 'scatter', mode: 'lines', fill: 'tonexty', fillcolor: 'rgba(255, 138, 61, 0.16)', line: { width: 0 }, name: 'Pita 80% (P10-P90)' };
-    const traceP50 = { x: CURRENT_HOURS, y: p50, type: 'scatter', mode: 'lines', line: { color: '#FF8A3D', width: 2.5 }, name: 'Peluang Stok (%)' };
+    const traceP50 = { x: CURRENT_HOURS, y: p50, type: 'scatter', mode: 'lines', line: { color: '#FF8A3D', width: 2.5 }, name: 'Peluang Ada Bensin (%)' };
     const traceQ = { x: CURRENT_HOURS, y: qTraj, type: 'scatter', mode: 'lines', yaxis: 'y2', line: { color: tc.fontColor, width: 1.5, dash: 'dot' }, name: 'Antrean (Mnt)' };
 
     const layout = {
@@ -80,7 +80,7 @@
       font: { family: 'JetBrains Mono, monospace', color: tc.fontColor, size: 10 },
       legend: { orientation: 'h', y: -0.22, x: 0.05 },
       xaxis: { gridcolor: tc.gridColor, nticks: 10 },
-      yaxis: { title: 'Peluang Stok (%)', range: [0, 105], gridcolor: tc.gridColor },
+      yaxis: { title: 'Peluang Ada Bensin (%)', range: [0, 105], gridcolor: tc.gridColor },
       yaxis2: { title: 'Waktu Antre (Mnt)', overlaying: 'y', side: 'right', range: [0, 55], showgrid: false }
     };
 
@@ -92,7 +92,7 @@
     const tc = getThemeColors();
 
     Plotly.newPlot('areaPlotlyChart', [
-      { x: areaData.map(a => a.area), y: areaData.map(a => a.area_csi), type: 'bar', name: 'Skor CSI Keparahan', marker: { color: '#FF8A3D' } },
+      { x: areaData.map(a => a.area), y: areaData.map(a => a.area_csi), type: 'bar', name: 'Skor Kesulitan Bensin', marker: { color: '#FF8A3D' } },
       { x: areaData.map(a => a.area), y: areaData.map(a => a.pct_empty_stations), type: 'bar', name: '% SPBU Kosong', marker: { color: '#FF6B5A' } }
     ], {
       paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
@@ -115,14 +115,14 @@
         { x: fc.timestamps, y: fc.p5, type: 'scatter', mode: 'lines', fill: 'tonexty', fillcolor: 'rgba(255, 138, 61, 0.12)', line: { width: 0 }, name: 'Rentang 90%' },
         { x: fc.timestamps, y: fc.p75, type: 'scatter', mode: 'lines', line: { width: 0 }, showlegend: false },
         { x: fc.timestamps, y: fc.p25, type: 'scatter', mode: 'lines', fill: 'tonexty', fillcolor: 'rgba(255, 138, 61, 0.28)', line: { width: 0 }, name: 'Rentang 50%' },
-        { x: fc.timestamps, y: fc.p50, type: 'scatter', mode: 'lines', line: { color: '#FF8A3D', width: 2.5 }, name: 'Median (P50)' }
+        { x: fc.timestamps, y: fc.p50, type: 'scatter', mode: 'lines', line: { color: '#FF8A3D', width: 2.5 }, name: 'Titik Tengah Perkiraan' }
       ], {
         paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
         margin: { l: 35, r: 15, t: 15, b: 55 },
         font: { family: 'JetBrains Mono, monospace', color: tc.fontColor, size: 9.5 },
         legend: { orientation: 'h', y: -0.25 },
         xaxis: { gridcolor: tc.gridColor, tickangle: -30, nticks: 8 },
-        yaxis: { gridcolor: tc.gridColor, title: '% Stok', range: [0, 105] }
+        yaxis: { gridcolor: tc.gridColor, title: 'Peluang Ada Bensin (%)', range: [0, 105] }
       }, { responsive: true, displayModeBar: false });
     }
 

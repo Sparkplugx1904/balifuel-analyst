@@ -68,12 +68,20 @@
   }
 
   // ── Fetch helpers ─────────────────────────────────────────────────────────
-  async function fetchJson(url) {
-    const res = await fetch(url, { cache: "no-cache" });
-    if (!res.ok) throw new Error(`HTTP ${res.status} on ${url}`);
-    const raw = await res.text();
-    const sanitized = raw.replace(/:\s*NaN\b/g, ": null").replace(/:\s*[-]?Infinity\b/g, ": null");
-    return JSON.parse(sanitized);
+  async function fetchJson(url, optional = false) {
+    try {
+      const res = await fetch(url, { cache: "no-cache" });
+      if (!res.ok) {
+        if (optional) return null;
+        throw new Error(`HTTP ${res.status} on ${url}`);
+      }
+      const raw = await res.text();
+      const sanitized = raw.replace(/:\s*NaN\b/g, ": null").replace(/:\s*[-]?Infinity\b/g, ": null");
+      return JSON.parse(sanitized);
+    } catch (e) {
+      if (optional) return null;
+      throw e;
+    }
   }
 
   // ── Data loader ───────────────────────────────────────────────────────────
@@ -103,9 +111,9 @@
           const [summary, stations, panic, correlations, sources] = await Promise.all([
             fetchJson(`${feed}/latest/summary.json`),
             fetchJson(`${feed}/latest/stations.json`),
-            fetchJson(`${feed}/latest/panic.json`).catch(() => null),
-            fetchJson(`${feed}/latest/correlations.json`).catch(() => null),
-            fetchJson(`${feed}/latest/sources.json`).catch(() => null)
+            fetchJson(`${feed}/latest/panic.json`, true),
+            fetchJson(`${feed}/latest/correlations.json`, true),
+            fetchJson(`${feed}/latest/sources.json`, true)
           ]);
           DATA_CACHE = {
             meta,

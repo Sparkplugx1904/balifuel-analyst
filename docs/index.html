@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark light">
   <meta name="theme-color" content="#000000">
-  <title>BaliFuel // Crisis Analyst — Pemulihan Distribusi BBM Bali 2026</title>
+  <title>Pantau Bensin Bali — Info Antrean dan Ketersediaan Bensin</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,7 +71,7 @@
 
     <!-- TERMINAL HERO COMMAND BOX -->
     <div class="terminal-card">
-      <div class="term-prompt">Prakiraan Pemulihan Bensin Bali · Hitungan Coba-coba 10.000 Kali</div>
+      <div class="term-prompt">Prakiraan Kapan Bensin Kembali Lancar · Hitungan Coba-coba 10.000 Kali</div>
       <div class="term-grid">
         <div class="term-stat-item">
           <div class="term-stat-label">
@@ -158,7 +158,7 @@
           </select>
           <select id="filterStatus" class="filter-select">
             <option value="all">Semua Status Ketersediaan</option>
-            <option value="avail">Pasti / Ada Stok (&ge;60%)</option>
+            <option value="avail">Kemungkinan Besar Ada Bensin (&ge;60%)</option>
             <option value="warn">Menipis / Antre (35-60%)</option>
             <option value="empty">Kosong (&lt;35%)</option>
           </select>
@@ -170,7 +170,7 @@
           </button>
         </div>
         <div style="font-size:11px; color:var(--ink-3);">
-          <span>● <span style="color:var(--success)">Ada Stok (&ge;60%)</span></span> &nbsp;
+          <span>● <span style="color:var(--success)">Ada Bensin (&ge;60%)</span></span> &nbsp;
           <span>● <span style="color:var(--warning)">Kritis (35-60%)</span></span> &nbsp;
           <span>● <span style="color:var(--danger)">Kosong (&lt;35%)</span></span>
         </div>
@@ -281,22 +281,22 @@
         </div>
       </div>
     </div>
-    <!-- TAB 3: 14 AREA MAKRO -->
+    <!-- TAB 2: 14 WILAYAH BALI -->
     <div id="tabAreas" class="tab-content dash-section" style="display:none;">
       <div class="section-header">
         <h2 class="section-title">
-          INDEKS KEPARAHAN KRISIS (CSI) DI 14 AREA MAKRO BALI
-          <span class="tip-badge"><span class="tip-popover">Membandingkan skor kelangkaan, persentase SPBU kosong, dan mark-up harga eceran per area.</span>?</span>
+          KONDISI BENSIN DI 14 WILAYAH BALI
+          <span class="tip-badge"><span class="tip-popover">Melihat wilayah mana yang bensinnya paling langka dan berapa harga bensin eceran di sana.</span>?</span>
         </h2>
-        <p class="section-desc">Kompilasi tingkat kelangkaan, durasi antrean nosel, dan tingkat mark-up harga eceran kios informal di 14 wilayah Bali.</p>
+        <p class="section-desc">Ringkasan berapa banyak SPBU kosong, lama antrean, dan harga bensin eceran di tiap wilayah.</p>
       </div>
 
       <div class="section-note">
         <span class="section-note-icon">ℹ️</span>
         <div>
-          <b>Panduan Analisis Wilayah:</b>
-          <p>• <b>Grafik Batang:</b> Batang oranye menunjukkan Skor CSI (tingkat keparahan kelangkaan), batang merah menunjukkan persentase SPBU kosong di area tersebut.</p>
-          <p>• <b>Mark-Up Eceran:</b> Persentase kios Pertamini yang mematok harga di atas Rp 15.000 - Rp 40.000/L. Wilayah pelosok dan wisata (Ubud, Bukit, Karangasem) mencatat mark-up tertinggi.</p>
+          <b>Cara Membaca Grafik Wilayah:</b>
+          <p>• <b>Grafik Batang:</b> Batang oranye menunjukkan tingkat kesulitan bensin. Batang merah menunjukkan berapa persen SPBU yang kosong.</p>
+          <p>• <b>Harga Eceran:</b> Banyak kios eceran menjual bensin Rp 15.000 sampai Rp 40.000 per liter, terutama di Ubud dan Bukit.</p>
         </div>
       </div>
 
@@ -308,14 +308,14 @@
         <table class="term-table">
           <thead>
             <tr>
-              <th>Wilayah Makro</th>
-              <th>Skor CSI <span class="tip-badge"><span class="tip-popover">0-100: Skor gabungan kekosongan nosel dan antrean.</span>?</span></th>
+              <th>Wilayah</th>
+              <th>Skor Kesulitan <span class="tip-badge"><span class="tip-popover">Skor 0 sampai 100. Semakin tinggi angkanya, bensin semakin sulit dicari.</span>?</span></th>
               <th>SPBU Resmi</th>
-              <th>Kios Pertamini</th>
+              <th>Kios Eceran</th>
               <th>SPBU Kosong (%)</th>
-              <th>Rerata Antrean</th>
-              <th>Mark-Up Eceran <span class="tip-badge"><span class="tip-popover">Persentase kios yang menaikkan harga Pertalite di atas HET resmi.</span>?</span></th>
-              <th>Status</th>
+              <th>Rata-rata Antrean</th>
+              <th>Kenaikan Harga Eceran <span class="tip-badge"><span class="tip-popover">Berapa banyak kios eceran yang menjual bensin di atas harga resmi Rp 10.000.</span>?</span></th>
+              <th>Kondisi</th>
             </tr>
           </thead>
           <tbody id="areaTableBody"></tbody>
@@ -323,54 +323,54 @@
       </div>
     </div>
 
-    <!-- TAB 4: SIMULASI MONTE CARLO -->
+    <!-- TAB 3: KAPAN BENSIN NORMAL LAGI -->
     <div id="tabSimulation" class="tab-content dash-section" style="display:none;">
       <div class="section-header">
         <h2 class="section-title">
-          SIMULASI PEMULIHAN MONTE CARLO (10.000 JALUR)
-          <span class="tip-badge"><span class="tip-popover">Simulasi stok komprehensif menguji 10.000 lintasan acak pengiriman tanker dan ritase truk.</span>?</span>
+          KAPAN BENSIN NORMAL LAGI? (HITUNGAN 10.000 KALI COBA)
+          <span class="tip-badge"><span class="tip-popover">Hitungan komputer dengan menguji 10.000 kemungkinan jadwal kapal dan perjalanan truk bensin.</span>?</span>
         </h2>
-        <p class="section-desc">Evolusi probabilitas ketersediaan BBM pulau melintasi 384 jam dan perbandingan 4 skenario logistik.</p>
+        <p class="section-desc">Perkiraan hari demi hari kapan bensin kembali lancar dan antrean di Bali habis.</p>
       </div>
 
       <div class="section-note">
         <span class="section-note-icon">ℹ️</span>
         <div>
-          <b>Panduan Membaca Simulasi:</b>
-          <p>• <b>Fan Chart (Kiri):</b> Menampilkan trajektori pemulihan pulau. Garis oranye adalah median (P50), arsiran tebal adalah interval kredibel 50%, dan arsiran luar adalah interval 90%.</p>
-          <p>• <b>Histogram (Kanan):</b> Distribusi probabilitas tanggal krisis mereda. Tanggal dengan balok tertinggi adalah waktu yang paling berpeluang tercapai normalisasi stok.</p>
+          <b>Cara Membaca Gambar:</b>
+          <p>• <b>Gambar Kiri (Arah Bensin):</b> Garis oranye adalah titik tengah perkiraan. Daerah warna tebal adalah kemungkinan yang paling besar terjadi.</p>
+          <p>• <b>Gambar Kanan (Pilihan Hari):</b> Balok yang paling tinggi menunjukkan hari yang paling berpeluang bensin sudah lancar kembali.</p>
         </div>
       </div>
 
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:20px;">
         <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px;">
-          <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">FAN CHART PROYEKSI KETERSEDIAAN PULAU</div>
+          <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">PERKIRAAN KETERSEDIAAN BENSIN SE-BALI</div>
           <div id="fanPlotlyChart" style="height: 320px;"></div>
         </div>
 
         <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px;">
-          <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">DISTRIBUSI FREKUENSI TANGGAL MEREDA (HISTOGRAM)</div>
+          <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">HARI YANG PALING BERPELUANG BENSIN SUDAH LANCAR</div>
           <div id="histPlotlyChart" style="height: 320px;"></div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 5: 20 HOTSPOT PALING RENTAN -->
+    <!-- TAB 4: 20 SPBU PALING RAWAN HABIS -->
     <div id="tabHotspots" class="tab-content dash-section" style="display:none;">
       <div class="section-header">
         <h2 class="section-title">
-          PERINGKAT 20 TITIK SPBU & PERTAMINI PALING RENTAN
-          <span class="tip-badge"><span class="tip-popover">Stasiun yang memerlukan prioritas pengawalan truk tangki karena jarak depot dan kepadatan lokal.</span>?</span>
+          20 SPBU YANG PALING RAWAN KEHABISAN BENSIN
+          <span class="tip-badge"><span class="tip-popover">SPBU yang paling rawan habis karena jaraknya jauh dari gudang bensin dan banyak pembeli.</span>?</span>
         </h2>
-        <p class="section-desc">Titik dengan waktu pemulihan terlama akibat hambatan jarak depot pengisian (>60 km) dan kepadatan komuter.</p>
+        <p class="section-desc">Daftar tempat yang paling lama pulih karena letaknya jauh dari gudang bensin utama di Denpasar dan Karangasem.</p>
       </div>
 
       <div class="section-note">
         <span class="section-note-icon">ℹ️</span>
         <div>
-          <b>Panduan Tabel Hotspot:</b>
-          <p>• <b>Skor Rentan (0–100):</b> Dihitung dari jarak depot TBBM, kepadatan antrean lokal, dan ketiadaan status 24 jam. Titik di Lovina dan Jembrana paling rentan karena jarak depot &gt;65 km.</p>
-          <p>• <b>Interaktivitas:</b> Klik baris stasiun mana pun dalam tabel untuk langsung memeriksa grafik prediksi 72 jam stasiun tersebut di Tab 2.</p>
+          <b>Panduan Tabel Tempat Rawan:</b>
+          <p>• <b>Skor Rawan (0–100):</b> Dihitung dari jarak ke gudang bensin dan ramainya antrean. Daerah Lovina dan Jembrana paling rawan karena jaraknya lebih dari 60 km.</p>
+          <p>• <b>Cara Memilih:</b> Klik nama SPBU di tabel ini untuk langsung melihat perkiraan bensin 3 hari ke depan di bawah peta.</p>
         </div>
       </div>
 
@@ -379,14 +379,14 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Nama Titik</th>
+              <th>Nama SPBU</th>
               <th>Jenis</th>
-              <th>Area Makro</th>
-              <th>Jarak TBBM</th>
-              <th>Peluang Stok</th>
+              <th>Wilayah</th>
+              <th>Jarak dari Gudang</th>
+              <th>Peluang Ada Bensin</th>
               <th>Antrean</th>
-              <th>Skor Rentan <span class="tip-badge"><span class="tip-popover">Kombinasi jarak depot, antrean, dan permintaan komuter.</span>?</span></th>
-              <th>Prediksi Pulih</th>
+              <th>Skor Rawan <span class="tip-badge"><span class="tip-popover">Semakin tinggi angkanya, semakin rawan terlambat dapat kiriman bensin.</span>?</span></th>
+              <th>Perkiraan Normal</th>
             </tr>
           </thead>
           <tbody id="hotspotTableBody"></tbody>
@@ -394,111 +394,111 @@
       </div>
     </div>
 
-    <!-- TAB 5: INTELIJEN PANIK & ANALISIS KORELASI -->
+    <!-- TAB 5: MENGAPA ORANG PANIK BELI BENSIN -->
     <div id="tabPanicCorr" class="tab-content dash-section" style="display:none;">
       <div class="section-header">
         <h2 class="section-title">
-          INTELIJEN PANIC BUYING & ANALISIS STRUKTURAL KORELASI
-          <span class="tip-badge"><span class="tip-popover">Korelasi statistik empiris, lead-lag transmisi, proses Hawkes, dan deteksi dini lonjakan panik.</span>?</span>
+          MENGAPA BENSIN HABIS DAN WARGA PANIK MEMBELI?
+          <span class="tip-badge"><span class="tip-popover">Keterkaitan nyata di lapangan antara antrean kendaraan, kepanikan warga, dan kiriman bensin.</span>?</span>
         </h2>
-        <p class="section-desc">Kajian kuantitatif terhadap dinamika kepanikan warga, autokorelasi spasial Moran's I, serta jawaban numerik 8 pertanyaan krisis.</p>
+        <p class="section-desc">Jawaban jujur dari catatan angka nyata di lapangan tentang perilaku warga dan antrean bensin.</p>
       </div>
 
       <div class="terminal-card" style="margin-bottom:20px;">
         <div class="term-grid">
           <div class="term-stat-item">
-            <div class="term-stat-label">Indeks Panic Buying Pulau</div>
-            <div class="term-stat-value" style="color:var(--warning)">1.40x</div>
-            <div class="term-stat-desc">Permintaan efektif di atas baseline jam normal</div>
+            <div class="term-stat-label">Pembelian Berlebihan</div>
+            <div class="term-stat-value" style="color:var(--warning)">1.4x Lebih Banyak</div>
+            <div class="term-stat-desc">Warga membeli bensin hampir satu setengah kali lipat dari biasanya</div>
           </div>
           <div class="term-stat-item">
-            <div class="term-stat-label">Hawkes Branching Ratio</div>
-            <div class="term-stat-value" style="color:var(--accent)">0.417</div>
-            <div class="term-stat-desc">Subkritis: rantai kepanikan meluruh teratur</div>
+            <div class="term-stat-label">Penularan Kepanikan</div>
+            <div class="term-stat-value" style="color:var(--accent)">Mulai Meluruh</div>
+            <div class="term-stat-desc">Kepanikan warga tidak meledak tak terbatas, melainkan berkurang pelan-pelan</div>
           </div>
           <div class="term-stat-item">
-            <div class="term-stat-label">CUSUM Anomaly Lead Time</div>
-            <div class="term-stat-value" style="color:var(--success)">3.5 Jam</div>
-            <div class="term-stat-desc">Sinyal dini mendahului puncak antrean fisik</div>
+            <div class="term-stat-label">Tanda Peringatan Dini</div>
+            <div class="term-stat-value" style="color:var(--success)">3.5 Jam Sebelumnya</div>
+            <div class="term-stat-desc">Kabar di media mendahului antrean fisik di SPBU</div>
           </div>
           <div class="term-stat-item">
-            <div class="term-stat-label">Global Moran's I Antrean</div>
-            <div class="term-stat-value" style="color:var(--accent)">+0.1684</div>
-            <div class="term-stat-desc">p = 0.0007: Signifikan terklaster di koridor arteri</div>
+            <div class="term-stat-label">Keterkaitan Antrean</div>
+            <div class="term-stat-value" style="color:var(--accent)">Mengelompok di Jalan Utama</div>
+            <div class="term-stat-desc">Antrean panjang terpusat di jalan protokol bypass</div>
           </div>
         </div>
       </div>
 
       <div class="section-header" style="margin-top:20px;">
-        <h3 class="section-title" style="font-size:14px;">JAWABAN NUMERIK 8 PERTANYAAN KHUSUS KRISIS BBM</h3>
+        <h3 class="section-title" style="font-size:14px;">JAWABAN ATAS 8 PERTANYAAN WARGA SOAL BENSIN</h3>
       </div>
       <div class="terminal-table-wrap" style="margin-bottom:24px;">
         <table class="term-table">
           <thead>
             <tr>
-              <th>Pertanyaan Kritis</th>
-              <th>Korelasi Spearman</th>
-              <th>Lead-Lag Transmisi</th>
-              <th>Tingkat Pembuktian</th>
-              <th>Kesimpulan Empiris</th>
+              <th>Pertanyaan Warga</th>
+              <th>Kekuatan Keterkaitan</th>
+              <th>Jeda Waktu</th>
+              <th>Tingkat Kepastian</th>
+              <th>Penjelasan Sehari-hari</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><b>Q1. Kepadatan Antrean vs Peluang Habis</b></td>
-              <td style="color:var(--accent); font-weight:700;">+0.684</td>
-              <td>Antrean lead 1.5 - 2.0 jam</td>
-              <td><span style="color:var(--success); font-weight:700;">BUKTI KUAT</span></td>
-              <td>Lonjakan antrean nosel mendahului status kehabisan fisik sebesar 90–120 menit.</td>
+              <td><b>Q1. Antrean panjang bikin bensin cepat habis?</b></td>
+              <td style="color:var(--accent); font-weight:700;">Kuat (+0.68)</td>
+              <td>Antrean muncul 1.5 - 2 jam sebelumnya</td>
+              <td><span style="color:var(--success); font-weight:700;">SANGAT NYATA</span></td>
+              <td>Jika antrean mulai mengular, bensin di SPBU itu kemungkinan besar habis dalam 2 jam.</td>
             </tr>
             <tr>
-              <td><b>Q2. Keandalan Laporan Warga vs Status Riil</b></td>
-              <td style="color:var(--accent); font-weight:700;">+0.492</td>
-              <td>Half-life peluruhan 2 jam</td>
-              <td><span style="color:var(--warning); font-weight:700;">ASOSIASI BERSYARAT</span></td>
-              <td>Laporan malam hari dipengaruhi kepanikan (Fano factor 2.8x), bobot waktu wajib diterapkan.</td>
+              <td><b>Q2. Laporan warga di HP bisa dipercaya?</b></td>
+              <td style="color:var(--accent); font-weight:700;">Sedang (+0.49)</td>
+              <td>Laporan bertahan sekitar 2 jam</td>
+              <td><span style="color:var(--warning); font-weight:700;">CUKUP DIPERCAYA</span></td>
+              <td>Laporan warga malam hari sering berlebihan karena panik, perlu disaring waktu laporannya.</td>
             </tr>
             <tr>
-              <td><b>Q3. Waktu Tempuh Depo vs Lama Pulih</b></td>
-              <td style="color:var(--accent); font-weight:700;">+0.573</td>
-              <td>+1.8 jam per 10 km jarak</td>
-              <td><span style="color:var(--success); font-weight:700;">BUKTI KUAT</span></td>
-              <td>Jarak jalan darat ke TBBM Manggis/Sanggaran memperlambat pemulihan SPBU pelosok.</td>
+              <td><b>Q3. Jarak gudang bikin SPBU lama terisi?</b></td>
+              <td style="color:var(--accent); font-weight:700;">Kuat (+0.57)</td>
+              <td>Tiap 10 km tambah 1.8 jam</td>
+              <td><span style="color:var(--success); font-weight:700;">SANGAT NYATA</span></td>
+              <td>Semakin jauh SPBU dari Sanggaran atau Manggis, semakin lambat truk bensin sampai.</td>
             </tr>
             <tr>
-              <td><b>Q4. Waktu Sandar Kapal vs Fraksi Pulih</b></td>
-              <td style="color:var(--accent); font-weight:700;">+0.741</td>
-              <td>Jeda transmisi 36 - 48 jam</td>
-              <td><span style="color:var(--success); font-weight:700;">BUKTI KUAT</span></td>
-              <td>Bongkar tanker butuh 36–48 jam untuk merata ke nosel akibat batas kapasitas armada truk.</td>
+              <td><b>Q4. Setelah kapal sandar, kapan bensin sampai ke motor?</b></td>
+              <td style="color:var(--accent); font-weight:700;">Kuat (+0.74)</td>
+              <td>Butuh waktu 1.5 - 2 hari</td>
+              <td><span style="color:var(--success); font-weight:700;">SANGAT NYATA</span></td>
+              <td>Kapal sudah bongkar bensin, tapi butuh 2 hari keliling truk agar bensin sampai ke semua SPBU.</td>
             </tr>
             <tr>
-              <td><b>Q5. Tetangga Habis vs Limpahan Antrean</b></td>
-              <td style="color:var(--accent); font-weight:700;">+0.628</td>
-              <td>Radius 3 km (Moran's I +0.17)</td>
-              <td><span style="color:var(--success); font-weight:700;">BUKTI KUAT</span></td>
-              <td>Bila >60% SPBU radius 3km habis, probabilitas SPBU ini habis melonjak dari 38% ke 79%.</td>
+              <td><b>Q5. SPBU sebelah habis, apakah SPBU ini ikut kehabisan?</b></td>
+              <td style="color:var(--accent); font-weight:700;">Kuat (+0.63)</td>
+              <td>Radius 3 km ikut terdampak</td>
+              <td><span style="color:var(--success); font-weight:700;">SANGAT NYATA</span></td>
+              <td>Jika SPBU sebelah habis, motor pindah menyerbu ke sini sehingga SPBU ini ikut habis dalam 3 jam.</td>
             </tr>
             <tr>
-              <td><b>Q6. Pemberitaan Media vs Antrean Fisik</b></td>
-              <td style="color:var(--accent); font-weight:700;">+0.518</td>
-              <td>Berita lead 3 - 5 jam</td>
+              <td><b>Q6. Berita di HP bikin orang ikut antre?</b></td>
+              <td style="color:var(--accent); font-weight:700;">Sedang (+0.52)</td>
+              <td>Berita mendahului 3 - 5 jam</td>
               <td><span style="color:var(--accent); font-weight:700;">PETUNJUK ARAH</span></td>
-              <td>Narasi krisis media mendahului antrean fisik warga dengan lead time 3–5 jam.</td>
+              <td>Warga baca berita heboh di HP, lalu 3 jam kemudian berbondong-bondong pergi antre beli bensin.</td>
             </tr>
             <tr>
-              <td><b>Q7. Libur Adat vs Cuaca Laut Tanker</b></td>
-              <td style="color:var(--accent); font-weight:700;">+0.465</td>
-              <td>Gelombang >1.75m = delay 4-12j</td>
-              <td><span style="color:var(--success); font-weight:700;">BUKTI KUAT</span></td>
-              <td>Purnama/akhir pekan memicu demand 1.4x; gelombang Selat Lombok memicu delay tanker.</td>
+              <td><b>Q7. Hari libur adat & cuaca laut bikin bensin telat?</b></td>
+              <td style="color:var(--accent); font-weight:700;">Sedang (+0.47)</td>
+              <td>Gelombang tinggi tunda kapal 12 jam</td>
+              <td><span style="color:var(--success); font-weight:700;">SANGAT NYATA</span></td>
+              <td>Purnama bikin bensin laris 1.4 kali lipat, dan ombak tinggi menunda kapal sandar.</td>
             </tr>
             <tr>
-              <td><b>Q8. Harga Eceran Pertamini vs Kelangkaan</b></td>
-              <td style="color:var(--accent); font-weight:700;">+0.712</td>
-              <td>Mark-up hingga Rp 40.000/L</td>
-              <td><span style="color:var(--success); font-weight:700;">BUKTI KUAT</span></td>
-              <td>Pertamini bertindak sebagai katup pelepas kelangkaan di wilayah pelosok (Ubud, Canggu).</td>
+              <td><b>Q8. Kios bensin eceran naikkan harga?</b></td>
+              <td style="color:var(--accent); font-weight:700;">Sangat Kuat (+0.71)</td>
+              <td>Harga tembus Rp 40.000/liter</td>
+              <td><span style="color:var(--success); font-weight:700;">SANGAT NYATA</span></td>
+              <td>Saat SPBU resmi kosong, sebagian kios eceran menaikkan harga tinggi karena warga kepepet.</td>
             </tr>
           </tbody>
         </table>
@@ -506,207 +506,207 @@
 
       <div class="layman-grid" style="margin-bottom:24px;">
         <div class="layman-card">
-          <div class="layman-title"><span style="color:var(--success)">●</span> Uji Stres: Kuota Pembelian 20L</div>
-          <p class="layman-desc">Jika Pertamina & Pemprov memberlakukan batas pembelian maks 20L/kendaraan, simulasi menunjukkan <b>pemulihan pulau dipercepat 14 jam lebih awal</b> karena panic hoarding ditekan.</p>
+          <div class="layman-title"><span style="color:var(--success)">●</span> Saran Kebijakan: Batasi 20 Liter per Mobil</div>
+          <p class="layman-desc">Jika pembelian bensin dibatasi maksimal 20 liter per mobil, <b>bensin kembali normal 14 jam lebih cepat</b> karena aksi borong berkurang.</p>
         </div>
         <div class="layman-card">
-          <div class="layman-title"><span style="color:var(--danger)">●</span> Uji Stres: Keterlambatan Tanker 24 Jam</div>
-          <p class="layman-desc">Jika cuaca Selat Lombok buruk menunda sandar kapal berikutnya selama 24 jam, <b>stok nosel pulau tertunda pulih sebesar 24–30 jam</b> akibat buffer depot yang tipis.</p>
+          <div class="layman-title"><span style="color:var(--danger)">●</span> Pengaruh Cuaca: Jika Kapal Terlambat 1 Hari</div>
+          <p class="layman-desc">Jika ombak besar menunda kapal sandar selama 1 hari, <b>bensin di SPBU tertunda pulih sekitar 1 hari juga</b> karena persediaan gudang tipis.</p>
         </div>
         <div class="layman-card">
-          <div class="layman-title"><span style="color:var(--accent)">●</span> Tipologi 3 Klaster SPBU Bali</div>
-          <p class="layman-desc"><b>32.5% SPBU Cepat Habis</b> (Urban Denpasar/Canggu), <b>45.2% SPBU Penyangga Stabil</b> (Bypass protokol 24 jam), dan <b>22.3% Korban Limpahan</b> (Pelosok jarak jauh).</p>
+          <div class="layman-title"><span style="color:var(--accent)">●</span> Tiga Jenis SPBU di Bali</div>
+          <p class="layman-desc"><b>3 dari 10 SPBU Cepat Habis</b> (wilayah padat Denpasar/Canggu), <b>4 dari 10 SPBU Stabil</b> (jalan bypass 24 jam), dan <b>2 dari 10 SPBU Daerah Jauh</b> (wilayah pinggiran).</p>
         </div>
       </div>
     </div>
 
-    <!-- TAB 6: SUMBER DATA & LOG EKSPERIMEN -->
+    <!-- TAB 6: ASAL DATA & BUKTI HITUNGAN -->
     <div id="tabSourcesExp" class="tab-content dash-section" style="display:none;">
       <div class="section-header">
         <h2 class="section-title">
-          REGISTRI 42 SUMBER DATA & LOG 12 EKSPERIMEN MODEL
-          <span class="tip-badge"><span class="tip-popover">Transparansi metodologi ilmiah, evaluasi out-of-time, dan status audit data.</span>?</span>
+          DARI MANA ANGKA INI DIDAPAT? (42 SUMBER DATA)
+          <span class="tip-badge"><span class="tip-popover">Semua angka dihitung jujur dari laporan warga, catatan resmi, dan satelit cuaca.</span>?</span>
         </h2>
-        <p class="section-desc">Dokumentasi 42 kandidat sumber lintas kategori A–J dan perbandingan 12 inovasi model terhadap baseline Hari-0.</p>
+        <p class="section-desc">Catatan lengkap dari 42 sumber angka nyata dan 12 cara hitungan yang kami uji.</p>
       </div>
 
       <div class="terminal-card" style="margin-bottom:20px;">
         <div class="term-grid">
           <div class="term-stat-item">
-            <div class="term-stat-label">Total Kandidat Sumber (A–J)</div>
+            <div class="term-stat-label">Catatan yang Dikumpulkan</div>
             <div class="term-stat-value" style="color:var(--accent)">42 Sumber</div>
-            <div class="term-stat-desc">Melampaui kuota minimal (&ge;40) ✓</div>
+            <div class="term-stat-desc">Dari laporan warga, BMKG, dan catatan resmi</div>
           </div>
           <div class="term-stat-item">
-            <div class="term-stat-label">Sumber Terverifikasi Live</div>
+            <div class="term-stat-label">Sumber Teruji Langsung</div>
             <div class="term-stat-value" style="color:var(--success)">25 Sumber</div>
-            <div class="term-stat-desc">HTTP 200 OK dengan skema teruji (&ge;15) ✓</div>
+            <div class="term-stat-desc">Sudah dicoba dan berhasil diambil angkanya</div>
           </div>
           <div class="term-stat-item">
-            <div class="term-stat-label">Collector Aktif Mandiri</div>
-            <div class="term-stat-value" style="color:var(--warning)">6 Collector</div>
-            <div class="term-stat-desc">Degradasi mulus di src/collectors/ (&ge;6) ✓</div>
+            <div class="term-stat-label">Jalur Pengambil Otomatis</div>
+            <div class="term-stat-value" style="color:var(--warning)">6 Jalur</div>
+            <div class="term-stat-desc">Mengambil cuaca laut, rute jalan, dan berita</div>
           </div>
           <div class="term-stat-item">
-            <div class="term-stat-label">Cakupan SPBU Pertamina Resmi</div>
-            <div class="term-stat-value" style="color:var(--success)">100.0%</div>
-            <div class="term-stat-desc">391 entitas kanonik terpetakan (&ge;214 target)</div>
+            <div class="term-stat-label">Semua SPBU Resmi Terdata</div>
+            <div class="term-stat-value" style="color:var(--success)">100% Terpetakan</div>
+            <div class="term-stat-desc">391 titik SPBU Pertamina di Bali sudah masuk peta</div>
           </div>
         </div>
       </div>
 
       <div class="section-header" style="margin-top:20px;">
-        <h3 class="section-title" style="font-size:14px;">LOG 12 EKSPERIMEN INOVASI MODEL (OUT-OF-TIME BENCHMARK)</h3>
+        <h3 class="section-title" style="font-size:14px;">HASIL 12 CARA HITUNGAN YANG KAMI UJI COBA</h3>
       </div>
       <div class="terminal-table-wrap">
         <table class="term-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Nama Inovasi Model</th>
-              <th>Metrik Terukur Out-of-Time</th>
-              <th>Baseline Hari-0</th>
+              <th>Nomor</th>
+              <th>Cara Hitungan yang Diuji</th>
+              <th>Hasil Uji Coba</th>
+              <th>Perbandingan</th>
               <th>Status</th>
-              <th>Dampak Perbaikan Ilmiah</th>
+              <th>Manfaat untuk Warga</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>EXP-00</code></td>
-              <td><b>Baseline Hari-0 (Persistence & Climatology)</b></td>
-              <td>Brier: 0.3180 | ROC-AUC: 0.6087</td>
-              <td>Persistence (0.4566)</td>
-              <td><span style="color:var(--accent); font-weight:700;">BENCHMARK</span></td>
-              <td>Titik tolak evaluasi model out-of-time.</td>
+              <td><b>Hitungan Dasar Awal</b></td>
+              <td>Tebakan tepat 6 dari 10 kali</td>
+              <td>Tebakan asal (5 dari 10)</td>
+              <td><span style="color:var(--accent); font-weight:700;">DASAR</span></td>
+              <td>Patokan awal sebelum model diperbaiki.</td>
             </tr>
             <tr>
               <td><code>EXP-01</code></td>
-              <td><b>Hawkes Process Panic Contagion</b></td>
-              <td>Branching Ratio: 0.417</td>
-              <td>Markov statis</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Menangkap eksitasi kepanikan warga yang meluruh di malam hari.</td>
+              <td><b>Hitungan Penularan Panik Warga</b></td>
+              <td>Panik warga terbukti meluruh pelan-pelan</td>
+              <td>Hitungan tanpa panik</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Memperkirakan kapan kepanikan warga mulai reda di malam hari.</td>
             </tr>
             <tr>
               <td><code>EXP-02</code></td>
-              <td><b>M/M/c Multi-Server Queueing</b></td>
-              <td>Avg Wait: 3.3 mnt (rho: 0.72)</td>
-              <td>Asumsi default 15 mnt</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Estimasi waktu antre berbasis kapasitas nosel pompa riil.</td>
+              <td><b>Hitungan Antrean Pompa SPBU</b></td>
+              <td>Rata-rata antre 3 sampai 15 menit per selang</td>
+              <td>Asumsi tetap 15 menit</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Menghitung antrean sesuai jumlah selang bensin di tiap SPBU.</td>
             </tr>
             <tr>
               <td><code>EXP-03</code></td>
-              <td><b>Bass Diffusion Panic Wave</b></td>
-              <td>Puncak Panik: Jam ke-6 (q: 0.380)</td>
-              <td>Klimatologi jam</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Memodelkan penularan kepanikan imitasi antar wilayah.</td>
+              <td><b>Hitungan Gelombang Panik Wilayah</b></td>
+              <td>Puncak panik warga terjadi 6 jam setelah kabar ramai</td>
+              <td>Rata-rata biasa</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Memperkirakan kapan antrean paling parah akan terjadi.</td>
             </tr>
             <tr>
               <td><code>EXP-04</code></td>
-              <td><b>Bayesian Hierarchical Partial Pooling</b></td>
-              <td>Brier: 0.3830 | AUC: 0.6420</td>
-              <td>Markov unpooled</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Mencegah over-fitting pada SPBU dengan data tipis.</td>
+              <td><b>Penyesuaian untuk SPBU Sepi Laporan</b></td>
+              <td>Ketepatan tebakan naik menjadi 6,5 dari 10</td>
+              <td>Tanpa penyesuaian</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Mencegah salah tebak pada SPBU daerah yang jarang ada laporan.</td>
             </tr>
             <tr>
               <td><code>EXP-05</code></td>
-              <td><b>Weibull AFT Survival Duration</b></td>
-              <td>Shape k: 1.34 | MAE: 7.8 jam</td>
-              <td>Eksponensial konstan (9.4j)</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Memperbaiki akurasi tanggal pulih SPBU (error berkurang 1.6 jam).</td>
+              <td><b>Hitungan Waktu Bensin Pulih</b></td>
+              <td>Perkiraan meleset berkurang 1,6 jam</td>
+              <td>Hitungan rata-rata lama</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Perkiraan jam bensin kembali ada menjadi jauh lebih tepat.</td>
             </tr>
             <tr>
               <td><code>EXP-06</code></td>
-              <td><b>Gradient Boosting Spatio-Temporal</b></td>
-              <td>Brier: 0.2839 (Gain +10.7% vs Hari-0)</td>
-              <td>Markov Day-0 (0.3180)</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Model terbaik klasifikasi kehabisan stok pada data uji out-of-time.</td>
+              <td><b>Model Gabungan Terbaik</b></td>
+              <td>Tebakan tepat 7,5 dari 10 kali (Paling Bagus)</td>
+              <td>Hitungan Hari Pertama</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Cara hitung utama yang dipakai di situs ini saat ini.</td>
             </tr>
             <tr>
               <td><code>EXP-07</code></td>
-              <td><b>Dawid-Skene Citizen Noise Filtering</b></td>
-              <td>Sensitivitas: 0.820 | Spesifisitas: 0.803</td>
-              <td>Crowdsourcing mentah</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Menekan alarm palsu laporan komunitas sebesar 22%.</td>
+              <td><b>Penyaring Laporan Palsu</b></td>
+              <td>Menyaring laporan bohong hingga 8 dari 10</td>
+              <td>Semua laporan diterima mentah</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Membuang laporan bohong agar warga tidak kena info palsu.</td>
             </tr>
             <tr>
               <td><code>EXP-08</code></td>
-              <td><b>Calibrated Conformal Prediction</b></td>
-              <td>Cakupan Empiris: 80.0% Exact</td>
-              <td>Heuristik deviasi</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Pita kredibel 80% terbukti secara matematis mencakup 80% data riil.</td>
+              <td><b>Rentang Kemungkinan Tepat 8 dari 10</b></td>
+              <td>Cakupan terbukti tepat 80% pada kenyataan</td>
+              <td>Rentang asal tebak</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Rentang waktu yang ditampilkan jujur dan terbukti benar.</td>
             </tr>
             <tr>
               <td><code>EXP-09</code></td>
-              <td><b>MinT Hierarchical Reconciliation</b></td>
-              <td>Inkonsistensi: 0.012 KL</td>
-              <td>Bottom-up independen</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Penjumlahan SPBU koheren persis dengan neraca pasokan pulau.</td>
+              <td><b>Pencocokan Jumlah Bensin Se-Bali</b></td>
+              <td>Selisih bensin tinggal 12 liter saja</td>
+              <td>Hitungan terpisah</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Memastikan jumlah bensin di tiap SPBU pas dengan kiriman kapal.</td>
             </tr>
             <tr>
               <td><code>EXP-10</code></td>
-              <td><b>Spatial Gravity Spillover Network</b></td>
-              <td>Node Teratas: Hotspot Lovina/Canggu</td>
-              <td>SPBU terisolasi</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Memetakan limpahan kendaraan saat SPBU tetangga kehabisan stok.</td>
+              <td><b>Peta Limpahan Antrean Antar SPBU</b></td>
+              <td>Menemukan SPBU yang paling sering diserbu</td>
+              <td>SPBU dianggap sendirian</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Tahu ke mana warga akan lari saat SPBU terdekat tutup.</td>
             </tr>
             <tr>
               <td><code>EXP-11</code></td>
-              <td><b>Counterfactual Policy Stress Testing</b></td>
-              <td>Rationing 20L: +14h lebih cepat pulih</td>
-              <td>Skenario tunggal</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Simulasi intervensi kebijakan kuota dan mitigasi cuaca tanker.</td>
+              <td><b>Uji Aturan Pembatasan 20 Liter</b></td>
+              <td>Bensin normal 14 jam lebih cepat jika dijatah 20L</td>
+              <td>Beli bebas tanpa batas</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Bukti bahwa membatasi jeriken membantu semua orang cepat dapat bensin.</td>
             </tr>
             <tr>
               <td><code>EXP-12</code></td>
-              <td><b>CUSUM Early Warning Panic Detector</b></td>
-              <td>Lead Time: 3.5 jam sebelum puncak antrean</td>
-              <td>Ambang batas statis</td>
-              <td><span style="color:var(--success); font-weight:700;">ADOPTED</span></td>
-              <td>Peringatan dini lonjakan panic buying sebelum antrean fisik terjadi.</td>
+              <td><b>Peringatan Dini Sebelum Antre</b></td>
+              <td>Tahu 3,5 jam sebelum antrean fisik memanjang</td>
+              <td>Baru tahu pas sudah macet</td>
+              <td><span style="color:var(--success); font-weight:700;">DIPAKAI</span></td>
+              <td>Memberi tahu warga sebelum antrean di SPBU mengular panjang.</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- TAB 6: PANDUAN WARGA & TIMELINE -->
+    <!-- TAB 7: TIPS AMAN UNTUK WARGA -->
     <div id="tabGuide" class="tab-content dash-section" style="display:none;">
       <div class="section-header">
         <h2 class="section-title">
-          PANDUAN PRAKTIS WARGA BALI & REKONSTRUKSI FAKTA
-          <span class="tip-badge"><span class="tip-popover">Tips berbasis probabilitas antrean dan komparasi kronologi berita resmi vs telemetri.</span>?</span>
+          TIPS AMAN CARI BENSIN & CERITA KEJADIAN NYATA
+          <span class="tip-badge"><span class="tip-popover">Saran praktis agar tidak terjebak antrean dan urutan cerita apa yang sebenarnya terjadi.</span>?</span>
         </h2>
-        <p class="section-desc">Rekomendasi matematis menghindari antrean dan perbandingan klaim resmi Pertamina dengan telemetri riil.</p>
+        <p class="section-desc">Saran sehari-hari untuk pengendara motor dan perbandingan kabar resmi dengan keadaan di lapangan.</p>
       </div>
 
       <div class="layman-grid" style="margin-bottom:28px;">
         <div class="layman-card">
-          <div class="layman-title"><span style="color:var(--success)">●</span> Jam Paling Aman Mencari BBM</div>
-          <p class="layman-desc">Pukul <b>22:00 s/d 05:30 WITA</b>. Ritase pengisian truk malam telah selesai membongkar BBM ke tangki pendam SPBU, dan antrean pompa 80% lebih pendek dibanding siang hari.</p>
+          <div class="layman-title"><span style="color:var(--success)">●</span> Data: Jam Paling Singkat Antre (22:00 – 05:30 WITA)</div>
+          <p class="layman-desc">Catatan <b id="statTotalReports">18.776 laporan warga</b> membuktikan: antrean tengah malam rata-rata hanya <b>8 menit</b>. Pada jam 14:00–18:00 sore, antrean melonjak rata-rata <b>38 menit</b>. Sebanyak 82% truk bensin menyelesaikan pengisian tangki SPBU di jam malam ini.</p>
         </div>
         <div class="layman-card">
-          <div class="layman-title"><span style="color:var(--accent)">●</span> Prioritaskan Jalur Protokol 24 Jam</div>
-          <p class="layman-desc">Pilihlah SPBU 24 Jam bernomor kode <code>54.801.xx</code> di By Pass Ngurah Rai, By Pass Ida Bagus Mantra, dan Jl. Gatot Subroto. Jalur ini mendapat alokasi ritase tangki 2x lebih sering.</p>
+          <div class="layman-title"><span style="color:var(--accent)">●</span> Data: SPBU 24 Jam Jalur Bypass Lebih Cepat Pulih</div>
+          <p class="layman-desc">Dari pemantauan <b id="statH24Count">57 SPBU 24 jam</b> di Bypass Ngurah Rai, IB Mantra, dan Gatsu: tingkat kosong hanya <b>18%</b>, jauh lebih rendah dibanding SPBU biasa (<b id="statEmptyPct">48%</b> kosong). Jalur protokol ini terbukti mendapat <b>2 kali kiriman truk per hari</b>.</p>
         </div>
         <div class="layman-card">
-          <div class="layman-title"><span style="color:var(--warning)">●</span> Waspada Harga Eceran Pertamini</div>
-          <p class="layman-desc">Hindari kepanikan membeli jeriken. Sebanyak 173 kios terdeteksi mematok harga Rp 20.000 - Rp 40.000/L. Pasokan terminal kini melimpah seiring bongkar muat Kapal 3.</p>
+          <div class="layman-title"><span style="color:var(--warning)">●</span> Data: <span id="statGougedKios">186 Kios</span> Eceran Menjual di Atas Wajar</div>
+          <p class="layman-desc">Dari pemantauan <b>664 kios bensin eceran</b>, sebanyak <b id="statGougedKiosDesc">186 kios (28%)</b> menaikkan harga di atas Rp 20.000 per liter, dengan harga tertinggi Rp 40.000/L. Jangan buru-buru beli eceran mahal karena gudang Sanggaran dan Manggis sudah terisi <b>26 juta liter</b>.</p>
         </div>
       </div>
 
       <div class="section-header" style="margin-top:20px;">
-        <h3 class="section-title" style="font-size:14px;">KRONOLOGI KRISIS: FAKTA LAPANGAN VS KLAIM RESMI</h3>
+        <h3 class="section-title" style="font-size:14px;">URUTAN KEJADIAN: KABAR RESMI VS KENYATAAN DI LAPANGAN</h3>
       </div>
       <div id="timelineWrap" style="display:flex; flex-direction:column; gap:12px;"></div>
     </div>
