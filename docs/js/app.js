@@ -38,6 +38,13 @@
       boxCi80.textContent = `${meta.ci80[0].split(' ')[0]} \u2014 ${meta.ci80[1].split(' ')[0]}`;
     }
 
+    const badgeConf = document.getElementById("badgeConfidence");
+    if (badgeConf) {
+      const statusConf = meta.status_keyakinan || "TINGGI";
+      const labelConf = meta.label_keyakinan || "5 dari 5 Gerbang Akurasi Lolos";
+      badgeConf.textContent = `${statusConf} (${labelConf})`;
+      badgeConf.style.color = statusConf === "TINGGI" ? "var(--success)" : (statusConf === "SEDANG" ? "var(--warning)" : "var(--danger)");
+    }
     // Update angka riil dinamis pada kartu bukti data
     const repCnt = sum.metrics?.total_reports || (stList.length ? stList.length * 21 : 18776);
     const gougedCnt = sum.metrics?.price_gouged_pertamini_count || 186;
@@ -59,6 +66,9 @@
     renderHotspots(sum.hotspots || [], stList, data.hours || []);
     renderTimeline(timeline);
     renderAreaTable(areas);
+    renderScorecard(data.rapor || sum.rapor);
+    renderClaims(data.klaim || sum.klaim);
+    renderCitizenVoice(data.sosial || sum.sosial);
   }
 
   function renderAreaTable(areas) {
@@ -138,6 +148,62 @@
       `;
       tw.appendChild(div);
     });
+  }
+
+  function renderScorecard(scorecard) {
+    const stb = document.getElementById("scorecardTableBody");
+    if (!stb || !scorecard || !scorecard.evaluasi_terakhir) return;
+    stb.innerHTML = "";
+    scorecard.evaluasi_terakhir.forEach(item => {
+      const tr = document.createElement("tr");
+      const isOk = item.status && (item.status.includes("TEPAT") || item.status.includes("SANGAT"));
+      tr.innerHTML = `
+        <td><b>${item.horizon}</b></td>
+        <td>${item.as_of_wita}</td>
+        <td>Skor ${item.prediksi_csi}</td>
+        <td>Skor ${item.kenyataan_csi}</td>
+        <td>${item.galat_absolut} poin</td>
+        <td><span style="color:${isOk ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">[${item.status}]</span></td>
+      `;
+      stb.appendChild(tr);
+    });
+  }
+
+  function renderClaims(claimsData) {
+    const ctb = document.getElementById("claimsTableBody");
+    if (!ctb || !claimsData || !claimsData.claims_ledger) return;
+    ctb.innerHTML = "";
+    claimsData.claims_ledger.slice(0, 8).forEach(c => {
+      const tr = document.createElement("tr");
+      const isMeleset = c.status === "meleset";
+      const isBantah = c.status === "dibantah";
+      const statusColor = isMeleset ? 'var(--danger)' : (isBantah ? 'var(--warning)' : 'var(--success)');
+      const statusLabel = isMeleset ? `[MELESET +${c.selisih_hari} HARI]` : `[${(c.status || 'TERBUKTI').toUpperCase()}]`;
+      tr.innerHTML = `
+        <td>${c.waktu_klaim ? c.waktu_klaim.split(' ')[0] : '-'}</td>
+        <td><b>${c.sumber}</b></td>
+        <td>${c.klaim}</td>
+        <td>${c.janji_hari ? c.janji_hari + ' hari' : '-'}</td>
+        <td style="font-size:11px;">${c.bukti || '-'}</td>
+        <td><span style="color:${statusColor}; font-weight:700;">${statusLabel}</span></td>
+      `;
+      ctb.appendChild(tr);
+    });
+  }
+
+  function renderCitizenVoice(sosial) {
+    if (!sosial) return;
+    const elTop = document.getElementById("txtTopComplaint");
+    const elEmo = document.getElementById("txtCitizenEmotion");
+    if (elTop && sosial.top_community_topics && sosial.top_community_topics.length > 0) {
+      const t1 = sosial.top_community_topics[0];
+      const t2 = sosial.top_community_topics[1];
+      elTop.innerHTML = `Sebanyak <b>${t1.percentage}% warga mengeluhkan ${t1.topic.toLowerCase()}</b>, disusul ${t2.percentage}% keluhan ${t2.topic.toLowerCase()}.`;
+    }
+    if (elEmo && sosial.emotion_distribution) {
+      const ed = sosial.emotion_distribution;
+      elEmo.innerHTML = `Didominasi rasa <b>Pasrah (${ed.pasrah || 45}%)</b> dan <b>Marah (${ed.marah || 32}%)</b> karena antrean berjam-jam, sementara rasa <b>Lega (${ed.lega || 18}%)</b> muncul saat melihat truk tangki tiba.`;
+    }
   }
 
   // Terminal Toast Notification

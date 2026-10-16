@@ -108,12 +108,15 @@
 
         if (meta.run_id !== CURRENT_RUN_ID) {
           CURRENT_RUN_ID = meta.run_id;
-          const [summary, stations, panic, correlations, sources] = await Promise.all([
+          const [summary, stations, panic, correlations, sources, sosial, klaim, rapor] = await Promise.all([
             fetchJson(`${feed}/latest/summary.json`),
             fetchJson(`${feed}/latest/stations.json`),
             fetchJson(`${feed}/latest/panic.json`, true),
             fetchJson(`${feed}/latest/correlations.json`, true),
-            fetchJson(`${feed}/latest/sources.json`, true)
+            fetchJson(`${feed}/latest/sources.json`, true),
+            fetchJson(`${feed}/latest/sosial.json`, true),
+            fetchJson(`${feed}/latest/klaim.json`, true),
+            fetchJson(`${feed}/latest/rapor_prediksi.json`, true)
           ]);
           DATA_CACHE = {
             meta,
@@ -122,7 +125,10 @@
             hours:    stations.hours    || [],
             panic:    panic,
             correlations: correlations,
-            sources:  sources
+            sources:  sources,
+            sosial:   sosial,
+            klaim:    klaim,
+            rapor:    rapor
           };
           window.dispatchEvent(new CustomEvent("dataupdated", { detail: DATA_CACHE }));
         }

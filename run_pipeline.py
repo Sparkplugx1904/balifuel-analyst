@@ -106,47 +106,81 @@ def run_pipeline(
 
     phase_timings["3_metrics"] = round(time.time() - t0, 2)
     print(f"-> Phase 3 completed in {phase_timings['3_metrics']}s (Island CSI: {res_metrics.get('current_island_csi')})")
+
     # -------------------------------------------------------------
-    # FASE 4: PEMODELAN MARKOV & SURVIVAL (SETIAP 6 JAM)
+    # FASE 4: KECERDASAN NON-ANGKA & PROSES TEKS PUBLIK (SAH)
     # -------------------------------------------------------------
     t0 = time.time()
-    print("\n[PHASE 4/7] Checking Markov Chain & Survival Analysis Cache...")
+    print("\n[PHASE 4/9] Processing Non-Numeric Public Text & Claims Ledger...")
+    try:
+        from src.text_nlp import process_all_text_sources, validate_nlp_models
+        validate_nlp_models()
+        res_text = process_all_text_sources()
+        phase_timings["4_text_nlp"] = round(time.time() - t0, 2)
+        print(f"-> Phase 4 completed in {phase_timings['4_text_nlp']}s (Signals: {res_text.get('signals_count')})")
+    except Exception as text_err:
+        phase_timings["4_text_nlp"] = round(time.time() - t0, 2)
+        print(f"-> Text intelligence warning (degraded): {text_err}")
+
+    # -------------------------------------------------------------
+    # FASE 5: PEMODELAN MARKOV & SURVIVAL (SETIAP 6 JAM)
+    # -------------------------------------------------------------
+    t0 = time.time()
+    print("\n[PHASE 5/9] Checking Markov Chain & Survival Analysis Cache...")
     if force_markov_refit or should_refit_markov(max_age_hours=6.0):
         print("-> Running full Markov fitting & backtest (Cache expired > 6 hours)...")
         from src.markov_model import run_markov_pipeline
         res_markov = run_markov_pipeline()
         winner = res_markov.get("model_comparison", {}).get("best_model", "Markov")
-        phase_timings["4_markov"] = round(time.time() - t0, 2)
-        print(f"-> Phase 4 refit completed in {phase_timings['4_markov']}s (Model: {winner})")
+        phase_timings["5_markov"] = round(time.time() - t0, 2)
+        print(f"-> Phase 5 refit completed in {phase_timings['5_markov']}s (Model: {winner})")
     else:
-        phase_timings["4_markov"] = round(time.time() - t0, 2)
-        print(f"-> Reusing cached Markov model (< 6h old). Phase 4 skipped in {phase_timings['4_markov']}s.")
+        phase_timings["5_markov"] = round(time.time() - t0, 2)
+        print(f"-> Reusing cached Markov model (< 6h old). Phase 5 skipped in {phase_timings['5_markov']}s.")
 
     # -------------------------------------------------------------
-    # FASE 5: SIMULASI MONTE CARLO (10.000 JALUR)
+    # FASE 6: SIMULASI MONTE CARLO (10.000 JALUR)
     # -------------------------------------------------------------
     t0 = time.time()
-    print("\n[PHASE 5/7] Running 10,000 Monte Carlo Simulation Paths...")
+    print("\n[PHASE 6/9] Running 10,000 Monte Carlo Simulation Paths...")
     from src.simulation import run_monte_carlo_simulation
     res_sim = run_monte_carlo_simulation(n_paths=10000, random_seed=seed)
-    phase_timings["5_simulation"] = round(time.time() - t0, 2)
-    print(f"-> Phase 5 completed in {phase_timings['5_simulation']}s (Median: {res_sim.get('median_recovery_datetime_wita')})")
+    phase_timings["6_simulation"] = round(time.time() - t0, 2)
+    print(f"-> Phase 6 completed in {phase_timings['6_simulation']}s (Median: {res_sim.get('median_recovery_datetime_wita')})")
 
     # -------------------------------------------------------------
-    # FASE 6: PROYEKSI 72 JAM PER SPBU & HOTSPOT RANKING
+    # FASE 7: PROYEKSI 72 JAM PER SPBU & HOTSPOT RANKING
     # -------------------------------------------------------------
     t0 = time.time()
-    print("\n[PHASE 6/7] Generating 72-Hour Per-SPBU Forecasts & Hotspot Rankings...")
+    print("\n[PHASE 7/9] Generating 72-Hour Per-SPBU Forecasts & Hotspot Rankings...")
     from src.forecast import generate_station_forecasts
     res_fc = generate_station_forecasts(horizon_hours=72)
-    phase_timings["6_forecast"] = round(time.time() - t0, 2)
-    print(f"-> Phase 6 completed in {phase_timings['6_forecast']}s ({res_fc.get('total_stations')} stations)")
+    phase_timings["7_forecast"] = round(time.time() - t0, 2)
+    print(f"-> Phase 7 completed in {phase_timings['7_forecast']}s ({res_fc.get('total_stations')} stations)")
 
     # -------------------------------------------------------------
-    # FASE 7: PUBLIKASI KONTRAK ATAU BUILD DASHBOARD LOKAL
+    # FASE 8: GERBANG AKURASI (G1-G5) & AUDIT KONSISTENSI DATA
     # -------------------------------------------------------------
     t0 = time.time()
-    print("\n[PHASE 7/7] Output Generation & Publishing...")
+    print("\n[PHASE 8/9] Evaluating Accuracy Gates (G1-G5) & Data Consistency...")
+    from src.accuracy_gates import evaluate_accuracy_gates
+    from src.consistency import check_data_consistency, generate_prediction_scorecard
+    res_gates = evaluate_accuracy_gates()
+    generate_prediction_scorecard()
+    res_cons = check_data_consistency()
+    phase_timings["8_consistency"] = round(time.time() - t0, 2)
+    print(f"-> Phase 8 completed in {phase_timings['8_consistency']}s (Keyakinan: {res_gates.get('status_keyakinan')})")
+
+    if res_cons.get("status") != "PASSED":
+        print(f" [!] CRITICAL: Consistency check failed: {res_cons.get('issues_found')}")
+        if publish:
+            raise RuntimeError(f"Publish cancelled due to consistency failure: {res_cons.get('issues_found')}")
+
+    # -------------------------------------------------------------
+    # FASE 9: PUBLIKASI KONTRAK ATAU BUILD DASHBOARD LOKAL
+    # -------------------------------------------------------------
+    t0 = time.time()
+    print("\n[PHASE 9/9] Output Generation & Publishing...")
     if publish or dry_run:
         from src.publish import publish_pipeline_artifacts
         w_url = worker_url or os.getenv("WORKER_URL", "http://127.0.0.1:8787")

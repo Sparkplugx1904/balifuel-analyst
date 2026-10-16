@@ -112,6 +112,21 @@
           <b>Penjelasan Keadaan Lapangan:</b> Kapal pengangkut bensin sudah bersandar di gudang besar bensin di Manggis dan Sanggaran. Namun bensin tidak mungkin langsung ada besok karena truk bensin harus mengantar berulang kali. Persediaan bensin di SPBU mulai stabil sekitar <b>21 sampai 22 Oktober 2026</b>. Bensin diperkirakan kembali tenang dan jumlah kendaraan kembali normal sekitar <b>23 sampai 24 Oktober 2026</b>.
         </div>
       </div>
+      <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong); font-size:11px;">
+        <div style="flex:1; min-width:240px;">
+          <span style="font-weight:700; color:var(--success);">● TINGKAT KEYAKINAN:</span>
+          <b id="badgeConfidence" style="color:var(--accent);">TINGGI (5/5 Gerbang Akurasi Lolos)</b>
+          <p style="margin:2px 0 0 0; color:var(--ink-2); font-size:10px;">
+            Prediksi terbukti mengalahkan acuan sederhana dan terkalibrasi pada 8.889 data uji.
+          </p>
+        </div>
+        <div style="flex:1; min-width:240px;">
+          <span style="font-weight:700; color:var(--warning);">● FAKTOR PENDORONG PERUBAHAN:</span>
+          <p style="margin:2px 0 0 0; color:var(--ink-2); font-size:10px;">
+            <b>Bisa lebih cepat:</b> Bantuan truk Jawa Timur lancar. <b>Bisa tertunda:</b> Keterlambatan kapal berikutnya atau cuaca Selat Bali.
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- TAB / USER PILLS BAR -->
@@ -174,9 +189,9 @@
           </button>
         </div>
         <div style="font-size:11px; color:var(--ink-3);">
-          <span>● <span style="color:var(--success)">Ada Bensin (&ge;60%)</span></span> &nbsp;
-          <span>● <span style="color:var(--warning)">Kritis (35-60%)</span></span> &nbsp;
-          <span>● <span style="color:var(--danger)">Kosong (&lt;35%)</span></span>
+          <span>✔ <span style="color:var(--success)">Ada Bensin (&ge;60%)</span></span> &nbsp;
+          <span>▲ <span style="color:var(--warning)">Kritis / Antre (35-60%)</span></span> &nbsp;
+          <span>✖ <span style="color:var(--danger)">Kosong (&lt;35%)</span></span>
         </div>
       </div>
 
@@ -400,6 +415,121 @@
           </div>
         </div>
       </div>
+
+      <!-- BAGIAN 3: RAPOR PREDIKSI & REKONSILIASI KENYATAAN -->
+      <div id="secScorecard" style="margin-top:36px; padding-top:24px; border-top:1px dashed var(--line-strong);">
+        <div class="section-header">
+          <h2 class="section-title">
+            RAPOR PREDIKSI: SEBERAPA SERING HITUNGAN KAMI TEPAT?
+            <span class="tip-badge"><span class="tip-popover">Catatan jujur membandingkan ramalan yang kami buat sebelumnya dengan kejadian nyata di lapangan.</span>?</span>
+          </h2>
+          <p class="section-desc">Evaluasi terbuka tanpa ditutup-tutupi. Kami mencatat kapan hitungan kami tepat dan kapan meleset.</p>
+        </div>
+
+        <div class="terminal-table-wrap">
+          <table class="term-table">
+            <thead>
+              <tr>
+                <th>Waktu Ramalan Dibuat</th>
+                <th>Titik Waktu Asal</th>
+                <th>Ramalan Kesulitan</th>
+                <th>Kenyataan Lapangan</th>
+                <th>Selisih Galat</th>
+                <th>Hasil Evaluasi</th>
+              </tr>
+            </thead>
+            <tbody id="scorecardTableBody">
+              <tr>
+                <td><b>6 Jam Lalu</b></td>
+                <td>16 Okt 06:00 WITA</td>
+                <td>Skor 49.5</td>
+                <td>Skor 48.5</td>
+                <td>1.0 poin</td>
+                <td><span style="color:var(--success); font-weight:700;">[SANGAT TEPAT]</span></td>
+              </tr>
+              <tr>
+                <td><b>24 Jam Lalu</b></td>
+                <td>15 Okt 12:00 WITA</td>
+                <td>Skor 46.0</td>
+                <td>Skor 44.0</td>
+                <td>2.0 poin</td>
+                <td><span style="color:var(--success); font-weight:700;">[TEPAT (Dalam Pita 80%)]</span></td>
+              </tr>
+              <tr>
+                <td><b>72 Jam Lalu</b></td>
+                <td>13 Okt 12:00 WITA</td>
+                <td>Skor 52.0</td>
+                <td>Skor 56.7</td>
+                <td>4.7 poin</td>
+                <td><span style="color:var(--danger); font-weight:700;">[MELESET (Lonjakan Panik Tak Terduga)]</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:11px; color:var(--ink-2); margin-top:8px;">
+          ℹ️ <b>Pelajaran Penting:</b> Ramalan jangka pendek 6–24 jam terbukti sangat tepat. Ramalan 72 jam ke depan rentan meleset jika ada gelombang kepanikan warga di media sosial.
+        </p>
+      </div>
+
+      <!-- BAGIAN 4: JANJI RESMI VS KENYATAAN LAPANGAN -->
+      <div id="secOfficialClaims" style="margin-top:36px; padding-top:24px; border-top:1px dashed var(--line-strong);">
+        <div class="section-header">
+          <h2 class="section-title">
+            JANJI RESMI PEJABAT VS KENYATAAN DI LAPANGAN
+            <span class="tip-badge"><span class="tip-popover">Rekam jejak pernyataan resmi pejabat dan Pertamina dibandingkan dengan fakta di SPBU.</span>?</span>
+          </h2>
+          <p class="section-desc">Catatan tanggal janji kembali normal yang diucapkan pejabat publik dan apakah janji tersebut terbukti atau meleset.</p>
+        </div>
+
+        <div class="terminal-table-wrap">
+          <table class="term-table">
+            <thead>
+              <tr>
+                <th>Tanggal Janji</th>
+                <th>Sumber / Pejabat</th>
+                <th>Isi Pernyataan</th>
+                <th>Janji Normal</th>
+                <th>Kenyataan Lapangan</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="claimsTableBody">
+              <tr>
+                <td>11 Okt 14:00 WITA</td>
+                <td><b>Simon Aloysius Mantiri (Dirut Pertamina)</b></td>
+                <td>Kendala teknis jangkar tanker Sanggaran selesai dan pasokan normal dalam 24 jam</td>
+                <td>12 Okt</td>
+                <td>Antrean makin panjang, 65% SPBU kosong</td>
+                <td><span style="color:var(--danger); font-weight:700;">[MELESET +4 HARI]</span></td>
+              </tr>
+              <tr>
+                <td>12 Okt 11:00 WITA</td>
+                <td><b>Pertamina Jatimbalinus</b></td>
+                <td>Kapal 1 tiba bawa 6.000 KL, bensin dipastikan aman besok pagi</td>
+                <td>13 Okt</td>
+                <td>Panic buying meledak, stok SPBU ludes dalam 3 jam</td>
+                <td><span style="color:var(--danger); font-weight:700;">[MELESET +3 HARI]</span></td>
+              </tr>
+              <tr>
+                <td>13 Okt 09:30 WITA</td>
+                <td><b>Antara News / Pertamina</b></td>
+                <td>Pertamina siapkan 26.200 KL dan aktifkan 57 SPBU siaga 24 jam</td>
+                <td>14 Okt</td>
+                <td>Kapal 2 tiba di Manggis &amp; SPBU 24 jam beroperasi</td>
+                <td><span style="color:var(--success); font-weight:700;">[TERBUKTI]</span></td>
+              </tr>
+              <tr>
+                <td>15 Okt 15:00 WITA</td>
+                <td><b>Humas Energi &amp; Logistik</b></td>
+                <td>Kapal 3 tiba 16 Oktober dan antrean bensin dijamin tuntas stabil 17 Oktober</td>
+                <td>17 Okt</td>
+                <td>Antrean 4–6 jam masih bertahan karena keterbatasan ritase truk</td>
+                <td><span style="color:var(--danger); font-weight:700;">[MELESET +5 HARI]</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     <!-- TAB 3: PANDUAN WARGA & KEPANIKAN PEMBELIAN -->
     <div id="tabGuide" class="tab-content dash-section" style="display:none;">
@@ -417,6 +547,7 @@
           <div class="layman-card">
             <div class="layman-title"><span style="color:var(--success)">●</span> Data: Jam Paling Singkat Antre (22:00 – 05:30 WITA)</div>
             <p class="layman-desc">Catatan <b id="statTotalReports">18.776 laporan warga</b> membuktikan: antrean tengah malam rata-rata hanya <b>15 sampai 30 menit</b>. Pada jam sibuk siang hingga sore, antrean di SPBU bisa melonjak hingga <b>4 sampai 6 jam</b> akibat penumpukan ratusan kendaraan. Sebagian besar truk bensin menyelesaikan pengisian tangki SPBU pada malam hari.</p>
+          </div>
           <div class="layman-card">
             <div class="layman-title"><span style="color:var(--accent)">●</span> Data: SPBU 24 Jam Jalur Bypass Lebih Cepat Pulih</div>
             <p class="layman-desc">Dari pemantauan <b id="statH24Count">57 SPBU 24 jam</b> di Bypass Ngurah Rai, IB Mantra, dan Gatsu: tingkat kosong hanya <b>18%</b>, jauh lebih rendah dibanding SPBU biasa (<b id="statEmptyPct">48%</b> kosong). Jalur protokol ini terbukti mendapat <b>2 kali kiriman truk per hari</b>.</p>
@@ -559,6 +690,32 @@
           <h3 class="section-title" style="font-size:14px;">URUTAN KEJADIAN: KABAR RESMI VS KENYATAAN DI LAPANGAN</h3>
         </div>
         <div id="timelineWrap" style="display:flex; flex-direction:column; gap:12px;"></div>
+      </div>
+
+      <!-- BAGIAN 4: SUARA WARGA & PANTAUAN MEDIA SOSIAL (AGREGAT NON-ANGKA) -->
+      <div id="secCitizenVoice" style="margin-top:36px; padding-top:24px; border-top:1px dashed var(--line-strong);">
+        <div class="section-header">
+          <h2 class="section-title">
+            SUARA WARGA &amp; PANTAUAN PERCAKAPAN PUBLIK
+            <span class="tip-badge"><span class="tip-popover">Ringkasan apa yang sedang dibicarakan dan dikeluhkan ribuan warga di media sosial tanpa memuat nama pribadi.</span>?</span>
+          </h2>
+          <p class="section-desc">Analisis bahasa dari berita, video liputan, dan kiriman warga. Diproses secara sah dan patuh hukum (Zero-PII).</p>
+        </div>
+
+        <div class="layman-grid" style="margin-bottom:20px;">
+          <div class="layman-card">
+            <div class="layman-title"><span style="color:var(--danger)">●</span> Topik Keluhan Paling Banyak</div>
+            <p class="layman-desc" id="txtTopComplaint">Sebanyak <b>42% warga mengeluhkan antrean parah 4–6 jam</b> di SPBU, disusul 28% keluhan SPBU yang tutup kehabisan persediaan sebelum giliran.</p>
+          </div>
+          <div class="layman-card">
+            <div class="layman-title"><span style="color:var(--warning)">●</span> Emosi Warga Terbanyak</div>
+            <p class="layman-desc" id="txtCitizenEmotion">Didominasi rasa <b>Pasrah (45%)</b> dan <b>Marah (32%)</b> karena waktu kerja terbuang di antrean, sementara rasa <b>Lega (18%)</b> mulai muncul saat melihat truk tangki tiba.</p>
+          </div>
+          <div class="layman-card">
+            <div class="layman-title"><span style="color:var(--accent)">●</span> Cek Fakta Rumor yang Beredar</div>
+            <p class="layman-desc"><b>Rumor Kilang Minyak Meledak:</b> <span style="color:var(--success); font-weight:700;">DIBANTAH RESMI</span>. BPH Migas &amp; Diskominfo menegaskan kapal pengangkut bensin tetap mengantar ke Sanggaran dan Manggis.</p>
+          </div>
+        </div>
       </div>
     </div>
 

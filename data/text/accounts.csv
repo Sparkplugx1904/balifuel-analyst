@@ -1,0 +1,20 @@
+platform,nama,url,jenis,tingkat_kredibilitas,status_akses,alasan
+Website,Pertamina Patra Niaga Jatimbalinus,https://pertaminapatraniaga.com,resmi,A,API/RSS,Sumber primer alokasi suplai dan jadwal tanker
+Website,BPH Migas,https://bphmigas.go.id,resmi,A,API/RSS,Regulator kuota dan pengawasan subsidi BBM
+Website,Pemprov Bali / Diskominfos,https://baliprov.go.id,resmi,A,API/RSS,Pemerintah daerah koordinasi stok darurat
+Website,Polda Bali Ditlantas,https://tribratanews.bali.polri.go.id,resmi,A,API/RSS,Pengawasan antrean jalan raya dan penertiban jeriken
+Portal,Antara News Bali,https://bali.antaranews.com,media_terverifikasi,B,API/RSS,Kantor berita nasional liputan lapangan harian
+Portal,Detik Bali,https://www.detik.com/bali,media_terverifikasi,B,API/RSS,Jurnalisme investigasi antrean SPBU Denpasar-Badung
+Portal,Tribun Bali,https://bali.tribunnews.com,media_terverifikasi,B,API/RSS,Liputan real-time kelangkaan per kabupaten
+Portal,Bali Post,https://www.balipost.com,media_terverifikasi,B,API/RSS,Media lokal rujukan kebijakan logistik dan pariwisata
+YouTube,Kompas TV Dewata / Bali,https://youtube.com/@KompasTVDewata,media_terverifikasi,B,API,Liputan video visual antrean panjang dan wawancara warga
+YouTube,NusaBali TV,https://youtube.com/@NusaBaliTV,media_terverifikasi,B,API,Laporan lapangan kondisi SPBU jalur timur dan utara
+Instagram,Info Denpasar,@infodenpasar,komunitas_publik,C,inbox_manual,Akun publik informasi warga Denpasar terbesar (>1M pengikut)
+Instagram,Punapi Bali,@punapibali,komunitas_publik,C,inbox_manual,Akun publik laporan situasi terkini dan video kiriman warga
+Instagram,Info Badung,@infobadung,komunitas_publik,C,inbox_manual,Laporan situasi SPBU Kuta-Canggu-Kuta Selatan
+Instagram,Info Gianyar,@infogianyar_,komunitas_publik,C,inbox_manual,Laporan antrean SPBU jalur timur dan Ubud
+Instagram,Info Tabanan,@infotabanan_id,komunitas_publik,C,inbox_manual,Laporan SPBU jalur arteri logistik Gilimanuk-Denpasar
+Instagram,Info Singaraja News,@infosingaraja_news,komunitas_publik,C,inbox_manual,Laporan SPBU terisolasi di Bali Utara
+Facebook,Suara Warga Bali Publik,https://facebook.com/groups/suarawargabali,komunitas_publik,C,inbox_manual,Grup publik pantauan harga eceran dan SPBU buka
+Telegram,Kanal Pantauan BBM Driver Bali,https://t.me/pantauanbbmbali,komunitas_pengemudi,C,API,Informasi waktu kedatangan truk tangki real-time
+Reddit,r/bali,https://reddit.com/r/bali,forum_publik,C,API,Laporan wisatawan dan ekspatriat terkait sewa motor & bensin

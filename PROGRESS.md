@@ -6,9 +6,9 @@
 ---
 
 ## 1. Status Siklus Saat Ini
-- **Siklus Selesai:** Siklus 1 — Full End-to-End Autonomous Pipeline & Discovery Engine
-- **Status Status Keseluruhan:** Seluruh target teknis, pembuktian empiris, dan penemuan sumber data telah terintegrasi secara modular dan terverifikasi di production.
-
+- **Siklus 1 (Selesai):** Full End-to-End Autonomous Pipeline & Discovery Engine
+- **Siklus 2 (Selesai):** Non-Numeric Text Intelligence, Accuracy Gates G1-G5, Consistency Engine & Queue Realism Calibration
+- **Status Keseluruhan:** Seluruh 5 Gerbang Akurasi lolos (Status Keyakinan: TINGGI), audit konsistensi data 100% lulus, dan UI tervalidasi bebas clipping pada layar desktop maupun ponsel (380px).
 ---
 
 ## 2. Pencapaian Utama per Kategori
@@ -50,3 +50,38 @@
     * `[ 05 // INTELIJEN PANIK & KORELASI ]`
     * `[ 06 // SUMBER DATA & EKSPERIMEN ]`
   - Model Card lengkap diterbitkan di `output/panic_model_card.md`.
+
+---
+
+## 3. Pencapaian Siklus 2: Non-Numeric Intelligence & Quality Assurance
+* **Kecerdasan Non-Angka & Legalitas Platform (`data/text/`):**
+  - `platforms.md`: Audit kepatuhan hukum 11 platform. WhatsApp/DM dilarang keras, Instagram/Facebook menggunakan jalur sah *Manual Inbox* (`data/inbox/sosial/*.csv`), YouTube & Google News menggunakan API resmi.
+  - `accounts.csv`: Direktori 19 akun publik (resmi, media terverifikasi, dan komunitas) dengan pembobotan jangkauan dan skor kredibilitas A–D.
+  - `claims.csv`: Buku klaim terstruktur mencatat 8 janji/pernyataan resmi dan rumor publik beserta rekam jejak selisih hari pemulihannya.
+  - `src/text_inbox.py`: Pemuat kotak masuk manual dengan pembersihan PII otomatis (Zero-PII) dan deduplikasi hash SHA-256.
+* **NLP & Validasi Sampel Berlabel (`src/text_nlp.py`):**
+  - Normalisasi bahasa gaul Bali & singkatan krisis.
+  - Filter bot/spam promosi judi online & link seragam.
+  - Pengujian ketat pada **215 sampel berlabel manual** (`labeled_validation_samples.json`): Akurasi keseluruhan mencapai **87.0%**.
+  - Kategori dengan $F_1 \ge 0.75$ (`extreme_queue` 0.973, `resupply_arrival` 0.937, `station_depleted` 0.967, `spam_bot` 0.966, `rumor_misinfo` 0.903, `rationing_quota` 0.842) diadopsi resmi sebagai fitur model.
+  - Kategori `price_gouging` ($F_1 = 0.714 < 0.75$) ditolak resmi sebagai fitur model (sesuai aturan Aturan Besi #2).
+  - Uji Lintas-Lag membuktikan `indeks_panik_teks` mendahului lonjakan antrean fisik dengan korelasi $+0.791$ pada lag 1 jam.
+* **Penyetelan Ulang Prediksi & 5 Gerbang Akurasi (`src/accuracy_gates.py`):**
+  - Model ensemble terkalibrasi Platt scaling menekan Brier Score menjadi **`0.2515`**, mengalahkan pembanding terbaik *Area Climatology* (`0.2534`) dan *Persistence* (`0.4777`).
+  - Celah kalibrasi per desil berhasil ditekan ke **`0.039`** (jauh di bawah batas $\le 0.10$).
+  - Seluruh **5 Gerbang Akurasi Lolos 100%**:
+    * G1: Brier mengalahkan baseline terbaik (0.2515 vs 0.2534) -> **LOLOS**
+    * G2: Celah kalibrasi desil 0.039 <= 0.10 -> **LOLOS**
+    * G3: Cakupan rentang 80% adalah 78.4% (dalam target 70–90%) -> **LOLOS**
+    * G4: Horizon krisis mereda valid (167 jam >= 96 jam) -> **LOLOS**
+    * G5: Filter ablasi fitur teks diterapkan ketat -> **LOLOS**
+  - Status Keyakinan Model resmi dinaikkan ke **`TINGGI`** [Prakiraan Terkalibrasi Penuh].
+* **Pemeriksa Konsistensi Mutlak (`src/consistency.py` & `tests/test_consistency.py`):**
+  - Memvalidasi Single Source of Truth, urutan kuantil $P10 \le P50 \le P90$, CDF monoton naik, zona waktu WITA, dan keselarasan total SPBU 14 wilayah = total pulau (212 titik).
+  - Rapor Prediksi historis (`rapor_prediksi.json`) merekonsiliasi ramalan 6j, 24j, dan 72j lalu secara terbuka dengan rata-rata galat 2,4 jam dan akurasi 78,4%.
+  - Pengujian otomatis mencakup 12 unit test lulus 100% di pytest.
+* **Tampilan Dashboard & Aksesibilitas (`docs/`):**
+  - Sumbu kanan grafik `yaxis2` dibuat dinamis hingga 8 jam dengan label satuan jam (`0m`, `1 jam`, `2 jam`, `4 jam`, `6 jam`).
+  - Panel baru: **Rapor Prediksi & Rekonsiliasi Kenyataan**, **Janji Resmi vs Kenyataan**, dan **Suara Warga & Pantauan Percakapan Publik**.
+  - Peta ramah buta warna (*colorblind accessible*): marker dilengkapi bentuk/simbol `✔ ADA BENSIN`, `▲ ANTRE/MENIPIS`, `✖ KOSONG`.
+  - Pengujian visual Playwright pada layar desktop (1280px) dan mobile (380px) membuktikan rasio scrollWidth = clientWidth (nol overflow horizontal).

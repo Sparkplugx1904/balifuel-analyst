@@ -164,29 +164,45 @@
       if (fStatus === "empty" && p >= 0.35) return;
 
       let color = "#FF6B5A";
-      if (p >= 0.60) color = "#22C55E";
-      else if (p >= 0.35) color = "#FF8A3D";
+      let statusSymbol = "✖ KOSONG";
+      let statusBadge = "[✖ KOSONG]";
+      let dashStyle = "2, 3";
+      if (p >= 0.60) {
+        color = "#22C55E";
+        statusSymbol = "✔ ADA BENSIN";
+        statusBadge = "[✔ ADA BENSIN]";
+        dashStyle = null;
+      } else if (p >= 0.35) {
+        color = "#FF8A3D";
+        statusSymbol = "▲ ANTRE / MENIPIS";
+        statusBadge = "[▲ ANTRE / MENIPIS]";
+        dashStyle = "4, 2";
+      }
 
       const isSpbu = kind === "spbu";
       const marker = L.circleMarker([lat, lng], {
-        radius: isSpbu ? 7.0 : 4.5,
+        radius: isSpbu ? 7.5 : 4.5,
         fillColor: color,
         color: "#000000",
-        weight: 1.5,
+        weight: 1.8,
         opacity: 1.0,
-        fillOpacity: 0.9
+        fillOpacity: 0.9,
+        dashArray: dashStyle
       });
 
-      const qText = s.queue != null ? `${s.queue} mnt` : "Belum ada laporan";
+      const qText = s.queue != null ? (s.queue >= 60 ? `${Math.floor(s.queue/60)}j ${Math.round(s.queue%60)}m` : `${s.queue} mnt`) : "Belum ada laporan";
       const priceText = s.price ? `Rp ${Number(s.price).toLocaleString()}/L` : (isSpbu ? "Rp 10.000/L (HET)" : "-");
 
       const popupHtml = `
         <div style="font-size:11px; line-height:1.5; min-width:215px; font-family:var(--f-mono);">
-          <div style="font-weight:700; color:var(--accent); font-size:12px; margin-bottom:2px;">${s.name || 'SPBU'}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+            <div style="font-weight:700; color:var(--accent); font-size:12px;">${s.name || 'SPBU'}</div>
+            <span style="font-size:10px; font-weight:700; color:${color};">${statusBadge}</span>
+          </div>
           <div style="color:var(--ink-3); margin-bottom:6px;">${area} \u00B7 [${kind.toUpperCase()}]</div>
           <div style="border-top:1px solid var(--line-strong); padding:6px 0;">
-            <div>Peluang ada bensin: <b style="color:${color}">${Math.round(p * 100)}% (sekitar ${Math.round(p * 10)} dari 10)</b></div>
-            <div>Waktu antre: <b>${s.queue != null ? `${s.queue} menit` : "Belum ada antrean dilaporkan"}</b></div>
+            <div>Peluang ada bensin: <b style="color:${color}">${statusSymbol} · ${Math.round(p * 100)}%</b></div>
+            <div>Waktu antre: <b>${qText}</b></div>
             <div>Harga Pertalite: <b>${priceText}</b></div>
           </div>
           <!-- FORM SURVEY WARGA -->

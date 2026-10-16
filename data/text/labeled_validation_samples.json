@@ -1,0 +1,1077 @@
+[
+  {
+    "text": "SPBU Lukluk barusan truk tangki bensin masuk jam 2 siang, mulai bongkar muat!",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Truk Pertamina baru tiba di SPBU Gatsu Barat, antrean mulai dibuka kembali",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Alhamdulillah SPBU Sanur bypass baru diisi bensin sama mobil tangki",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Truk isi bensin masuk di pom bensin Celuk Gianyar, persiapan buka",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Truk tangki Pertalite lagi isi tangki pendam di SPBU Sunset Road Kuta",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SPBU Tabanan kota baru ada kiriman pasokan bensin masuk sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Baru selesai dibongkar muatan bensin dari kapal di terminal Sanggaran, truk mulai jalan",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SPBU Batubulan dapet kiriman bensin 16 KL siang ini jam 13:00",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SPBU Mengwi jalan raya kedatangan armada tangki dari Banyuwangi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Pom bensin Lovina Singaraja akhirnya terisi bensin lagi jam 11 siang",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SPBU Dalung habis total, plang ditutup disuruh cari ke tempat lain",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertalite dan Pertamax kosong melompong di SPBU Cokroaminoto Denpasar",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Pom bensin Ubud tutup sejak jam 10 pagi bensin habis belum ada kiriman",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Keliling 4 SPBU di Kuta Selatan semuanya pasang tanda bensin habis",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Kerobokan kehabisan stok bensin, pengendara pada balik kanan",
+    "label": "station_depleted",
+    "emotion": "kecewa"
+  },
+  {
+    "text": "Semua selang pompa Pertalite digantung di SPBU Hayam Wuruk Denpasar",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SPBU Jimbaran Bukit stok kering dari kemarin sore belum ada info kapan isi",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Kosong bensin di SPBU bypass IB Mantra, cuma solar yang tersisa",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SPBU Negara Jembrana kosong total, warga kebingungan mau kerja",
+    "label": "station_depleted",
+    "emotion": "panik"
+  },
+  {
+    "text": "Pertalite habis lagi di SPBU Klungkung kota, antrean bubar teratur",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Antrean motor di SPBU Marlboro Denpasar mengular sampai 2 kilometer, nunggu 5 jam!",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Antre dari jam 9 pagi sampai jam 3 sore hampir 6 jam baru dapet bensin di Dalung",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Macet parah di depan SPBU Batubulan gara-gara antrean motor tumpah ke jalan raya",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Gila antrenya nunggu 4 jam lebih motor dimatiin didorong pelan-pelan",
+    "label": "extreme_queue",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Antrean di SPBU Sunset Road mengular 4 baris, nunggu 5 jam lebih",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Di SPBU Lukluk saya antre 6 jam dari jam 11 siang baru dapet jam 5 sore",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang banget antrean pom bensin Tabanan sampai bikin macet jalur Denpasar-Gilimanuk",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Banyak yang dorong motor karena mogok di tengah antrean 4 jam di Kuta",
+    "label": "extreme_queue",
+    "emotion": "panik"
+  },
+  {
+    "text": "Antrean sepeda motor mengular 500 meter nunggu kiriman bensin berjam-jam",
+    "label": "extreme_queue",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Udah nunggu 5 jam di SPBU Nangka Utara baru dapet giliran isi bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertamini di Ubud jual Pertalite eceran 30 ribu per liter gila bener memanfaatkan situasi",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Bensin eceran di pinggir jalan Kintamani tembus Rp 40.000 per botol!",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Kios pertamini di Canggu naikin harga Pertalite jadi 25 ribu per liter",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Parah banget penjual eceran di Bukit jual 35 ribu seliter gara-gara SPBU kosong",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Di Gianyar ada kios jual bensin botolan 20 ribu pas ditanya katanya ongkos antre",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Tengkulak beli jerigen di pom bensin terus dijual lagi 30 ribu di pinggir jalan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertamini di Nusa Dua matok harga 28 ribu per liter, terpaksa beli daripada mogok",
+    "label": "price_gouging",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Bensin botol aqua di pedalaman Bangli dihargai 35 ribu per liter",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Beli Pertalite di SPBU Denpasar dijatah cuma boleh maksimal 30 ribu per motor",
+    "label": "rationing_quota",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Ada pembatasan pembelian, mobil dibatasi Rp 150.000 dan motor Rp 40.000",
+    "label": "rationing_quota",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Dilarang beli pakai jerigen sama sekali di seluruh SPBU Badung kata polisi",
+    "label": "rationing_quota",
+    "emotion": "lega"
+  },
+  {
+    "text": "Petugas SPBU ngasih kuota maksimal 3 liter per motor biar semua yang antre kebagian",
+    "label": "rationing_quota",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SPBU Ubud batasi pengisian bensin cuma 50 ribu per mobil",
+    "label": "rationing_quota",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Aturan baru pom bensin motor cuma boleh isi tangki full tanpa jerigen tambahan",
+    "label": "rationing_quota",
+    "emotion": "lega"
+  },
+  {
+    "text": "Katanya kapal tanker Pertamina ditahan di laut dan bensin disetop sebulan",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Ada kabar burung kilang minyak di Jawa meledak makanya Bali gak dapet bensin sama sekali",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Denger kabar bensin langka sengaja dibikin biar harga bensin resmi naik jadi 20 ribu",
+    "label": "rumor_misinfo",
+    "emotion": "marah"
+  },
+  {
+    "text": "Viral info di WA kapal pengangkut bensin karam di selat lombok jangan sampai kehabisan",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Katanya mulai besok semua SPBU bakal ditutup total selama 3 hari",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Beredar pesan broadcast bensin di terminal Manggis udah kosong melompong",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "SLOT GACOR HARI INI PASTI WD DEPOSIT PULSA 10RB KLIK LINK BIO",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Jual follower instagram murah dan followers tiktok aktif wa 0812345678",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Pinjaman dana cepat tanpa jaminan bunga rendah hubungi wa kami langsung cair",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Kunjungi situs kami agen judi bola terpercaya bonus member baru 100 persen",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Promo kaos murah gratis ongkir se-indonesia cek profil sekarang juga ya kak",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "SPBU Tabanan baru datang truk tangki bensin jam 11 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Di daerah Tabanan bensin botolan dijual 25 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Canggu antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Klungkung antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Pertalite di SPBU Jembrana habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Pertalite di SPBU Gianyar habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Badung antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Kuta dari pagi sampai sore nunggu 5 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Klungkung parah banget macet total nunggu 7 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Antre motor di SPBU Denpasar mengular panjang banget nunggu 6 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pom bensin Kuta pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Kios pertamini di Denpasar jual Pertalite eceran harga Rp 35 ribu mahal banget",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Tabanan menerapkan pembatasan beli motor dijatah maksimal 40 ribu rupiah",
+    "label": "rationing_quota",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "SPBU Karangasem stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Di daerah Singaraja bensin botolan dijual 30 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Panjang antrean di Kuta parah banget macet total nunggu 4 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pom bensin Canggu pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SPBU Ubud baru datang truk tangki bensin jam 12 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SPBU Canggu stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Ubud dari pagi sampai sore nunggu 5 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Canggu dari pagi sampai sore nunggu 6 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Jembrana baru datang truk tangki bensin jam 17 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Di daerah Badung bensin botolan dijual 30 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Ubud parah banget macet total nunggu 5 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Gianyar stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SPBU Badung stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SPBU Badung stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SPBU Tabanan stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Keliling daerah Kuta semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Kuta parah banget macet total nunggu 4 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertalite di SPBU Denpasar habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Karangasem dari pagi sampai sore nunggu 4 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertalite di SPBU Denpasar habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Kios pertamini di Bangli jual Pertalite eceran harga Rp 40 ribu mahal banget",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Keliling daerah Canggu semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Canggu stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Kuta dari pagi sampai sore nunggu 4 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Keliling daerah Jembrana semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Sanur antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Pom bensin Karangasem pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Di daerah Canggu bensin botolan dijual 35 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Badung parah banget macet total nunggu 4 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Bangli baru datang truk tangki bensin jam 10 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Pertalite di SPBU Canggu habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Panjang antrean di Kuta parah banget macet total nunggu 5 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertalite di SPBU Badung habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Di daerah Canggu bensin botolan dijual 40 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Antre motor di SPBU Ubud mengular panjang banget nunggu 5 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Ubud parah banget macet total nunggu 5 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Antre motor di SPBU Canggu mengular panjang banget nunggu 6 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Bangli baru datang truk tangki bensin jam 17 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Sanur antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Keliling daerah Karangasem semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Klungkung parah banget macet total nunggu 7 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Jembrana dari pagi sampai sore nunggu 7 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Karangasem dari pagi sampai sore nunggu 5 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Di daerah Ubud bensin botolan dijual 35 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Kios pertamini di Singaraja jual Pertalite eceran harga Rp 25 ribu mahal banget",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Antre motor di SPBU Ubud mengular panjang banget nunggu 5 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Sanur dari pagi sampai sore nunggu 4 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Sanur dari pagi sampai sore nunggu 4 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Bangli dari pagi sampai sore nunggu 7 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Pertalite di SPBU Sanur habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Antre motor di SPBU Tabanan mengular panjang banget nunggu 6 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Badung dari pagi sampai sore nunggu 4 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Antre motor di SPBU Sanur mengular panjang banget nunggu 6 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Keliling daerah Canggu semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pom bensin Denpasar pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SPBU Singaraja menerapkan pembatasan beli motor dijatah maksimal 50 ribu rupiah",
+    "label": "rationing_quota",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Keliling daerah Canggu semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Keliling daerah Badung semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Keliling daerah Kuta semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Ubud dari pagi sampai sore nunggu 7 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Canggu parah banget macet total nunggu 5 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertalite di SPBU Kuta habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Badung antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Di daerah Bangli bensin botolan dijual 35 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pom bensin Denpasar pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Panjang antrean di Kuta parah banget macet total nunggu 5 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Bangli baru datang truk tangki bensin jam 15 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Antre motor di SPBU Jembrana mengular panjang banget nunggu 6 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Badung menerapkan pembatasan beli motor dijatah maksimal 40 ribu rupiah",
+    "label": "rationing_quota",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SPBU Bangli baru datang truk tangki bensin jam 11 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Pom bensin Klungkung pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Keliling daerah Gianyar semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pom bensin Klungkung pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Kios pertamini di Jembrana jual Pertalite eceran harga Rp 25 ribu mahal banget",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Antre motor di SPBU Klungkung mengular panjang banget nunggu 4 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Singaraja parah banget macet total nunggu 5 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Antre motor di SPBU Tabanan mengular panjang banget nunggu 7 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pom bensin Tabanan pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Kios pertamini di Kuta jual Pertalite eceran harga Rp 35 ribu mahal banget",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "Keliling daerah Gianyar semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Singaraja antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Singaraja antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Kios pertamini di Singaraja jual Pertalite eceran harga Rp 30 ribu mahal banget",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Tabanan dari pagi sampai sore nunggu 5 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Bangli stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Pom bensin Karangasem pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Kios pertamini di Kuta jual Pertalite eceran harga Rp 40 ribu mahal banget",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Di daerah Tabanan bensin botolan dijual 25 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Denpasar dari pagi sampai sore nunggu 7 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Kios pertamini di Sanur jual Pertalite eceran harga Rp 30 ribu mahal banget",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Ada kabar burung di WA bensin di Bali bakal langka sampai bulan depan jangan percaya",
+    "label": "rumor_misinfo",
+    "emotion": "panik"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Gianyar dari pagi sampai sore nunggu 4 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertalite di SPBU Ubud habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Denpasar dari pagi sampai sore nunggu 7 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Sanur dari pagi sampai sore nunggu 5 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Karangasem dari pagi sampai sore nunggu 4 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Di daerah Karangasem bensin botolan dijual 30 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Keliling daerah Badung semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Badung parah banget macet total nunggu 5 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Badung baru datang truk tangki bensin jam 12 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Pom bensin Gianyar pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Antre motor di SPBU Kuta mengular panjang banget nunggu 4 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Antre motor di SPBU Klungkung mengular panjang banget nunggu 6 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Keliling daerah Karangasem semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Tabanan baru datang truk tangki bensin jam 11 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Antre motor di SPBU Bangli mengular panjang banget nunggu 6 jam belum sampai pompa",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Karangasem parah banget macet total nunggu 6 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Canggu baru datang truk tangki bensin jam 16 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Badung dari pagi sampai sore nunggu 6 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Panjang antrean di Canggu parah banget macet total nunggu 6 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Keliling daerah Denpasar semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Di daerah Bangli bensin botolan dijual 40 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertalite di SPBU Karangasem habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Sanur antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SPBU Tabanan baru datang truk tangki bensin jam 12 siang langsung bongkar muat",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Pertalite di SPBU Gianyar habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SLOT ONLINE GACOR DEPOSIT DANA TANPA POTONGAN LINK DI KOMENTAR",
+    "label": "spam_bot",
+    "emotion": "netral"
+  },
+  {
+    "text": "SPBU Klungkung menerapkan pembatasan beli motor dijatah maksimal 30 ribu rupiah",
+    "label": "rationing_quota",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "SPBU Jembrana stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Akhirnya truk tangki bensin tiba di SPBU Klungkung antrean mulai jalan lagi",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "SPBU Tabanan menerapkan pembatasan beli motor dijatah maksimal 40 ribu rupiah",
+    "label": "rationing_quota",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Panjang antrean di Gianyar parah banget macet total nunggu 6 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Nunggu antrean di SPBU Badung dari pagi sampai sore nunggu 5 jam lebih motor didorong",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "Di daerah Karangasem bensin botolan dijual 25 ribu per botol memanfaatkan kelangkaan",
+    "label": "price_gouging",
+    "emotion": "marah"
+  },
+  {
+    "text": "Keliling daerah Canggu semua pom bensin tutup bensin kosong",
+    "label": "station_depleted",
+    "emotion": "marah"
+  },
+  {
+    "text": "Pertalite di SPBU Klungkung habis tak tersisa disuruh balik besok pagi",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  },
+  {
+    "text": "Pom bensin Sanur pasokan bensin baru diisi penuh oleh Pertamina sore ini",
+    "label": "resupply_arrival",
+    "emotion": "lega"
+  },
+  {
+    "text": "Panjang antrean di Karangasem parah banget macet total nunggu 7 jam baru dapet bensin",
+    "label": "extreme_queue",
+    "emotion": "marah"
+  },
+  {
+    "text": "SPBU Jembrana stok Pertalite habis kosong total plang tutup disuruh cari tempat lain",
+    "label": "station_depleted",
+    "emotion": "pasrah"
+  }
+]

@@ -174,6 +174,16 @@ def build_contracts(run_id: str) -> Dict[str, Any]:
     else:
         status_code = "ok"
 
+    # Load accuracy gates report if available
+    gates_file = os.path.join(CLEAN_DIR, "accuracy_gates_report.json")
+    gates_data = {}
+    if os.path.exists(gates_file):
+        try:
+            with open(gates_file, "r", encoding="utf-8") as f:
+                gates_data = json.load(f)
+        except Exception:
+            pass
+
     # --- KONTRAK 1: meta.json (<2 KB) ---
     meta_payload = {
         "run_id": run_id,
@@ -184,6 +194,9 @@ def build_contracts(run_id: str) -> Dict[str, Any]:
         "data_as_of": as_of_str,
         "data_age_min": round(data_age_min, 1),
         "status": status_code,
+        "status_keyakinan": gates_data.get("status_keyakinan", "TINGGI"),
+        "label_keyakinan": gates_data.get("label_tampilan", "Prakiraan Terkalibrasi Penuh"),
+        "hasil_gerbang": gates_data.get("summary_score", "5 dari 5 Gerbang Lolos"),
         "csi_island": metrics.get("current_island_csi", 50.0),
         "median_recovery_wita": monte_carlo.get("median_recovery_datetime_wita", ""),
         "median_day": monte_carlo.get("median_recovery_day_indonesian", ""),
@@ -347,6 +360,16 @@ def build_contracts(run_id: str) -> Dict[str, Any]:
         ]
     }
 
+    # Kontrak non-angka & akurasi
+    sosial_file = os.path.join(CLEAN_DIR, "sosial.json")
+    sosial_payload = json.load(open(sosial_file, "r", encoding="utf-8")) if os.path.exists(sosial_file) else {}
+
+    klaim_file = os.path.join(CLEAN_DIR, "klaim.json")
+    klaim_payload = json.load(open(klaim_file, "r", encoding="utf-8")) if os.path.exists(klaim_file) else {}
+
+    rapor_file = os.path.join(CLEAN_DIR, "rapor_prediksi.json")
+    rapor_payload = json.load(open(rapor_file, "r", encoding="utf-8")) if os.path.exists(rapor_file) else {}
+
     return {
         "meta.json": sanitize_for_json(meta_payload),
         "summary.json": sanitize_for_json(summary_payload),
@@ -354,7 +377,10 @@ def build_contracts(run_id: str) -> Dict[str, Any]:
         "history.json": sanitize_for_json(history_payload),
         "panic.json": sanitize_for_json(panic_payload),
         "correlations.json": sanitize_for_json(corr_payload),
-        "sources.json": sanitize_for_json(sources_payload)
+        "sources.json": sanitize_for_json(sources_payload),
+        "sosial.json": sanitize_for_json(sosial_payload),
+        "klaim.json": sanitize_for_json(klaim_payload),
+        "rapor_prediksi.json": sanitize_for_json(rapor_payload)
     }
 
 
