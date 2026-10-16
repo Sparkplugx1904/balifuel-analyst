@@ -1,0 +1,14 @@
+target,fitur,pearson_r,pearson_p,spearman_rho,spearman_p,mi_score,fdr_significant
+T2_panic_buying,composite_panic_demand_index,1.0,0.0,1.0,0.0,6.0,True
+T2_panic_buying,neighbor_density_3km,0.724,6.848486301259047e-170,0.7226,5.763025527041155e-169,1.0393,True
+T2_panic_buying,is_arterial_bypass,0.7159,1.994882028656451e-164,0.6596,3.9401068016617654e-131,0.6153,True
+T2_panic_buying,is_24_jam,0.0723,0.019632033095716726,0.0699,0.024007383283837846,0.0,True
+T2_panic_buying,observed_queue_mins,0.055,0.07615541714337516,0.0611,0.04860093071857255,0.0861,False
+T2_panic_buying,is_spbu,0.0371,0.231846608811941,0.0485,0.11763723797628532,0.0834,False
+T2_panic_buying,nozzle_count,0.0218,0.48113160616170886,0.0148,0.6325392962695345,0.1188,False
+T2_panic_buying,spatial_lag_empty_ratio_3km,-0.1197,0.00010807841105055907,-0.1036,0.0008129060308005737,0.5155,True
+T2_panic_buying,min_dist_tbbm_km,-0.4661,2.5302091603049526e-57,-0.5442,2.2477782357604195e-81,0.9039,True
+T2_panic_buying,resupply_travel_hours,-0.466,2.7315458646448403e-57,-0.5444,1.872479098729821e-81,0.9403,True
+T2_panic_buying,reports_count_3h,,,,,0.0,False
+T2_panic_buying,marine_wave_height_m,,,,,0.0,False
+T2_panic_buying,panic_news_ratio,,,,,0.0,False

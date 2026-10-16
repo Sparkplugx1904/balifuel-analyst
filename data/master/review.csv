@@ -1,0 +1,17 @@
+id_kandidat,nama_kandidat,id_pembanding,nama_pembanding,jarak_meter,kemiripan_nama,alasan_ambigu
+129,SPBU Pertamina Nusa Dua,BALI-SPBU-1067,SPBU Pertamina 54.803.27,199.6,0.638,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+1091,SGB ( Sistem Ganti Baterai ) Pura Demak,BALI-SPBU-1016,SPBU 5480147 Pertamina Pura Demak,186.9,0.528,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+3172,Pertamini,BALI-SPBU-1043,Pertamina 54.801.36,150.7,0.571,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+3181,Pertamini,BALI-SPBU-1043,Pertamina 54.801.36,211.7,0.571,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+3255,Pertamini,BALI-SPBU-1086,SPBU Pertamina 54.805.25,143.7,0.485,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+3355,Pertamini,BALI-SPBU-1062,SPBU Pertamina 54.803.19,210.1,0.485,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+3363,Pertamini,BALI-SPBU-1063,Pertamina Gas Station 54.803.10,189.8,0.45,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+3373,Pertamini,BALI-SPBU-1036,Pertamina Petrol Station,141.6,0.545,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+3401,Pertamini,BALI-SPBU-1052,SPBU Pertamina 54.805.24,223.7,0.485,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+OSM-22,SPBU Dalung,BALI-SPBU-1069,SPBU 54.803.22 DALUNG Pertamina,4.0,0.524,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+OSM-45,SPBU Padangbai,BALI-SPBU-1072,SPBU MANGGIS 54.8.8.11,14.2,0.5,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+OSM-63,SPBU Blahbatuh,BALI-SPBU-1088,SPBU Sakah,6.1,0.583,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+OSM-65,SPBU Seminyak,BALI-SPBU-1016,SPBU 5480147 Pertamina Pura Demak,13.5,0.478,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+OSM-79,SPBU Sukawati,BALI-SPBU-1087,"SPBU Pertamina 54.805.26 Sukawati, Gianyar",7.1,0.473,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+OSM-96,SPBU Seminyak,BALI-SPBU-1016,SPBU 5480147 Pertamina Pura Demak,151.4,0.478,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada
+OSM-105,SPBU Kintamani,BALI-SPBU-1004,SPBU Pertamina 54.806.02,7.1,0.474,Jarak dekat (150-250m) dengan nama agak mirip tapi kode tidak ada

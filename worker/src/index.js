@@ -12,6 +12,9 @@ const KEY_WHITELIST = new Set([
   "summary.json",
   "stations.json",
   "history.json",
+  "panic.json",
+  "correlations.json",
+  "sources.json",
   "balifuel.db"
 ]);
 

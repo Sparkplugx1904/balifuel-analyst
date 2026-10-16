@@ -1,0 +1,14 @@
+target,fitur,pearson_r,pearson_p,spearman_rho,spearman_p,mi_score,fdr_significant
+T1_kehabisan,is_spbu,,,,,0.0,False
+T1_kehabisan,is_24_jam,,,,,0.0,False
+T1_kehabisan,nozzle_count,,,,,0.0,False
+T1_kehabisan,min_dist_tbbm_km,,,,,0.0,False
+T1_kehabisan,is_arterial_bypass,,,,,0.0,False
+T1_kehabisan,neighbor_density_3km,,,,,0.0,False
+T1_kehabisan,spatial_lag_empty_ratio_3km,,,,,0.0,False
+T1_kehabisan,observed_queue_mins,,,,,0.0,False
+T1_kehabisan,reports_count_3h,,,,,0.0,False
+T1_kehabisan,resupply_travel_hours,,,,,0.0,False
+T1_kehabisan,marine_wave_height_m,,,,,0.0,False
+T1_kehabisan,composite_panic_demand_index,,,,,0.0,False
+T1_kehabisan,panic_news_ratio,,,,,0.0,False

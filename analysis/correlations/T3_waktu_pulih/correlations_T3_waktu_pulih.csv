@@ -1,0 +1,14 @@
+target,fitur,pearson_r,pearson_p,spearman_rho,spearman_p,mi_score,fdr_significant
+T3_waktu_pulih,resupply_travel_hours,1.0,0.0,1.0,0.0,8.0,True
+T3_waktu_pulih,min_dist_tbbm_km,1.0,0.0,1.0,0.0,7.3013,True
+T3_waktu_pulih,spatial_lag_empty_ratio_3km,0.1135,0.0002415387898599616,0.2391,5.135602722784557e-15,0.5276,True
+T3_waktu_pulih,nozzle_count,-0.0612,0.048163168145011065,-0.0889,0.004077598254474172,0.0627,False
+T3_waktu_pulih,is_spbu,-0.0653,0.03500396781279446,-0.1183,0.00012974110068422626,0.0397,False
+T3_waktu_pulih,observed_queue_mins,-0.0684,0.027334784368941843,-0.1338,1.4675658564954615e-05,0.0487,True
+T3_waktu_pulih,is_24_jam,-0.0915,0.003122059577598177,-0.1469,1.904663739527924e-06,0.0,True
+T3_waktu_pulih,composite_panic_demand_index,-0.466,2.7315458646448403e-57,-0.5444,1.872479098729821e-81,0.9403,True
+T3_waktu_pulih,neighbor_density_3km,-0.5104,3.309288811277057e-70,-0.6515,6.721071935627825e-127,0.8895,True
+T3_waktu_pulih,is_arterial_bypass,-0.5437,3.2444653556465876e-81,-0.7476,4.342875127365867e-187,0.8356,True
+T3_waktu_pulih,reports_count_3h,,,,,0.0,False
+T3_waktu_pulih,marine_wave_height_m,,,,,0.0,False
+T3_waktu_pulih,panic_news_ratio,,,,,0.0,False
