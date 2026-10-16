@@ -100,15 +100,21 @@
 
         if (meta.run_id !== CURRENT_RUN_ID) {
           CURRENT_RUN_ID = meta.run_id;
-          const [summary, stations] = await Promise.all([
+          const [summary, stations, panic, correlations, sources] = await Promise.all([
             fetchJson(`${feed}/latest/summary.json`),
-            fetchJson(`${feed}/latest/stations.json`)
+            fetchJson(`${feed}/latest/stations.json`),
+            fetchJson(`${feed}/latest/panic.json`).catch(() => null),
+            fetchJson(`${feed}/latest/correlations.json`).catch(() => null),
+            fetchJson(`${feed}/latest/sources.json`).catch(() => null)
           ]);
           DATA_CACHE = {
             meta,
             summary,
             stations: stations.stations || [],
-            hours:    stations.hours    || []
+            hours:    stations.hours    || [],
+            panic:    panic,
+            correlations: correlations,
+            sources:  sources
           };
           window.dispatchEvent(new CustomEvent("dataupdated", { detail: DATA_CACHE }));
         }

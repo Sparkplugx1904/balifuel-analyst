@@ -63,15 +63,22 @@ def run_pipeline(
     phase_timings = {}
 
     # -------------------------------------------------------------
-    # FASE 1: KOLEKSI DATA (SNAPSHOT & HISTORY BOOTSTRAP)
+    # FASE 1: KOLEKSI DATA (SNAPSHOT, HISTORY & 6 COLLECTORS MANDIRI)
     # -------------------------------------------------------------
     t0 = time.time()
     print("\n[PHASE 1/7] Running Data Collection & History Bootstrap...")
     from src.collector import collect_snapshot
     res_collect = collect_snapshot()
+    
+    # Jalankan 6 collector mandiri (Marine weather, OSRM routing, News RSS, Calendar, Macro, OSM)
+    try:
+        from src.collectors.collector_manager import run_all_collectors
+        run_all_collectors()
+    except Exception as coll_err:
+        print(f"-> Collectors warning (degraded): {coll_err}")
+
     phase_timings["1_collector"] = round(time.time() - t0, 2)
     print(f"-> Phase 1 completed in {phase_timings['1_collector']}s (Reports: {res_collect.get('collected', {}).get('reports_count')})")
-
     # -------------------------------------------------------------
     # FASE 2: PEMBERSIHAN DATA & IMPUTASI SPASIAL
     # -------------------------------------------------------------
@@ -89,9 +96,16 @@ def run_pipeline(
     print("\n[PHASE 3/7] Computing Crisis Severity Index & 14 Area Metrics...")
     from src.metrics import compute_crisis_metrics
     res_metrics = compute_crisis_metrics()
+
+    # Rekayasa Fitur Spasial-Temporal (32 Fitur)
+    try:
+        from src.feature_engineering import build_feature_matrix
+        build_feature_matrix()
+    except Exception as feat_err:
+        print(f"-> Feature engineering warning: {feat_err}")
+
     phase_timings["3_metrics"] = round(time.time() - t0, 2)
     print(f"-> Phase 3 completed in {phase_timings['3_metrics']}s (Island CSI: {res_metrics.get('current_island_csi')})")
-
     # -------------------------------------------------------------
     # FASE 4: PEMODELAN MARKOV & SURVIVAL (SETIAP 6 JAM)
     # -------------------------------------------------------------
