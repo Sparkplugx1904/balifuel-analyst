@@ -15,22 +15,13 @@
   function updateEmptyState() {
     const emptyCard = document.getElementById("forecastEmptyState");
     const gridContainer = document.getElementById("spbuGridContainer");
-    const pill = document.getElementById("pillForecastBtn");
-    const label = document.getElementById("pillForecastLabel");
 
     if (!CURRENT_STATION) {
       if (emptyCard) emptyCard.style.display = "block";
       if (gridContainer) gridContainer.style.display = "none";
-      if (pill) pill.classList.add("locked");
-      if (label) label.textContent = "\uD83D\uDD12 Pilih di Peta";
     } else {
       if (emptyCard) emptyCard.style.display = "none";
       if (gridContainer) gridContainer.style.display = "grid";
-      if (pill) pill.classList.remove("locked");
-      if (label) {
-        const shortName = CURRENT_STATION.name ? CURRENT_STATION.name.slice(0, 18) : "SPBU Terpilih";
-        label.textContent = `\uD83D\uDCCD ${shortName}`;
-      }
     }
   }
 

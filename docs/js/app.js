@@ -51,7 +51,11 @@
         const match = stList.find(s => s.id === h.id);
         if (match && window.BaliCharts && window.BaliCharts.selectStation) {
           window.BaliCharts.selectStation(match, hours);
-          window.switchTab('tabForecast');
+          window.switchTab('tabMap');
+          setTimeout(() => {
+            const fc = document.getElementById("tabForecast");
+            if (fc) fc.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 150);
         }
       };
       tr.innerHTML = `
@@ -108,13 +112,13 @@
 
   // Global Tab Switcher dengan Validasi Dependensi
   window.switchTab = function (tabId) {
-    // Tab Forecast mewajibkan pemilihan SPBU di Peta terlebih dahulu
+    // Jika ada yang memanggil tabForecast, arahkan ke tabMap dan gulir ke inspektor
     if (tabId === 'tabForecast') {
-      const selectedStation = window.BaliCharts ? window.BaliCharts.getSelectedStation() : null;
-      if (!selectedStation) {
-        showToast("⚠️ Silakan pilih salah satu SPBU di Peta Real-Time (Tab 01) terlebih dahulu untuk melihat prediksi 72 jam.");
-        tabId = 'tabMap';
-      }
+      tabId = 'tabMap';
+      setTimeout(() => {
+        const fc = document.getElementById("tabForecast");
+        if (fc) fc.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
     }
 
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
@@ -126,17 +130,17 @@
     const btn = Array.from(document.querySelectorAll('.user-pill')).find(b => b.getAttribute('onclick')?.includes(tabId));
     if (btn) btn.classList.add('active');
 
-    if (tabId === 'tabMap' && window.BaliMap) {
-      window.BaliMap.invalidateSize();
+    if (tabId === 'tabMap') {
+      if (window.BaliMap) window.BaliMap.invalidateSize();
+      if (typeof Plotly !== "undefined" && window.BaliCharts && window.BaliCharts.getSelectedStation()) {
+        Plotly.relayout('spbuPlotlyChart', { autosize: true });
+      }
     }
     if (typeof Plotly !== "undefined") {
       if (tabId === 'tabAreas') Plotly.relayout('areaPlotlyChart', { autosize: true });
       if (tabId === 'tabSimulation') {
         Plotly.relayout('fanPlotlyChart', { autosize: true });
         Plotly.relayout('histPlotlyChart', { autosize: true });
-      }
-      if (tabId === 'tabForecast' && window.BaliCharts && window.BaliCharts.getSelectedStation()) {
-        Plotly.relayout('spbuPlotlyChart', { autosize: true });
       }
     }
   };
@@ -161,11 +165,14 @@
 
       if (match && window.BaliCharts && window.BaliCharts.selectStation) {
         window.BaliCharts.selectStation(match, []);
-        window.switchTab('tabForecast');
+        window.switchTab('tabMap');
+        setTimeout(() => {
+          const fc = document.getElementById("tabForecast");
+          if (fc) fc.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
       }
     });
   }
-
   // Listen to dataupdated event from api.js
   window.addEventListener("dataupdated", (e) => {
     LATEST_DATA = e.detail;

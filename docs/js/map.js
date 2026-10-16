@@ -153,6 +153,11 @@
       `;
 
       marker.bindPopup(popupHtml);
+      marker.on("click", () => {
+        if (window.BaliCharts && window.BaliCharts.selectStation) {
+          window.BaliCharts.selectStation(s, HOURS_DATA);
+        }
+      });
       marker.on("popupopen", () => {
         const btn = document.getElementById(`popBtn_${s.id}`);
         if (btn) {
@@ -160,8 +165,9 @@
             if (window.BaliCharts && window.BaliCharts.selectStation) {
               window.BaliCharts.selectStation(s, HOURS_DATA);
             }
-            if (window.switchTab) {
-              window.switchTab('tabForecast');
+            const fc = document.getElementById("tabForecast");
+            if (fc) {
+              fc.scrollIntoView({ behavior: "smooth", block: "start" });
             }
           };
         }

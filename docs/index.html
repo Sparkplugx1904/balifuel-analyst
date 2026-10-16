@@ -117,11 +117,10 @@
     <!-- TAB / USER PILLS BAR -->
     <nav class="user-pills-bar">
       <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA REAL-TIME (LEAFLET) ] <small id="pillCount">876 Titik</small></button>
-      <button id="pillForecastBtn" class="user-pill locked" onclick="switchTab('tabForecast')">[ 02 // PREDIKSI 72 JAM ] <small id="pillForecastLabel">&#x1F512; Pilih di Peta</small></button>
-      <button class="user-pill" onclick="switchTab('tabAreas')">[ 03 // 14 AREA MAKRO ] <small>Analisis CSI</small></button>
-      <button class="user-pill" onclick="switchTab('tabSimulation')">[ 04 // SIMULASI MONTE CARLO ] <small>Fan Chart</small></button>
-      <button class="user-pill" onclick="switchTab('tabHotspots')">[ 05 // 20 HOTSPOT RENTAN ] <small>Ranking</small></button>
-      <button class="user-pill" onclick="switchTab('tabGuide')">[ 06 // PANDUAN WARGA & TIMELINE ] <small>Praktis</small></button>
+      <button class="user-pill" onclick="switchTab('tabAreas')">[ 02 // 14 AREA MAKRO ] <small>Analisis CSI</small></button>
+      <button class="user-pill" onclick="switchTab('tabSimulation')">[ 03 // SIMULASI MONTE CARLO ] <small>Fan Chart</small></button>
+      <button class="user-pill" onclick="switchTab('tabHotspots')">[ 04 // 20 HOTSPOT RENTAN ] <small>Ranking</small></button>
+      <button class="user-pill" onclick="switchTab('tabGuide')">[ 05 // PANDUAN WARGA & TIMELINE ] <small>Praktis</small></button>
     </nav>
 
     <!-- TAB 1: PETA LEAFLET -->
@@ -176,79 +175,78 @@
       </div>
 
       <div id="map"></div>
+
+      <!-- INSPEKTOR PREDIKSI 72 JAM PER SPBU (DI BAWAH PETA) -->
+      <div id="tabForecast" style="margin-top:28px;">
+        <div class="section-header">
+          <h2 class="section-title">
+            INSPEKTOR PREDIKSI 72 JAM PER SPBU (MARKOV KERNEL)
+            <span class="tip-badge"><span class="tip-popover">Model Markov memperhitungkan jam sibuk komuter, kapasitas tangki pendam, dan jarak depot.</span>?</span>
+          </h2>
+          <p class="section-desc">Pilih stasiun pada peta di atas atau gunakan pencarian untuk melihat probabilitas ketersediaan BBM, pita ketidakpastian 80%, dan estimasi antrean.</p>
+        </div>
+
+        <div class="section-note">
+          <span class="section-note-icon">ℹ️</span>
+          <div>
+            <b>Panduan Membaca Grafik 72 Jam:</b>
+            <p>• <b>Garis Oranye (P50):</b> Median peluang ketersediaan stok (% ada BBM) jam demi jam selama 3 hari ke depan.</p>
+            <p>• <b>Pita Arsiran (P10 - P90):</b> Pita ketidakpastian 80%. Semakin sempit pita, semakin tinggi kepastian stok stabil.</p>
+            <p>• <b>Garis Putus-putus Abu-abu:</b> Estimasi waktu antrean dalam hitungan menit (sumbu kanan). Antrean akan melandai seiring pulihnya stok tangki pendam.</p>
+          </div>
+        </div>
+
+        <!-- EMPTY STATE KETIKA BELUM ADA SPBU DIPILIH -->
+        <div id="forecastEmptyState" class="terminal-card" style="text-align:center; padding:44px 20px; border:1px dashed var(--line-strong); margin-top:14px;">
+          <div style="font-size:32px; margin-bottom:12px;">🗺️ ➔ 📈</div>
+          <h3 style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:8px;">
+            PILIH SALAH SATU SPBU PADA PETA DI ATAS
+          </h3>
+          <p style="font-size:12px; color:var(--ink-2); max-width:540px; margin:0 auto 20px; line-height:1.6;">
+            Grafik 72 jam adalah proyeksi stok spesifik per <b>masing-masing SPBU</b> (bukan nilai rata-rata agregat pulau). Silakan klik salah satu penanda SPBU pada peta di atas dan pilih <b>[ INSPEKSI GRAFIK 72 JAM ]</b>, atau gunakan kotak pencarian di bilah navigasi atas.
+          </p>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('map').scrollIntoView({behavior:'smooth', block:'center'})">
+            ⬆ Ke Peta di Atas untuk Memilih Titik
+          </button>
+        </div>
+
+        <div id="spbuGridContainer" class="spbu-grid" style="display:none; margin-top:14px;">
+          <div class="spec-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span id="cardBadgeKind" style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:var(--r-sm); background:var(--accent-soft); color:var(--accent);">SPBU PERTAMINA</span>
+              <span id="cardCode" style="font-size:11px; color:var(--ink-3);">-</span>
+            </div>
+            <h3 id="cardName" style="font-size:15px; font-weight:700; margin-bottom:4px; color:var(--ink);">Pilih SPBU</h3>
+            <p id="cardAddress" style="font-size:11px; color:var(--ink-2); margin-bottom:14px;">-</p>
+
+            <div class="spec-row">
+              <span class="spec-label">Peluang Stok Saat Ini: <span class="tip-badge"><span class="tip-popover">Probabilitas ketersediaan BBM di nosel saat ini berdasarkan laporan komunitas terkini.</span>?</span></span>
+              <span class="spec-val" id="cardProb" style="color:var(--success);">-</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Estimasi Waktu Antre: <span class="tip-badge"><span class="tip-popover">Waktu antre kendaraan roda dua dan roda empat sebelum dilayani petugas nosel.</span>?</span></span>
+              <span class="spec-val" id="cardQueue" style="color:var(--warning);">-</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Jarak ke TBBM Suplai: <span class="tip-badge"><span class="tip-popover">Jarak tempuh armada mobil tangki dari terminal pasokan terdekat (Sanggaran atau Manggis).</span>?</span></span>
+              <span class="spec-val" id="cardDist">-</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Prediksi Pulih Normal: <span class="tip-badge"><span class="tip-popover">Waktu saat peluang ketersediaan mencapai &ge;80% secara konsisten selama minimal 12 jam.</span>?</span></span>
+              <span class="spec-val" id="cardRecovery" style="color:var(--accent);">-</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Harga Pertalite: <span class="tip-badge"><span class="tip-popover">Harga eceran terpantau (HET resmi Rp 10.000 untuk SPBU, Pertamini bervariasi).</span>?</span></span>
+              <span class="spec-val" id="cardPrice">-</span>
+            </div>
+          </div>
+
+          <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:12px;">
+            <div id="spbuPlotlyChart" style="height: 380px; width:100%;"></div>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <!-- TAB 2: PREDIKSI PER SPBU -->
-    <div id="tabForecast" class="tab-content dash-section" style="display:none;">
-      <div class="section-header">
-        <h2 class="section-title">
-          INSPEKTOR PREDIKSI 72 JAM PER SPBU (MARKOV KERNEL)
-          <span class="tip-badge"><span class="tip-popover">Model Markov memperhitungkan jam sibuk komuter, kapasitas tangki pendam, dan jarak depot.</span>?</span>
-        </h2>
-        <p class="section-desc">Pilih stasiun di peta atau gunakan pencarian untuk melihat probabilitas stok, pita ketidakpastian 80%, dan estimasi antrean.</p>
-      </div>
-
-      <div class="section-note">
-        <span class="section-note-icon">ℹ️</span>
-        <div>
-          <b>Panduan Membaca Grafik 72 Jam:</b>
-          <p>• <b>Garis Oranye (P50):</b> Median peluang ketersediaan stok (% ada BBM) jam demi jam selama 3 hari ke depan.</p>
-          <p>• <b>Pita Arsiran (P10 - P90):</b> Pita ketidakpastian 80%. Semakin sempit pita, semakin tinggi kepastian stok stabil.</p>
-          <p>• <b>Garis Putus-putus Abu-abu:</b> Estimasi waktu antrean dalam hitungan menit (sumbu kanan). Antrean akan melandai seiring pulihnya stok tangki pendam.</p>
-        </div>
-      </div>
-
-      <!-- EMPTY STATE JIKA BELUM MEMILIH SPBU -->
-      <div id="forecastEmptyState" class="terminal-card" style="text-align:center; padding:44px 20px; border:1px dashed var(--line-strong); margin-top:14px;">
-        <div style="font-size:32px; margin-bottom:12px;">🗺️ ➔ 📈</div>
-        <h3 style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:8px;">
-          PILIH SPBU PADA PETA TERLEBIH DAHULU
-        </h3>
-        <p style="font-size:12px; color:var(--ink-2); max-width:540px; margin:0 auto 20px; line-height:1.6;">
-          Grafik 72 jam adalah kurva proyeksi stok spesifik per <b>masing-masing SPBU</b> (bukan nilai rata-rata agregat pulau). Silakan buka <b>Tab 01 // PETA REAL-TIME</b> lalu klik salah satu penanda SPBU dan pilih <b>[ INSPEKSI GRAFIK 72 JAM ]</b>, atau gunakan kotak pencarian di bilah navigasi atas.
-        </p>
-        <button class="btn btn-primary" onclick="switchTab('tabMap')">
-          ⟵ Buka Tab 01 (Peta Real-Time) untuk Memilih SPBU
-        </button>
-      </div>
-
-      <div id="spbuGridContainer" class="spbu-grid" style="display:none;">
-        <div class="spec-box">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <span id="cardBadgeKind" style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:var(--r-sm); background:var(--accent-soft); color:var(--accent);">SPBU PERTAMINA</span>
-            <span id="cardCode" style="font-size:11px; color:var(--ink-3);">-</span>
-          </div>
-          <h3 id="cardName" style="font-size:15px; font-weight:700; margin-bottom:4px; color:var(--ink);">Pilih SPBU</h3>
-          <p id="cardAddress" style="font-size:11px; color:var(--ink-2); margin-bottom:14px;">-</p>
-
-          <div class="spec-row">
-            <span class="spec-label">Peluang Stok Saat Ini: <span class="tip-badge"><span class="tip-popover">Probabilitas ketersediaan BBM di nosel saat ini berdasarkan laporan komunitas terkini.</span>?</span></span>
-            <span class="spec-val" id="cardProb" style="color:var(--success);">-</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-label">Estimasi Waktu Antre: <span class="tip-badge"><span class="tip-popover">Waktu antre kendaraan roda dua dan roda empat sebelum dilayani petugas nosel.</span>?</span></span>
-            <span class="spec-val" id="cardQueue" style="color:var(--warning);">-</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-label">Jarak ke TBBM Suplai: <span class="tip-badge"><span class="tip-popover">Jarak tempuh armada mobil tangki dari terminal pasokan terdekat (Sanggaran atau Manggis).</span>?</span></span>
-            <span class="spec-val" id="cardDist">-</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-label">Prediksi Pulih Normal: <span class="tip-badge"><span class="tip-popover">Waktu saat peluang ketersediaan mencapai &ge;80% secara konsisten selama minimal 12 jam.</span>?</span></span>
-            <span class="spec-val" id="cardRecovery" style="color:var(--accent);">-</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-label">Harga Pertalite: <span class="tip-badge"><span class="tip-popover">Harga eceran terpantau (HET resmi Rp 10.000 untuk SPBU, Pertamini bervariasi).</span>?</span></span>
-            <span class="spec-val" id="cardPrice">-</span>
-          </div>
-        </div>
-
-        <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:12px;">
-          <div id="spbuPlotlyChart" style="height: 380px; width:100%;"></div>
-        </div>
-      </div>
-    </div>
-
     <!-- TAB 3: 14 AREA MAKRO -->
     <div id="tabAreas" class="tab-content dash-section" style="display:none;">
       <div class="section-header">
