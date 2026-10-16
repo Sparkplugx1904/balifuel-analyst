@@ -17,14 +17,18 @@
     const hdrRecovery = document.getElementById("hdrRecovery");
     const hdrEmpty = document.getElementById("hdrEmptyPct");
     const boxMedian = document.getElementById("boxMedianDate");
+    const boxStockStabil = document.getElementById("boxStockStabilDate");
     const boxCi50 = document.getElementById("boxCi50");
     const boxCi80 = document.getElementById("boxCi80");
     const pillCount = document.getElementById("pillCount");
+
+    const stockStabilTxt = meta.stock_stabilization_wita || sum.monte_carlo?.stock_stabilization?.median_recovery_datetime_wita || "22 Okt 2026, 09:00 WITA";
 
     if (hdrStatus) hdrStatus.textContent = `${statusTxt.toUpperCase()} (Skor: ${Math.round(csiVal)}/100)`;
     if (hdrRecovery) hdrRecovery.textContent = recoveryTxt;
     if (hdrEmpty) hdrEmpty.textContent = `${emptyPct}%`;
     if (boxMedian) boxMedian.textContent = recoveryTxt;
+    if (boxStockStabil) boxStockStabil.textContent = stockStabilTxt;
     if (pillCount) pillCount.textContent = `${stList.length} Titik`;
 
     if (meta.ci50 && meta.ci50.length >= 2 && boxCi50) {
@@ -49,9 +53,34 @@
     if (elGougedKios) elGougedKios.textContent = `${gougedCnt} Kios`;
     if (elGougedDesc) elGougedDesc.textContent = `${gougedCnt} kios (${gougedPct}%)`;
 
-    // Render Hotspots & Timeline
+    // Render Hotspots, Timeline & Area Table
+    const areas = sum.areas || sum.metrics?.area_metrics || [];
+    const timeline = sum.timeline || sum.context?.crisis_timeline || sum.context?.timeline || [];
     renderHotspots(sum.hotspots || [], stList, data.hours || []);
-    renderTimeline(sum.timeline || []);
+    renderTimeline(timeline);
+    renderAreaTable(areas);
+  }
+
+  function renderAreaTable(areas) {
+    const atb = document.getElementById("areaTableBody");
+    if (!atb || !areas || areas.length === 0) return;
+    atb.innerHTML = "";
+
+    areas.forEach(a => {
+      const tr = document.createElement("tr");
+      const statusColor = a.status === 'Kritis' ? 'var(--danger)' : (a.status === 'Waspada' ? 'var(--warning)' : 'var(--success)');
+      tr.innerHTML = `
+        <td style="font-weight:600; color:var(--ink);">${a.area}</td>
+        <td style="font-weight:700; color:${a.area_csi >= 65 ? 'var(--danger)' : (a.area_csi >= 45 ? 'var(--warning)' : 'var(--success)')};">${a.area_csi != null ? a.area_csi : '-'}</td>
+        <td>${a.spbu_count != null ? a.spbu_count : '-'}</td>
+        <td>${a.pertamini_count != null ? a.pertamini_count : '-'}</td>
+        <td style="color:${a.pct_empty_stations >= 40 ? 'var(--danger)' : 'var(--ink)'}; font-weight:600;">${a.pct_empty_stations != null ? a.pct_empty_stations + '%' : '-'}</td>
+        <td>${a.avg_queue_minutes != null ? Math.round(a.avg_queue_minutes) + ' mnt' : '-'}</td>
+        <td>${a.price_gouging_rate_pct != null ? a.price_gouging_rate_pct + '% (' + (a.price_gouged_pertamini_count || 0) + ' kios)' : '-'}</td>
+        <td><span style="font-size:10px; font-weight:700; color:${statusColor};">[${(a.status || 'NORMAL').toUpperCase()}]</span></td>
+      `;
+      atb.appendChild(tr);
+    });
   }
   function renderHotspots(hotspots, stList, hours) {
     const htb = document.getElementById("hotspotTableBody");
@@ -124,15 +153,24 @@
   }
   window.showToast = showToast;
 
-  // Global Tab Switcher dengan Validasi Dependensi
+  // Global Tab Switcher dengan Validasi Dependensi & Kompatibilitas Legacy
   window.switchTab = function (tabId) {
-    // Jika ada yang memanggil tabForecast, arahkan ke tabMap dan gulir ke inspektor
-    if (tabId === 'tabForecast') {
-      tabId = 'tabMap';
-      setTimeout(() => {
-        const fc = document.getElementById("tabForecast");
-        if (fc) fc.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
+    const tabMapping = {
+      'tabForecast':   { targetTab: 'tabMap', scrollTarget: 'tabForecast' },
+      'tabHotspots':   { targetTab: 'tabMap', scrollTarget: 'tabHotspots' },
+      'tabAreas':      { targetTab: 'tabAnalytics', scrollTarget: 'secAreas' },
+      'tabSimulation': { targetTab: 'tabAnalytics', scrollTarget: 'secSimulation' },
+      'tabPanicCorr':  { targetTab: 'tabGuide', scrollTarget: 'secPanicCorr' },
+      'tabSourcesExp': { targetTab: 'tabSources', scrollTarget: 'tabSources' },
+      'tabAnalytics':  { targetTab: 'tabAnalytics', scrollTarget: null },
+      'tabGuide':      { targetTab: 'tabGuide', scrollTarget: null },
+      'tabSources':    { targetTab: 'tabSources', scrollTarget: null }
+    };
+
+    let scrollTargetId = null;
+    if (tabMapping[tabId]) {
+      scrollTargetId = tabMapping[tabId].scrollTarget;
+      tabId = tabMapping[tabId].targetTab;
     }
 
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
@@ -146,15 +184,31 @@
 
     if (tabId === 'tabMap') {
       if (window.BaliMap) window.BaliMap.invalidateSize();
-      if (typeof Plotly !== "undefined" && window.BaliCharts && window.BaliCharts.getSelectedStation()) {
+      const el = document.getElementById('spbuPlotlyChart');
+      if (typeof Plotly !== "undefined" && el && el.data && window.BaliCharts && window.BaliCharts.getSelectedStation()) {
         Plotly.relayout('spbuPlotlyChart', { autosize: true });
       }
     }
     if (typeof Plotly !== "undefined") {
-      if (tabId === 'tabAreas') Plotly.relayout('areaPlotlyChart', { autosize: true });
-      if (tabId === 'tabSimulation') {
-        Plotly.relayout('fanPlotlyChart', { autosize: true });
-        Plotly.relayout('histPlotlyChart', { autosize: true });
+      if (tabId === 'tabAnalytics') {
+        ['areaPlotlyChart', 'fanPlotlyChart', 'histPlotlyChart'].forEach(cid => {
+          const cel = document.getElementById(cid);
+          if (cel && cel.data) {
+            Plotly.relayout(cid, { autosize: true });
+          }
+        });
+      }
+    }
+
+    if (scrollTargetId) {
+      setTimeout(() => {
+        const el = document.getElementById(scrollTargetId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    } else {
+      const navBar = document.querySelector('.user-pills-bar');
+      if (navBar && window.scrollY > navBar.offsetTop) {
+        navBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
   };
@@ -193,10 +247,109 @@
     renderMetricsAndHeader(LATEST_DATA);
   });
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setupSearch);
-  } else {
+  function initApp() {
     setupSearch();
+    setupSmartTooltips();
+  }
+
+  // Smart Global Floating Tooltip (Anti-Clipping & Anti-Overflow Layar)
+  function setupSmartTooltips() {
+    let tipEl = document.getElementById("globalTooltipPopover");
+    if (!tipEl) {
+      tipEl = document.createElement("div");
+      tipEl.id = "globalTooltipPopover";
+      document.body.appendChild(tipEl);
+    }
+
+    let activeBadge = null;
+
+    function showTooltip(badge) {
+      const popover = badge.querySelector(".tip-popover");
+      if (!popover) return;
+      activeBadge = badge;
+
+      tipEl.textContent = popover.textContent.trim();
+      tipEl.style.display = "block";
+      tipEl.style.visibility = "hidden"; // measure first
+
+      const bRect = badge.getBoundingClientRect();
+      const margin = 12;
+      const tipWidth = Math.min(270, window.innerWidth - (margin * 2));
+      tipEl.style.width = tipWidth + "px";
+
+      const tipHeight = tipEl.offsetHeight;
+
+      // X positioning: center horizontally, clamped between margin and (window.innerWidth - tipWidth - margin)
+      let left = bRect.left + (bRect.width / 2) - (tipWidth / 2);
+      left = Math.max(margin, Math.min(left, window.innerWidth - tipWidth - margin));
+      tipEl.style.left = Math.round(left) + "px";
+
+      // Y positioning: prefer top; flip to bottom if too close to viewport top
+      let top;
+      let placement = "top";
+      if (bRect.top < tipHeight + 14) {
+        // Place below badge
+        top = bRect.bottom + 8;
+        placement = "bottom";
+      } else {
+        // Place above badge
+        top = bRect.top - tipHeight - 8;
+        placement = "top";
+      }
+
+      tipEl.style.top = Math.round(top) + "px";
+      tipEl.setAttribute("data-placement", placement);
+
+      // Arrow alignment: points to center of badge
+      const arrowLeft = Math.max(10, Math.min(bRect.left + (bRect.width / 2) - left, tipWidth - 10));
+      tipEl.style.setProperty("--arrow-left", Math.round(arrowLeft) + "px");
+
+      tipEl.style.visibility = "visible";
+      tipEl.style.opacity = "1";
+    }
+
+    function hideTooltip() {
+      activeBadge = null;
+      tipEl.style.opacity = "0";
+      tipEl.style.visibility = "hidden";
+      tipEl.style.display = "none";
+    }
+
+    document.addEventListener("pointerover", (e) => {
+      const badge = e.target.closest(".tip-badge");
+      if (badge) showTooltip(badge);
+    });
+
+    document.addEventListener("pointerout", (e) => {
+      const badge = e.target.closest(".tip-badge");
+      if (badge && (!e.relatedTarget || !badge.contains(e.relatedTarget))) {
+        hideTooltip();
+      }
+    });
+
+    document.addEventListener("focusin", (e) => {
+      const badge = e.target.closest(".tip-badge");
+      if (badge) showTooltip(badge);
+    });
+
+    document.addEventListener("focusout", (e) => {
+      const badge = e.target.closest(".tip-badge");
+      if (badge) hideTooltip();
+    });
+
+    window.addEventListener("scroll", () => {
+      if (activeBadge) hideTooltip();
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      if (activeBadge) hideTooltip();
+    }, { passive: true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initApp);
+  } else {
+    initApp();
   }
 
   window.BaliApp = {

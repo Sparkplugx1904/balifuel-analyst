@@ -76,10 +76,18 @@
         <div class="term-stat-item">
           <div class="term-stat-label">
             Kapan Bensin Kembali Tenang?
-            <span class="tip-badge"><span class="tip-popover">Titik tengah perkiraan saat bensin sudah ada di sebagian besar SPBU.</span>?</span>
+            <span class="tip-badge"><span class="tip-popover">Waktu saat volume kendaraan kembali normal standar dan antrean di SPBU bubar.</span>?</span>
           </div>
           <div class="term-stat-value" style="color:var(--accent)" id="boxMedianDate">Menghitung...</div>
-          <div class="term-stat-desc" id="boxMedianDesc">Titik tengah perkiraan dari ribuan hitungan</div>
+          <div class="term-stat-desc" id="boxMedianDesc">Volume kendaraan kembali normal standar</div>
+        </div>
+        <div class="term-stat-item">
+          <div class="term-stat-label">
+            Kapan Persediaan SPBU Stabil?
+            <span class="tip-badge"><span class="tip-popover">Waktu saat persediaan bensin di sebagian besar SPBU tidak langsung habis dalam hitungan jam.</span>?</span>
+          </div>
+          <div class="term-stat-value" style="color:var(--success)" id="boxStockStabilDate">Menghitung...</div>
+          <div class="term-stat-desc" id="boxStockStabilDesc">Persediaan bensin di SPBU tidak langsung habis</div>
         </div>
         <div class="term-stat-item">
           <div class="term-stat-label">
@@ -91,38 +99,27 @@
         </div>
         <div class="term-stat-item">
           <div class="term-stat-label">
-            Rentang Aman (8 dari 10)
+            Rentang Aman Kendala Cuaca
             <span class="tip-badge"><span class="tip-popover">Rentang waktu yang memperhitungkan kemungkinan kapal terlambat atau kendala cuaca.</span>?</span>
           </div>
           <div class="term-stat-value" id="boxCi80">-</div>
           <div class="term-stat-desc">Memperhitungkan kemungkinan kapal terlambat atau hujan</div>
         </div>
-        <div class="term-stat-item">
-          <div class="term-stat-label">
-            Kendala Terbesar Saat Ini
-            <span class="tip-badge"><span class="tip-popover">Bensin di gudang sudah ada, namun butuh waktu truk mengantar sampai ke semua SPBU.</span>?</span>
-          </div>
-          <div class="term-stat-value" style="color:var(--warning)">Truk Bensin di Jalan</div>
-          <div class="term-stat-desc">Bensin ada di gudang, tapi truk butuh waktu mengantar</div>
-        </div>
       </div>
       <div class="section-note" style="margin-top:14px; margin-bottom:0;">
         <span class="section-note-icon">💡</span>
         <div>
-          <b>Cara membaca angka ini:</b> angka di atas adalah hitungan perkiraan berapa bensin yang benar-benar ada di Bali. Gudang bensin sudah terisi lagi karena kapal membawa sekitar 26 juta liter. Namun bensin itu masih harus diantar truk ke setiap SPBU. Satu kali keliling butuh sekitar 1,5 sampai 2 hari. Jadi antrean baru berkurang pelan-pelan, terutama di daerah yang jauh dari gudang bensin.
+          <b>Penjelasan Keadaan Lapangan:</b> Kapal pengangkut bensin sudah bersandar di gudang besar bensin di Manggis dan Sanggaran. Namun bensin tidak mungkin langsung ada besok karena truk bensin harus mengantar berulang kali. Persediaan bensin di SPBU mulai stabil sekitar <b>21 sampai 22 Oktober 2026</b>. Bensin diperkirakan kembali tenang dan jumlah kendaraan kembali normal sekitar <b>23 sampai 24 Oktober 2026</b>.
         </div>
       </div>
     </div>
 
     <!-- TAB / USER PILLS BAR -->
     <nav class="user-pills-bar">
-      <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA SPBU & CEK BENSIN ] <small id="pillCount">876 Titik</small></button>
-      <button class="user-pill" onclick="switchTab('tabAreas')">[ 02 // KONDISI TIAP WILAYAH ] <small>14 Area</small></button>
-      <button class="user-pill" onclick="switchTab('tabSimulation')">[ 03 // KAPAN BENSIN NORMAL LAGI? ] <small>Perkiraan Waktu</small></button>
-      <button class="user-pill" onclick="switchTab('tabHotspots')">[ 04 // SPBU YANG PALING RAWAN HABIS ] <small>Daftar 20 Titik</small></button>
-      <button class="user-pill" onclick="switchTab('tabPanicCorr')">[ 05 // MENGAPA ORANG PANIK BELI BENSIN? ] <small>8 Jawaban Warga</small></button>
-      <button class="user-pill" onclick="switchTab('tabSourcesExp')">[ 06 // ASAL DATA & BUKTI HITUNGAN ] <small>42 Sumber · 12 Uji Coba</small></button>
-      <button class="user-pill" onclick="switchTab('tabGuide')">[ 07 // TIPS AMAN UNTUK WARGA ] <small>Saran Praktis</small></button>
+      <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA &amp; CEK SPBU ] <small id="pillCount">876 Titik</small></button>
+      <button class="user-pill" onclick="switchTab('tabAnalytics')">[ 02 // ANALISIS &amp; PREDIKSI ] <small>14 Wilayah · Pemulihan</small></button>
+      <button class="user-pill" onclick="switchTab('tabGuide')">[ 03 // PANDUAN WARGA ] <small>Tips &amp; Tanya Jawab</small></button>
+      <button class="user-pill" onclick="switchTab('tabSources')">[ 04 // DATA &amp; METODOLOGI ] <small>42 Sumber · 12 Uji Coba</small></button>
     </nav>
 
     <!-- TAB 1: PETA LEAFLET -->
@@ -138,11 +135,12 @@
       <div class="section-note">
         <span class="section-note-icon">ℹ️</span>
         <div>
-          <b>Panduan Warna Peta:</b>
+          <b>Panduan Navigasi &amp; Zoom Peta:</b>
+          <p>• <b>Navigasi Zoom:</b> Cubit layar (*pinch*) untuk memperbesar/memperkecil peta, ketuk 2x, atau gunakan tombol <b>➕/➖ Zoom</b> (halaman web tidak akan ter-zoom secara tidak sengaja).</p>
           <p>• <b>Arti Warna Titik:</b> <span style="color:var(--success)">● Hijau</span> = Kemungkinan besar ada bensin; <span style="color:var(--warning)">● Kuning</span> = Antrean panjang / bensin menipis; <span style="color:var(--danger)">● Merah</span> = Bensin habis.</p>
           <p>• <b>Ukuran Titik:</b> Lingkaran besar = SPBU Resmi Pertamina (212 titik); Lingkaran kecil = Kios Bensin Eceran (664 titik).</p>
           <p>• <b>Gudang Besar Bensin:</b> Titik oranye menunjukkan gudang bensin utama di Sanggaran (Denpasar) dan Manggis (Karangasem).</p>
-          <p>• <b>Tombol Navigasi:</b> Gunakan tombol <code>📍 Lokasi Saya</code> untuk mencari SPBU terdekat dari posisi Anda saat ini.</p>
+          <p>• <b>Tombol Lokasi:</b> Gunakan tombol <code>📍 Lokasi Saya</code> untuk mencari SPBU terdekat dari posisi Anda saat ini.</p>
         </div>
       </div>
 
@@ -167,6 +165,12 @@
           </button>
           <button id="btnLocateMe" class="btn btn-outline btn-sm" title="Mencari SPBU di dekat posisi Anda">
             📍 Lokasi Saya
+          </button>
+          <button id="btnZoomIn" class="btn btn-outline btn-sm" title="Perbesar Peta (+)">
+            ➕ Zoom
+          </button>
+          <button id="btnZoomOut" class="btn btn-outline btn-sm" title="Perkecil Peta (−)">
+            ➖ Zoom
           </button>
         </div>
         <div style="font-size:11px; color:var(--ink-3);">
@@ -274,136 +278,166 @@
               </button>
               <div id="surveyFeedback" style="font-size:11px; margin-top:6px; display:none; text-align:center;"></div>
             </div>
+          </div><!-- /spec-box -->
 
           <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:12px;">
             <div id="spbuPlotlyChart" style="height: 380px; width:100%;"></div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- TAB 2: 14 WILAYAH BALI -->
-    <div id="tabAreas" class="tab-content dash-section" style="display:none;">
-      <div class="section-header">
-        <h2 class="section-title">
-          KONDISI BENSIN DI 14 WILAYAH BALI
-          <span class="tip-badge"><span class="tip-popover">Melihat wilayah mana yang bensinnya paling langka dan berapa harga bensin eceran di sana.</span>?</span>
-        </h2>
-        <p class="section-desc">Ringkasan berapa banyak SPBU kosong, lama antrean, dan harga bensin eceran di tiap wilayah.</p>
-      </div>
-
-      <div class="section-note">
-        <span class="section-note-icon">ℹ️</span>
-        <div>
-          <b>Cara Membaca Grafik Wilayah:</b>
-          <p>• <b>Grafik Batang:</b> Batang oranye menunjukkan tingkat kesulitan bensin. Batang merah menunjukkan berapa persen SPBU yang kosong.</p>
-          <p>• <b>Harga Eceran:</b> Banyak kios eceran menjual bensin Rp 15.000 sampai Rp 40.000 per liter, terutama di Ubud dan Bukit.</p>
-        </div>
-      </div>
-
-      <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px; margin-bottom:20px;">
-        <div id="areaPlotlyChart" style="height: 360px;"></div>
-      </div>
-
-      <div class="terminal-table-wrap">
-        <table class="term-table">
-          <thead>
-            <tr>
-              <th>Wilayah</th>
-              <th>Skor Kesulitan <span class="tip-badge"><span class="tip-popover">Skor 0 sampai 100. Semakin tinggi angkanya, bensin semakin sulit dicari.</span>?</span></th>
-              <th>SPBU Resmi</th>
-              <th>Kios Eceran</th>
-              <th>SPBU Kosong (%)</th>
-              <th>Rata-rata Antrean</th>
-              <th>Kenaikan Harga Eceran <span class="tip-badge"><span class="tip-popover">Berapa banyak kios eceran yang menjual bensin di atas harga resmi Rp 10.000.</span>?</span></th>
-              <th>Kondisi</th>
-            </tr>
-          </thead>
-          <tbody id="areaTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- TAB 3: KAPAN BENSIN NORMAL LAGI -->
-    <div id="tabSimulation" class="tab-content dash-section" style="display:none;">
-      <div class="section-header">
-        <h2 class="section-title">
-          KAPAN BENSIN NORMAL LAGI? (HITUNGAN 10.000 KALI COBA)
-          <span class="tip-badge"><span class="tip-popover">Hitungan komputer dengan menguji 10.000 kemungkinan jadwal kapal dan perjalanan truk bensin.</span>?</span>
-        </h2>
-        <p class="section-desc">Perkiraan hari demi hari kapan bensin kembali lancar dan antrean di Bali habis.</p>
-      </div>
-
-      <div class="section-note">
-        <span class="section-note-icon">ℹ️</span>
-        <div>
-          <b>Cara Membaca Gambar:</b>
-          <p>• <b>Gambar Kiri (Arah Bensin):</b> Garis oranye adalah titik tengah perkiraan. Daerah warna tebal adalah kemungkinan yang paling besar terjadi.</p>
-          <p>• <b>Gambar Kanan (Pilihan Hari):</b> Balok yang paling tinggi menunjukkan hari yang paling berpeluang bensin sudah lancar kembali.</p>
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:20px;">
-        <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px;">
-          <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">PERKIRAAN KETERSEDIAAN BENSIN SE-BALI</div>
-          <div id="fanPlotlyChart" style="height: 320px;"></div>
+      <!-- 20 SPBU PALING RAWAN KEHABISAN BENSIN -->
+      <div id="tabHotspots" style="margin-top:32px; padding-top:24px; border-top:1px dashed var(--line-strong);">
+        <div class="section-header">
+          <h2 class="section-title">
+            20 SPBU YANG PALING RAWAN KEHABISAN BENSIN
+            <span class="tip-badge"><span class="tip-popover">SPBU yang paling rawan habis karena jaraknya jauh dari gudang bensin dan banyak pembeli.</span>?</span>
+          </h2>
+          <p class="section-desc">Daftar tempat yang paling lama pulih karena letaknya jauh dari gudang bensin utama di Denpasar dan Karangasem. <b>Klik nama SPBU</b> untuk melihat perkiraan 3 hari di atas.</p>
         </div>
 
-        <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px;">
-          <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">HARI YANG PALING BERPELUANG BENSIN SUDAH LANCAR</div>
-          <div id="histPlotlyChart" style="height: 320px;"></div>
+        <div class="section-note">
+          <span class="section-note-icon">ℹ️</span>
+          <div>
+            <b>Panduan Tabel Tempat Rawan:</b>
+            <p>• <b>Skor Rawan (0–100):</b> Dihitung dari jarak ke gudang bensin dan ramainya antrean. Daerah Lovina dan Jembrana paling rawan karena jaraknya lebih dari 60 km.</p>
+            <p>• <b>Pilih Cepat:</b> Klik salah satu baris SPBU di tabel ini untuk langsung memusatkan perkiraan 3 hari ke depan pada kotak inspektor di atas.</p>
+          </div>
+        </div>
+
+        <div class="terminal-table-wrap">
+          <table class="term-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nama SPBU</th>
+                <th>Jenis</th>
+                <th>Wilayah</th>
+                <th>Jarak dari Gudang</th>
+                <th>Peluang Ada Bensin</th>
+                <th>Antrean</th>
+                <th>Skor Rawan <span class="tip-badge"><span class="tip-popover">Semakin tinggi angkanya, semakin rawan terlambat dapat kiriman bensin.</span>?</span></th>
+                <th>Perkiraan Normal</th>
+              </tr>
+            </thead>
+            <tbody id="hotspotTableBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- TAB 4: 20 SPBU PALING RAWAN HABIS -->
-    <div id="tabHotspots" class="tab-content dash-section" style="display:none;">
-      <div class="section-header">
-        <h2 class="section-title">
-          20 SPBU YANG PALING RAWAN KEHABISAN BENSIN
-          <span class="tip-badge"><span class="tip-popover">SPBU yang paling rawan habis karena jaraknya jauh dari gudang bensin dan banyak pembeli.</span>?</span>
-        </h2>
-        <p class="section-desc">Daftar tempat yang paling lama pulih karena letaknya jauh dari gudang bensin utama di Denpasar dan Karangasem.</p>
-      </div>
+    <!-- TAB 2: ANALISIS WILAYAH & SIMULASI PEMULIHAN -->
+    <div id="tabAnalytics" class="tab-content dash-section" style="display:none;">
+      <!-- BAGIAN 1: KONDISI TIAP WILAYAH -->
+      <div id="secAreas">
+        <div class="section-header">
+          <h2 class="section-title">
+            KONDISI BENSIN DI 14 WILAYAH BALI
+            <span class="tip-badge"><span class="tip-popover">Melihat wilayah mana yang bensinnya paling langka dan berapa harga bensin eceran di sana.</span>?</span>
+          </h2>
+          <p class="section-desc">Ringkasan berapa banyak SPBU kosong, lama antrean, dan harga bensin eceran di tiap wilayah.</p>
+        </div>
 
-      <div class="section-note">
-        <span class="section-note-icon">ℹ️</span>
-        <div>
-          <b>Panduan Tabel Tempat Rawan:</b>
-          <p>• <b>Skor Rawan (0–100):</b> Dihitung dari jarak ke gudang bensin dan ramainya antrean. Daerah Lovina dan Jembrana paling rawan karena jaraknya lebih dari 60 km.</p>
-          <p>• <b>Cara Memilih:</b> Klik nama SPBU di tabel ini untuk langsung melihat perkiraan bensin 3 hari ke depan di bawah peta.</p>
+        <div class="section-note">
+          <span class="section-note-icon">ℹ️</span>
+          <div>
+            <b>Cara Membaca Grafik Wilayah:</b>
+            <p>• <b>Grafik Batang:</b> Batang oranye menunjukkan tingkat kesulitan bensin. Batang merah menunjukkan berapa persen SPBU yang kosong.</p>
+            <p>• <b>Harga Eceran:</b> Banyak kios eceran menjual bensin Rp 15.000 sampai Rp 40.000 per liter, terutama di Ubud dan Bukit.</p>
+          </div>
+        </div>
+
+        <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px; margin-bottom:20px;">
+          <div id="areaPlotlyChart" style="height: 360px;"></div>
+        </div>
+
+        <div class="terminal-table-wrap">
+          <table class="term-table">
+            <thead>
+              <tr>
+                <th>Wilayah</th>
+                <th>Skor Kesulitan <span class="tip-badge"><span class="tip-popover">Skor 0 sampai 100. Semakin tinggi angkanya, bensin semakin sulit dicari.</span>?</span></th>
+                <th>SPBU Resmi</th>
+                <th>Kios Eceran</th>
+                <th>SPBU Kosong (%)</th>
+                <th>Rata-rata Antrean</th>
+                <th>Kenaikan Harga Eceran <span class="tip-badge"><span class="tip-popover">Berapa banyak kios eceran yang menjual bensin di atas harga resmi Rp 10.000.</span>?</span></th>
+                <th>Kondisi</th>
+              </tr>
+            </thead>
+            <tbody id="areaTableBody"></tbody>
+          </table>
         </div>
       </div>
 
-      <div class="terminal-table-wrap">
-        <table class="term-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nama SPBU</th>
-              <th>Jenis</th>
-              <th>Wilayah</th>
-              <th>Jarak dari Gudang</th>
-              <th>Peluang Ada Bensin</th>
-              <th>Antrean</th>
-              <th>Skor Rawan <span class="tip-badge"><span class="tip-popover">Semakin tinggi angkanya, semakin rawan terlambat dapat kiriman bensin.</span>?</span></th>
-              <th>Perkiraan Normal</th>
-            </tr>
-          </thead>
-          <tbody id="hotspotTableBody"></tbody>
-        </table>
+      <!-- BAGIAN 2: KAPAN BENSIN NORMAL LAGI (SIMULASI) -->
+      <div id="secSimulation" style="margin-top:36px; padding-top:24px; border-top:1px dashed var(--line-strong);">
+        <div class="section-header">
+          <h2 class="section-title">
+            KAPAN BENSIN NORMAL LAGI? (HITUNGAN 10.000 KALI COBA)
+            <span class="tip-badge"><span class="tip-popover">Hitungan komputer dengan menguji 10.000 kemungkinan jadwal kapal dan perjalanan truk bensin.</span>?</span>
+          </h2>
+          <p class="section-desc">Perkiraan hari demi hari kapan bensin kembali lancar dan antrean di Bali habis.</p>
+        </div>
+
+        <div class="section-note">
+          <span class="section-note-icon">ℹ️</span>
+          <div>
+            <b>Cara Membaca Gambar:</b>
+            <p>• <b>Gambar Kiri (Arah Bensin):</b> Garis oranye adalah titik tengah perkiraan. Daerah warna tebal adalah kemungkinan yang paling besar terjadi.</p>
+            <p>• <b>Gambar Kanan (Pilihan Hari):</b> Balok yang paling tinggi menunjukkan hari yang paling berpeluang bensin sudah lancar kembali.</p>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:20px;">
+          <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px;">
+            <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">PERKIRAAN KETERSEDIAAN BENSIN SE-BALI</div>
+            <div id="fanPlotlyChart" style="height: 320px;"></div>
+          </div>
+
+          <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:16px;">
+            <div style="font-size:12px; font-weight:700; color:var(--ink); margin-bottom:10px;">HARI YANG PALING BERPELUANG BENSIN SUDAH LANCAR</div>
+            <div id="histPlotlyChart" style="height: 320px;"></div>
+          </div>
+        </div>
       </div>
     </div>
+    <!-- TAB 3: PANDUAN WARGA & KEPANIKAN PEMBELIAN -->
+    <div id="tabGuide" class="tab-content dash-section" style="display:none;">
+      <!-- BAGIAN 1: TIPS AMAN CARI BENSIN -->
+      <div id="secGuideTips">
+        <div class="section-header">
+          <h2 class="section-title">
+            TIPS AMAN CARI BENSIN &amp; SARAN PRAKTIS
+            <span class="tip-badge"><span class="tip-popover">Saran praktis agar tidak terjebak antrean dan urutan cerita apa yang sebenarnya terjadi.</span>?</span>
+          </h2>
+          <p class="section-desc">Saran sehari-hari untuk pengendara motor dan perbandingan kabar resmi dengan keadaan di lapangan.</p>
+        </div>
 
-    <!-- TAB 5: MENGAPA ORANG PANIK BELI BENSIN -->
-    <div id="tabPanicCorr" class="tab-content dash-section" style="display:none;">
-      <div class="section-header">
-        <h2 class="section-title">
-          MENGAPA BENSIN HABIS DAN WARGA PANIK MEMBELI?
-          <span class="tip-badge"><span class="tip-popover">Keterkaitan nyata di lapangan antara antrean kendaraan, kepanikan warga, dan kiriman bensin.</span>?</span>
-        </h2>
-        <p class="section-desc">Jawaban jujur dari catatan angka nyata di lapangan tentang perilaku warga dan antrean bensin.</p>
+        <div class="layman-grid" style="margin-bottom:28px;">
+          <div class="layman-card">
+            <div class="layman-title"><span style="color:var(--success)">●</span> Data: Jam Paling Singkat Antre (22:00 – 05:30 WITA)</div>
+            <p class="layman-desc">Catatan <b id="statTotalReports">18.776 laporan warga</b> membuktikan: antrean tengah malam rata-rata hanya <b>8 menit</b>. Pada jam 14:00–18:00 sore, antrean melonjak rata-rata <b>38 menit</b>. Sebanyak 82% truk bensin menyelesaikan pengisian tangki SPBU di jam malam ini.</p>
+          </div>
+          <div class="layman-card">
+            <div class="layman-title"><span style="color:var(--accent)">●</span> Data: SPBU 24 Jam Jalur Bypass Lebih Cepat Pulih</div>
+            <p class="layman-desc">Dari pemantauan <b id="statH24Count">57 SPBU 24 jam</b> di Bypass Ngurah Rai, IB Mantra, dan Gatsu: tingkat kosong hanya <b>18%</b>, jauh lebih rendah dibanding SPBU biasa (<b id="statEmptyPct">48%</b> kosong). Jalur protokol ini terbukti mendapat <b>2 kali kiriman truk per hari</b>.</p>
+          </div>
+          <div class="layman-card">
+            <div class="layman-title"><span style="color:var(--warning)">●</span> Data: <span id="statGougedKios">186 Kios</span> Eceran Menjual di Atas Wajar</div>
+            <p class="layman-desc">Dari pemantauan <b>664 kios bensin eceran</b>, sebanyak <b id="statGougedKiosDesc">186 kios (28%)</b> menaikkan harga di atas Rp 20.000 per liter, dengan harga tertinggi Rp 40.000/L. Jangan buru-buru beli eceran mahal karena gudang Sanggaran dan Manggis sudah terisi <b>26 juta liter</b>.</p>
+          </div>
+        </div>
       </div>
 
+      <!-- BAGIAN 2: MENGAPA WARGA PANIK BELI BENSIN -->
+      <div id="secPanicCorr" style="margin-top:36px; padding-top:24px; border-top:1px dashed var(--line-strong);">
+        <div class="section-header">
+          <h2 class="section-title">
+            MENGAPA BENSIN HABIS DAN WARGA PANIK MEMBELI?
+            <span class="tip-badge"><span class="tip-popover">Keterkaitan nyata di lapangan antara antrean kendaraan, kepanikan warga, dan kiriman bensin.</span>?</span>
+          </h2>
+          <p class="section-desc">Jawaban jujur dari catatan angka nyata di lapangan tentang perilaku warga dan antrean bensin.</p>
+        </div>
       <div class="terminal-card" style="margin-bottom:20px;">
         <div class="term-grid">
           <div class="term-stat-item">
@@ -518,10 +552,19 @@
           <p class="layman-desc"><b>3 dari 10 SPBU Cepat Habis</b> (wilayah padat Denpasar/Canggu), <b>4 dari 10 SPBU Stabil</b> (jalan bypass 24 jam), dan <b>2 dari 10 SPBU Daerah Jauh</b> (wilayah pinggiran).</p>
         </div>
       </div>
+      </div>
+
+      <!-- BAGIAN 3: URUTAN KEJADIAN NYATA -->
+      <div id="secTimeline" style="margin-top:36px; padding-top:24px; border-top:1px dashed var(--line-strong);">
+        <div class="section-header">
+          <h3 class="section-title" style="font-size:14px;">URUTAN KEJADIAN: KABAR RESMI VS KENYATAAN DI LAPANGAN</h3>
+        </div>
+        <div id="timelineWrap" style="display:flex; flex-direction:column; gap:12px;"></div>
+      </div>
     </div>
 
-    <!-- TAB 6: ASAL DATA & BUKTI HITUNGAN -->
-    <div id="tabSourcesExp" class="tab-content dash-section" style="display:none;">
+    <!-- TAB 4: TRANSPARANSI DATA & METODOLOGI -->
+    <div id="tabSources" class="tab-content dash-section" style="display:none;">
       <div class="section-header">
         <h2 class="section-title">
           DARI MANA ANGKA INI DIDAPAT? (42 SUMBER DATA)
@@ -680,36 +723,6 @@
       </div>
     </div>
 
-    <!-- TAB 7: TIPS AMAN UNTUK WARGA -->
-    <div id="tabGuide" class="tab-content dash-section" style="display:none;">
-      <div class="section-header">
-        <h2 class="section-title">
-          TIPS AMAN CARI BENSIN & CERITA KEJADIAN NYATA
-          <span class="tip-badge"><span class="tip-popover">Saran praktis agar tidak terjebak antrean dan urutan cerita apa yang sebenarnya terjadi.</span>?</span>
-        </h2>
-        <p class="section-desc">Saran sehari-hari untuk pengendara motor dan perbandingan kabar resmi dengan keadaan di lapangan.</p>
-      </div>
-
-      <div class="layman-grid" style="margin-bottom:28px;">
-        <div class="layman-card">
-          <div class="layman-title"><span style="color:var(--success)">●</span> Data: Jam Paling Singkat Antre (22:00 – 05:30 WITA)</div>
-          <p class="layman-desc">Catatan <b id="statTotalReports">18.776 laporan warga</b> membuktikan: antrean tengah malam rata-rata hanya <b>8 menit</b>. Pada jam 14:00–18:00 sore, antrean melonjak rata-rata <b>38 menit</b>. Sebanyak 82% truk bensin menyelesaikan pengisian tangki SPBU di jam malam ini.</p>
-        </div>
-        <div class="layman-card">
-          <div class="layman-title"><span style="color:var(--accent)">●</span> Data: SPBU 24 Jam Jalur Bypass Lebih Cepat Pulih</div>
-          <p class="layman-desc">Dari pemantauan <b id="statH24Count">57 SPBU 24 jam</b> di Bypass Ngurah Rai, IB Mantra, dan Gatsu: tingkat kosong hanya <b>18%</b>, jauh lebih rendah dibanding SPBU biasa (<b id="statEmptyPct">48%</b> kosong). Jalur protokol ini terbukti mendapat <b>2 kali kiriman truk per hari</b>.</p>
-        </div>
-        <div class="layman-card">
-          <div class="layman-title"><span style="color:var(--warning)">●</span> Data: <span id="statGougedKios">186 Kios</span> Eceran Menjual di Atas Wajar</div>
-          <p class="layman-desc">Dari pemantauan <b>664 kios bensin eceran</b>, sebanyak <b id="statGougedKiosDesc">186 kios (28%)</b> menaikkan harga di atas Rp 20.000 per liter, dengan harga tertinggi Rp 40.000/L. Jangan buru-buru beli eceran mahal karena gudang Sanggaran dan Manggis sudah terisi <b>26 juta liter</b>.</p>
-        </div>
-      </div>
-
-      <div class="section-header" style="margin-top:20px;">
-        <h3 class="section-title" style="font-size:14px;">URUTAN KEJADIAN: KABAR RESMI VS KENYATAAN DI LAPANGAN</h3>
-      </div>
-      <div id="timelineWrap" style="display:flex; flex-direction:column; gap:12px;"></div>
-    </div>
 
     <!-- FOOTER TERMINAL -->
     <footer class="term-footer">

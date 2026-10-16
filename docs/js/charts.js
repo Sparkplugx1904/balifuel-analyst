@@ -161,7 +161,8 @@
   window.addEventListener("dataupdated", (e) => {
     const data = e.detail;
     const sum = data.summary || data;
-    renderAreaChart(sum.areas || []);
+    const areas = sum.areas || sum.metrics?.area_metrics || [];
+    renderAreaChart(areas);
     renderMonteCarlo(sum.monte_carlo || {});
   });
 

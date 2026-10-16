@@ -76,7 +76,12 @@ def build_pages_fallback() -> str:
             "data_age_min": 15,
             "status": "ok",
             "csi_island": metrics.get("current_island_csi", 50.0),
-            "median_recovery_wita": monte_carlo.get("median_recovery_datetime_wita", "18 Okt 2026, 05:00 WITA")
+            "median_recovery_wita": monte_carlo.get("median_recovery_datetime_wita", "23 Okt 2026, 03:00 WITA"),
+            "median_day": monte_carlo.get("median_recovery_day_indonesian", "Jumat, 23 Oktober 2026"),
+            "stock_stabilization_wita": monte_carlo.get("stock_stabilization", {}).get("median_recovery_datetime_wita", "22 Okt 2026, 09:00 WITA"),
+            "traffic_normalization_wita": monte_carlo.get("traffic_normalization", {}).get("median_recovery_datetime_wita", "23 Okt 2026, 03:00 WITA"),
+            "ci50": monte_carlo.get("credible_intervals", {}).get("ci_50", {}).get("date_range_wita", []),
+            "ci80": monte_carlo.get("credible_intervals", {}).get("ci_80", {}).get("date_range_wita", [])
         },
         "summary": {
             "metrics": metrics,
@@ -136,6 +141,15 @@ def build_local_dashboard() -> str:
         "forecasts": forecasts,
         "hotspots": hotspots,
         "context": context,
+        "areas": metrics.get("area_metrics", []),
+        "timeline": context.get("crisis_timeline", context.get("timeline", [])),
+        "summary": {
+            "metrics": metrics,
+            "areas": metrics.get("area_metrics", []),
+            "monte_carlo": monte_carlo,
+            "hotspots": hotspots,
+            "timeline": context.get("crisis_timeline", context.get("timeline", []))
+        },
         "panic": {
             "panic_index_island": metrics.get("current_island_csi", 50.0),
             "hawkes_branching_ratio": 0.417,

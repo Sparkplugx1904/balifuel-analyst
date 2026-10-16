@@ -10,8 +10,36 @@
     const mapEl = document.getElementById("map");
     if (!mapEl) return;
 
-    mapInstance = L.map("map", { attributionControl: true }).setView([-8.48, 115.18], 10);
+    mapInstance = L.map("map", {
+      attributionControl: true,
+      zoomControl: true,
+      touchZoom: true,
+      scrollWheelZoom: true,
+      doubleClickZoom: true,
+      boxZoom: true,
+      zoomSnap: 0.5,
+      zoomDelta: 0.5,
+      wheelDebounceTime: 40,
+      wheelPxPerZoomLevel: 60,
+      tap: false
+    }).setView([-8.48, 115.18], 10);
 
+    // Cegah peramban melakukan pinch-to-zoom pada level halaman web saat mencubit peta
+    mapEl.addEventListener("touchstart", (e) => {
+      // Izinkan touch normal, Leaflet internal touchZoom akan menangani perhitungan pinch
+    }, { passive: true });
+
+    mapEl.addEventListener("touchmove", (e) => {
+      if (e.touches && e.touches.length > 1) {
+        // Multi-touch: cegah browser zoom halaman web, serahkan zoom ke Leaflet
+        if (e.cancelable) e.preventDefault();
+      }
+    }, { passive: false });
+
+    // Cegah gesture pinch bawaan iOS Safari pada area peta
+    mapEl.addEventListener("gesturestart", (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false });
+    mapEl.addEventListener("gesturechange", (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false });
+    mapEl.addEventListener("gestureend", (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false });
     // OpenStreetMap Standard Tiles (BEBAS API KEY, sama seperti route-planner template)
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
@@ -75,6 +103,21 @@
           },
           { enableHighAccuracy: true, timeout: 8000 }
         );
+      });
+    }
+
+    // Tombol Zoom In & Zoom Out Toolbar
+    const btnZoomIn = document.getElementById("btnZoomIn");
+    if (btnZoomIn) {
+      btnZoomIn.addEventListener("click", () => {
+        if (mapInstance) mapInstance.zoomIn();
+      });
+    }
+
+    const btnZoomOut = document.getElementById("btnZoomOut");
+    if (btnZoomOut) {
+      btnZoomOut.addEventListener("click", () => {
+        if (mapInstance) mapInstance.zoomOut();
       });
     }
 
@@ -283,9 +326,10 @@
     setStations: setStations,
     renderPins: renderMapPins,
     invalidateSize: () => { if (mapInstance) mapInstance.invalidateSize(); },
+    zoomIn: () => { if (mapInstance) mapInstance.zoomIn(); },
+    zoomOut: () => { if (mapInstance) mapInstance.zoomOut(); },
     getStations: () => STATIONS_DATA
   };
-
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initMap);
   } else {

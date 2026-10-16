@@ -41,10 +41,9 @@ class BaliFuelMarkovEngine:
         self.context = external_context
         self.diurnal = {d["hour"]: d.get("demand_multiplier", 1.0) for d in diurnal_profile}
         
-        # Base transition rates (per hour)
-        self.base_resupply_rate = 0.105   # ~9.5 jam rata-rata waktu tunggu isi ulang
-        self.base_depletion_rate = 0.135  # ~7.4 jam rata-rata stok habis saat ramai
-        
+        # Base transition rates (per hour) terkalibrasi kondisi krisis & ritase riil
+        self.base_resupply_rate = 0.055   # ~18 jam rata-rata siklus giliran truk ke SPBU di masa krisis
+        self.base_depletion_rate = 0.180  # ~5.5 jam durasi bensin tersedot habis saat antrean memuncak
         # Precompute distance to nearest terminal for each station
         self.terminal_distances = {}
         for s in self.stations:
@@ -114,8 +113,8 @@ class BaliFuelMarkovEngine:
         for h in range(horizon_hours):
             hr = (now_hour + h) % 24
             s_mult = supply_schedule[h] if h < len(supply_schedule) else 1.0
-            # Panic decays gradually over 72 hours
-            p_factor = max(1.0, 1.20 - (h / 72.0) * 0.20)
+            # Peluruhan kepanikan secara bertahap seiring stabilisasi pasokan
+            p_factor = max(1.0, 1.35 - (h / 120.0) * 0.35)
             P = self.get_transition_matrix(station, hr, supply_multiplier=s_mult, panic_factor=p_factor)
             state_vec = state_vec @ P
             prob_traj.append(float(state_vec[1]))

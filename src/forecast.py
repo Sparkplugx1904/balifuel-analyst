@@ -52,22 +52,21 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
     # Initialize Markov Engine
     engine = BaliFuelMarkovEngine(stations, context, metrics["diurnal_profile"])
 
-    # Supply schedule over 72 hours:
-    # Hour 0-7: Terminal running on remaining stock (~0.85x normal delivery)
-    # Hour 7+: Kapal 3 bongkar muat (6,000 KL), pasokan meningkat bertahap ke 1.15x
-    # Hour 24-48: Ritase truk penuh, 1.25x kapasitas
-    # Hour 48-72: Pasokan melimpah, normalisasi stabil 1.10x
+    # Supply schedule over 72 hours (peningkatan bertahap dengan ritase truk & kapal normalisasi):
+    # Jam 0-12: Pasokan bertahap dari terminal (0.80x normal)
+    # Jam 12-36: Kapal 3 mulai terdistribusi, armada Banyuwangi mulai masuk (0.95x - 1.05x)
+    # Jam 36-60: Kapal 4 sandar & ritase truk penuh (1.10x)
+    # Jam 60-72: Ritase optimal berlanjut (1.20x)
     supply_schedule = []
     for h in range(horizon_hours):
-        if h < 7:
-            supply_schedule.append(0.85)
-        elif h < 24:
-            supply_schedule.append(1.05 + 0.15 * ((h - 7) / 17.0))
-        elif h < 48:
-            supply_schedule.append(1.25)
-        else:
+        if h < 12:
+            supply_schedule.append(0.80)
+        elif h < 36:
+            supply_schedule.append(0.95 + 0.10 * ((h - 12) / 24.0))
+        elif h < 60:
             supply_schedule.append(1.10)
-
+        else:
+            supply_schedule.append(1.20)
     start_dt_wita = datetime(2026, 10, 16, 3, 0, tzinfo=WITA_TZ)
     forecast_timestamps = [(start_dt_wita + timedelta(hours=h)).strftime("%Y-%m-%d %H:%M WITA") for h in range(horizon_hours)]
     forecast_hours_label = [(start_dt_wita + timedelta(hours=h)).strftime("%d %b %H:00") for h in range(horizon_hours)]
@@ -86,6 +85,22 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
         kind = s.get("kind", "spbu")
         area = s.get("area", "Denpasar")
         dist = engine.terminal_distances.get(s_id, 35.0)
+        lookers = s.get("lookers", 0)
+
+        # Vulnerability scoring (0 - 100):
+        # 1. Initial emptiness: (1 - p0) * 35
+        # 2. Distance to terminal: (dist / 70km) * 25
+        # 3. Lookers / traffic pressure: min(20, lookers * 0.25)
+        # 4. Kind factor: Pertamini more vulnerable to stockouts (+10)
+        # 5. Non-24h penalty (+10)
+        vuln_score = (
+            (1.0 - p0) * 35.0 +
+            min(25.0, (dist / 70.0) * 25.0) +
+            min(20.0, lookers * 0.25) +
+            (10.0 if kind == "pertamini" else 0.0) +
+            (0.0 if s.get("h24") else 10.0)
+        )
+        vuln_score = round(float(np.clip(vuln_score, 0.0, 100.0)), 1)
 
         # Propagate Markov trajectory
         p_traj = engine.propagate_probabilities(s, p0, horizon_hours=horizon_hours, supply_schedule=supply_schedule)
@@ -98,6 +113,7 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
 
         q_initial = float(s.get("queue_mins") or 25.0)
 
+        consec_high = 0
         recovery_hour = None
         for h in range(horizon_hours):
             p_val = p_traj[h]
@@ -111,42 +127,32 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
             p10.append(round(lo, 3))
             p90.append(round(hi, 3))
 
-            # Queue evolution: eases as availability increases
-            # High queue when p_val is moderate (everyone rushes), eases when p_val > 0.85
-            if p_val < 0.30:
-                q_h = max(0.0, q_initial * 0.40)  # SPBU kosong, antrean bubar
-            elif p_val < 0.75:
-                q_h = max(10.0, q_initial * (1.0 - h / 90.0))  # masih antre
+            # Queue evolution: selama antrean backlog belum tuntas, SPBU yang ada bensin tetap antre tinggi
+            if p_val < 0.25:
+                q_h = max(0.0, q_initial * 0.30)  # SPBU kosong, antrean bubar
+            elif p_val < 0.70:
+                q_h = max(18.0, q_initial * (1.0 - h / 160.0))  # antre padat
             else:
-                q_h = max(3.0, q_initial * np.exp(-h / 24.0))  # pulih lancar
+                q_h = max(5.0, q_initial * (0.85 - 0.45 * (h / horizon_hours)))  # mulai terurai bertahap
             q_proj.append(round(float(q_h), 1))
 
-            # Recovery criteria for single SPBU: P >= 0.80 for 12 consecutive hours
-            if recovery_hour is None and h >= 12 and all(p_traj[h_sub] >= 0.78 for h_sub in range(h - 11, h + 1)):
-                recovery_hour = h - 11
+            # Single SPBU sustained stability check within 72h window
+            if p_val >= 0.80:
+                consec_high += 1
+                if consec_high >= 18 and recovery_hour is None:
+                    recovery_hour = float(h - 17)
+            else:
+                consec_high = 0
 
         if recovery_hour is None:
-            # Default to island median if not resolved in 72h
-            recovery_hour = 48.0 if p0 >= 0.45 else 60.0
+            # Proyeksi waktu pulih berdasarkan median pulau Monte Carlo (~160 - 180 jam)
+            # disesuaikan jarak ke terminal (SPBU dekat pulih lebih dulu, SPBU jauh/pelosok lebih lambat)
+            mc_med_h = mc_results.get("traffic_normalization", {}).get("median_hours") or mc_results.get("median_recovery_hours", 168.0)
+            dist_penalty = (dist - 35.0) * 0.75
+            vuln_penalty = (vuln_score - 40.0) * 0.45
+            recovery_hour = max(96.0, mc_med_h + dist_penalty + vuln_penalty)
 
         recov_dt_wita = (start_dt_wita + timedelta(hours=float(recovery_hour))).strftime("%Y-%m-%d %H:%M WITA")
-
-        # Vulnerability scoring (0 - 100):
-        # 1. Initial emptiness: (1 - p0) * 35
-        # 2. Distance to terminal: (dist / 70km) * 25
-        # 3. Lookers / traffic pressure: min(20, lookers * 0.25)
-        # 4. Kind factor: Pertamini more vulnerable to stockouts (+10)
-        # 5. Non-24h penalty (+10)
-        lookers = s.get("lookers", 0)
-        vuln_score = (
-            (1.0 - p0) * 35.0 +
-            min(25.0, (dist / 70.0) * 25.0) +
-            min(20.0, lookers * 0.25) +
-            (10.0 if kind == "pertamini" else 0.0) +
-            (0.0 if s.get("h24") else 10.0)
-        )
-        vuln_score = round(float(np.clip(vuln_score, 0.0, 100.0)), 1)
-
         forecasts[s_id] = {
             "id": s_id,
             "name": s["name"],

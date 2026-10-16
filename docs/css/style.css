@@ -53,6 +53,11 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
   font-family: var(--f-mono);
   font-size: 13px;
@@ -159,25 +164,56 @@ button { cursor: pointer; }
   color: var(--accent); font-size: 10px; font-weight: 700;
   cursor: help; vertical-align: middle; margin-left: 6px;
   position: relative; user-select: none;
+  flex-shrink: 0;
 }
-.tip-badge:hover .tip-popover {
-  visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0);
-}
+
+/* Sembunyikan popover bawaan DOM inline agar tidak memicu phantom horizontal scrollbar */
 .tip-popover {
-  visibility: hidden; opacity: 0; position: absolute;
-  bottom: 130%; left: 50%; transform: translateX(-50%) translateY(4px);
-  width: 270px; padding: 8px 12px;
-  background: var(--card); color: var(--ink);
-  border: 1px solid var(--line-strong); border-radius: var(--r-md);
-  font-size: 11px; font-weight: 400; line-height: 1.45;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.7); z-index: 100;
-  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
-  pointer-events: none; white-space: normal; text-align: left;
+  display: none !important;
 }
-.tip-popover::after {
-  content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px;
-  border-width: 5px; border-style: solid;
-  border-color: var(--card) transparent transparent transparent;
+
+/* ---- Global Floating Tooltip Popover (Bebas Clipping & Anti-Overflow Layar) ---- */
+#globalTooltipPopover {
+  position: fixed;
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+  width: 270px;
+  max-width: calc(100vw - 24px);
+  padding: 8px 12px;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.45;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+  z-index: 9999999;
+  pointer-events: none;
+  white-space: normal;
+  text-align: left;
+  transition: opacity 0.12s ease;
+  font-family: var(--f-mono);
+}
+
+#globalTooltipPopover::after {
+  content: "";
+  position: absolute;
+  left: var(--arrow-left, 50%);
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+}
+
+#globalTooltipPopover[data-placement="top"]::after {
+  top: 100%;
+  border-color: var(--line-strong) transparent transparent transparent;
+}
+
+#globalTooltipPopover[data-placement="bottom"]::after {
+  bottom: 100%;
+  border-color: transparent transparent var(--line-strong) transparent;
 }
 
 /* ---- Callout Note / Penjelasan Langsung di Bawah Bagian ---- */
@@ -193,18 +229,21 @@ button { cursor: pointer; }
 
 /* ---- Navigasi Tab / User Pills Bar ---- */
 .user-pills-bar {
-  display: flex; gap: 4px; margin: 24px 0 20px;
+  display: flex; gap: 6px; margin: 24px 0 20px;
   overflow-x: auto; border-bottom: 1px solid var(--line); scrollbar-width: thin;
 }
 .user-pill {
   flex: none; display: inline-flex; align-items: baseline; gap: 8px;
-  padding: 10px 16px; margin-bottom: -1px; background: transparent;
+  padding: 10px 18px; margin-bottom: -1px; background: transparent;
   border: 0; border-bottom: 2px solid transparent; font-size: 12px;
   font-weight: 500; color: var(--ink-3); white-space: nowrap;
+  cursor: pointer; transition: color 0.15s ease, border-color 0.15s ease;
+  font-family: inherit;
 }
 .user-pill:hover { color: var(--ink); }
-.user-pill.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
-.user-pill small { color: var(--ink-3); font-size: 10px; }
+.user-pill.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 700; }
+.user-pill small { color: var(--ink-3); font-size: 10.5px; }
+.user-pill.active small { color: var(--accent); opacity: 0.85; }
 .user-pill.locked { opacity: 0.72; }
 .user-pill.locked:hover { opacity: 1; color: var(--accent); }
 /* ---- Gaya Tombol Survey Warga ---- */
@@ -237,8 +276,60 @@ button { cursor: pointer; }
 .section-title::before { content: "//"; color: var(--accent); font-weight: 800; }
 .section-desc { font-size: 12px; color: var(--ink-2); }
 
-/* ---- Peta Leaflet & Toolbar ---- */
-#map { height: 540px; width: 100%; border-radius: var(--r-md); border: 1px solid var(--line-strong); background: #050505; }
+/* ---- Peta Leaflet & Touch Optimization ---- */
+#map {
+  height: 540px;
+  width: 100%;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-strong);
+  background: #050505;
+  position: relative;
+  touch-action: none !important; /* Melarang browser zoom halaman saat menyentuh/mencubit peta */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.leaflet-container {
+  touch-action: none !important;
+  -ms-touch-action: none !important;
+  font-family: var(--f-mono) !important;
+}
+
+/* Tombol Zoom Leaflet: Lebih besar, tactile, ramah sentuhan (Touch-Friendly) */
+.leaflet-control-zoom {
+  border: 1px solid var(--line-strong) !important;
+  border-radius: var(--r-md) !important;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.75) !important;
+  margin-top: 14px !important;
+  margin-left: 14px !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: var(--surface) !important;
+  color: var(--accent) !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  border-bottom: 1px solid var(--line-strong) !important;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.leaflet-control-zoom a:hover,
+.leaflet-control-zoom a:active {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+}
+
+.leaflet-control-zoom a.leaflet-disabled {
+  background-color: var(--surface) !important;
+  color: var(--ink-3) !important;
+  opacity: 0.45;
+}
+
 .map-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .map-filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
