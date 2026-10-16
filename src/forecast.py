@@ -29,6 +29,11 @@ from src.markov_model import BaliFuelMarkovEngine
 DATA_DIR = os.path.join(BASE_DIR, "data")
 CLEAN_DIR = os.path.join(DATA_DIR, "clean")
 
+# Profil pengali jam sibuk antrean harian (puncak sore 15:00-18:00, terendah tengah malam)
+DIURNAL_QUEUE_WEIGHTS = [
+    0.35, 0.25, 0.20, 0.20, 0.30, 0.55, 1.00, 1.35, 1.45, 1.30, 1.25, 1.30,
+    1.40, 1.45, 1.50, 1.60, 1.65, 1.60, 1.40, 1.20, 0.95, 0.75, 0.55, 0.40
+]
 
 def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
     os.makedirs(CLEAN_DIR, exist_ok=True)
@@ -111,8 +116,13 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
         p90 = []
         q_proj = []
 
-        # Jika data antrean SPBU belum tersedia tapi bensin ada, default kondisi krisis adalah ~180 menit (3 jam)
-        q_initial = float(s.get("queue_mins") or (180.0 if (s.get("prob_pertalite") or 0.5) >= 0.40 else 25.0))
+        # Base queue minutes: SPBU riil saat krisis mencapai 4-6 jam (240-360 menit)
+        observed_q = s.get("queue_mins")
+        if observed_q is not None and observed_q >= 60.0:
+            q_base = float(observed_q)
+        else:
+            # Baseline SPBU ada bensin saat krisis: 300 menit (5 jam) untuk SPBU resmi, 120 menit untuk Pertamini
+            q_base = 300.0 if kind == "spbu" else 120.0
 
         consec_high = 0
         recovery_hour = None
@@ -128,13 +138,23 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
             p10.append(round(lo, 3))
             p90.append(round(hi, 3))
 
-            # Queue evolution: selama antrean backlog belum tuntas, SPBU yang ada bensin tetap antre tinggi (bisa 4-6 jam)
-            if p_val < 0.25:
-                q_h = max(0.0, q_initial * 0.20)  # SPBU kosong, antrean bubar
-            elif p_val < 0.70:
-                q_h = max(30.0, q_initial * (1.0 - h / 160.0))  # antre padat mengular
+            # Queue evolution: memodelkan antrean aktif pompa dan antrean tunggu kiriman truk (3-6+ jam di jam sibuk)
+            hr = (start_dt_wita.hour + h) % 24
+            d_fac = DIURNAL_QUEUE_WEIGHTS[hr]
+            time_decay = max(0.25, 1.0 - 0.45 * (h / horizon_hours))
+
+            if p_val >= 0.50:
+                # Ada bensin: antrean serbuan kendaraan penuh (puncak 4-7 jam di siang/sore)
+                q_h = q_base * d_fac * time_decay
+            elif p_val >= 0.25:
+                # Bensin menipis / hampir habis: antrean padat berebut sebelum kering
+                q_h = q_base * 0.85 * d_fac * time_decay
             else:
-                q_h = max(8.0, q_initial * (0.85 - 0.55 * (h / horizon_hours)))  # mulai terurai bertahap
+                # Bensin habis tapi warga tetap antre menunggu kedatangan truk tangki berikutnya (3-6 jam)
+                delivery_wait = 180.0 + min(180.0, (dist / 50.0) * 120.0)
+                q_h = delivery_wait * d_fac * time_decay
+
+            q_h = float(np.clip(q_h, 20.0, 480.0))
             q_proj.append(round(float(q_h), 1))
 
             # Single SPBU sustained stability check within 72h window
@@ -144,7 +164,6 @@ def generate_station_forecasts(horizon_hours: int = 72) -> Dict[str, Any]:
                     recovery_hour = float(h - 17)
             else:
                 consec_high = 0
-
         if recovery_hour is None:
             # Proyeksi waktu pulih berdasarkan median pulau Monte Carlo (~160 - 180 jam)
             # disesuaikan jarak ke terminal (SPBU dekat pulih lebih dulu, SPBU jauh/pelosok lebih lambat)

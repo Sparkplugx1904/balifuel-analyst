@@ -80,19 +80,42 @@
     const traceP90 = { x: CURRENT_HOURS, y: p90, type: 'scatter', mode: 'lines', line: { width: 0 }, showlegend: false, hoverinfo: 'skip' };
     const traceP10 = { x: CURRENT_HOURS, y: p10, type: 'scatter', mode: 'lines', fill: 'tonexty', fillcolor: 'rgba(255, 138, 61, 0.16)', line: { width: 0 }, name: 'Pita 80% (P10-P90)' };
     const traceP50 = { x: CURRENT_HOURS, y: p50, type: 'scatter', mode: 'lines', line: { color: '#FF8A3D', width: 2.5 }, name: 'Peluang Ada Bensin (%)' };
-    const traceQ = { x: CURRENT_HOURS, y: qTraj, type: 'scatter', mode: 'lines', yaxis: 'y2', line: { color: tc.fontColor, width: 1.5, dash: 'dot' }, name: 'Antrean (Mnt)' };
+    const validQ = (qTraj || []).filter(v => v != null && !isNaN(v));
+    const maxQ = validQ.length > 0 ? Math.max(...validQ) : 120;
+    const y2Max = Math.max(120, Math.ceil(maxQ / 60) * 60 + 30);
+    const tickVals = [0, 60, 120, 180, 240, 300, 360, 420, 480].filter(v => v <= y2Max);
+    const tickTexts = ['0m', '1 jam', '2 jam', '3 jam', '4 jam', '5 jam', '6 jam', '7 jam', '8 jam'].slice(0, tickVals.length);
+
+    const traceQ = {
+      x: CURRENT_HOURS,
+      y: qTraj,
+      type: 'scatter',
+      mode: 'lines',
+      yaxis: 'y2',
+      line: { color: 'var(--danger)', width: 2, dash: 'dot' },
+      name: 'Estimasi Antrean (Jam)',
+      hovertemplate: '%{y:.0f} mnt (%{customdata})<extra></extra>',
+      customdata: (qTraj || []).map(m => m >= 60 ? `${(m/60).toFixed(1)} jam` : `${Math.round(m)} mnt`)
+    };
 
     const layout = {
       paper_bgcolor: 'transparent',
       plot_bgcolor: 'transparent',
-      margin: { l: 45, r: 45, t: 25, b: 35 },
+      margin: { l: 45, r: 55, t: 25, b: 35 },
       font: { family: 'JetBrains Mono, monospace', color: tc.fontColor, size: 10 },
       legend: { orientation: 'h', y: -0.22, x: 0.05 },
       xaxis: { gridcolor: tc.gridColor, nticks: 10 },
       yaxis: { title: 'Peluang Ada Bensin (%)', range: [0, 105], gridcolor: tc.gridColor },
-      yaxis2: { title: 'Waktu Antre (Mnt)', overlaying: 'y', side: 'right', range: [0, 55], showgrid: false }
+      yaxis2: {
+        title: 'Waktu Antre (Jam / Menit)',
+        overlaying: 'y',
+        side: 'right',
+        range: [0, y2Max],
+        showgrid: false,
+        tickvals: tickVals,
+        ticktext: tickTexts
+      }
     };
-
     Plotly.newPlot('spbuPlotlyChart', [traceP90, traceP10, traceP50, traceQ], layout, { responsive: true, displayModeBar: false });
   }
 
