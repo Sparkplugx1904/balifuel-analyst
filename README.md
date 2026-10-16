@@ -1,44 +1,63 @@
-# Bali Fuel Crisis Analyst (Oktober 2026)
+# Bali Fuel Crisis & Panic Buying Analyst (Oktober 2026)
 
-Sistem terintegrasi end-to-end untuk analisis, simulasi Monte Carlo 10.000 jalur, prediksi per SPBU, otomasi pipeline data ke Cloudflare Edge, dan publikasi web interaktif di GitHub Pages.
+Sistem intelijen data otonom terintegrasi *end-to-end* untuk analisis krisis BBM Bali 2026: mengumpulkan data multi-sumber, melakukan *entity resolution* kanonikal SPBU, mengekstraksi 32 fitur spasial-temporal, menjalankan 12 eksperimen inovasi model, memprediksi titik balik pemulihan pulau via Monte Carlo (10.000 jalur), memetakan penularan *panic buying*, dan menerbitkan dasbor interaktif mandiri.
 
-Dokumentasi arsitektur, diagram alur, konfigurasi Cloudflare Worker, dan estimasi kuota gratis tersedia di **[`ARSITEKTUR.md`](./ARSITEKTUR.md)**.
+Dokumentasi arsitektur, diagram alur, konfigurasi Cloudflare Worker, dan estimasi kuota gratis tersedia di **[`ARSITEKTUR.md`](./ARSITEKTUR.md)**.  
+Kamus fitur lengkap tersedia di **[`output/feature_dictionary.md`](./output/feature_dictionary.md)**.  
+Laporan korelasi dan jawaban 8 pertanyaan krisis di **[`output/laporan_korelasi.md`](./output/laporan_korelasi.md)**.  
+Model Card resmi di **[`output/panic_model_card.md`](./output/panic_model_card.md)**.  
 
 ---
 
 ## 🚀 Fitur Utama & Kemampuan Sistem
 
-1. **Pengumpulan Data Mentah JSON-First & Cuaca Maritim**:
-   - Menghubungkan endpoint langsung dari `balifuelwatch.vercel.app` (`/api/stats`, `/api/metrics`, `/api/reports?w=day&f=2`, `/odbl-stations.json`) dan tag `<script id="fuel-data">` pada `bensinbali.com`.
-   - Mengumpulkan data maritim pendekatan terminal (TBBM Sanggaran & Manggis) via Open-Meteo Marine API, serta prakiraan BMKG.
-   - Mengarsipkan data ke SQLite `data/balifuel.db` dengan stempel waktu UTC & WITA.
+1. **Penemuan & Registri 42 Sumber Data (Kategori A–J)**:
+   - **Katalog Terverifikasi**: 42 kandidat sumber terdaftar di `data/sources/registry.csv` dan `data/sources/CATALOG.md`, dengan 25 sumber terverifikasi *live* (HTTP 200/OK dengan skema teruji).
+   - **Log Penelusuran**: Seluruh percobaan dan strategi pencarian dicatat detail pada `crawl_log.md`.
 
-2. **Pembersihan & Kualitas Data Berstandar Statistik**:
-   - **Pembobotan Peluruhan Waktu Eksponensial**: $\tau_{half} = 90$ menit untuk meredam laporan usang.
-   - **Pengali Bobot Konfirmasi**: Bobot $1.35\times$ untuk status antrean terkonfirmasi dan $1.5\times$ untuk nosel pompa langsung.
-   - **Normalisasi Kepanikan Pengguna**: Meredam bias keluhan akibat lonjakan pengguna online.
-   - **Imputasi Spasial k-NN IDW**: SPBU tanpa kabar diestimasi dari 3 SPBU terdekat dengan penandaan eksplisit `imputed_spatial` dan skor ketidakpastian. Titik liar laut dikarantina.
-   - **Pemetaan Kanonikal 14 Area Makro**: Canggu, Seminyak-Kuta, Bukit, Sanur, Denpasar, Mengwi, Ubud, Gianyar, Tabanan, Klungkung, Karangasem, Bangli, Lovina, dan Jembrana.
+2. **Master SPBU Kanonik & Entity Resolution**:
+   - Master dataset `data/master/spbu.parquet` memetakan **1.042 entitas kanonik** di Bali:
+     * **391 SPBU Resmi Pertamina** (Cakupan 100.0% terhadap target ~214 stasiun benchmark).
+     * **71 Pertashop Modular Resmi**.
+     * **580 Kios Pertamini / Penjual Eceran**.
+   - Normalisasi kode Pertamina standar (`54.80X.XX`), pencocokan spasial Haversine $\le 150\text{ m}$, dan fuzzy name matching.
+   - Kasus perbatasan spasial (16 kasus) dipisahkan secara transparan di `data/master/review.csv`.
 
-3. **Pemodelan Markov & Evaluasi Backtest Objektif**:
-   - *Inhomogeneous Continuous-Time Markov Chain* memodelkan probabilitas ketersediaan stok tiap jam berdasarkan penalti jarak depot TBBM Sanggaran/Manggis, jam operasional 24 jam, dan siklus jam sibuk diurnal.
-   - Diuji menggunakan *rolling backtest* pada 4.590 laporan aktual:
-     * **Markov Model**: Brier Score = **0.1896** (Terbaik), Akurasi = **71.5%**.
-     * **Kaplan-Meier Survival**: Brier Score = 0.2412, Akurasi = 59.4%.
-     * **Simple EMA Trend**: Brier Score = 0.1943, Akurasi = 71.2%.
+3. **6 Collector Mandiri dengan Degradasi Mulus (`src/collectors/`)**:
+   - `marine_weather_collector.py`: Tinggi gelombang laut Selat Lombok & TBBM Manggis via Open-Meteo Marine API.
+   - `routing_distance_collector.py`: Jarak & waktu tempuh darat nyata truk tangki via OSRM Driving API.
+   - `behavioral_news_collector.py`: Agregat sentimen dan laju publikasi berita krisis via Google News RSS.
+   - `calendar_holidays_collector.py`: Kalender libur nasional & siklus upacara adat Bali (Purnama, Tilem, Odalan).
+   - `macro_demand_collector.py`: Harga minyak mentah Brent, kurs USD/IDR, dan beban wisatawan Bandara Ngurah Rai.
+   - `osm_infrastructure_collector.py`: Topologi koridor jalan protokol arteri (Bypass Ngurah Rai, IB Mantra).
 
-4. **Simulasi Monte Carlo Pemulihan (10.000 Jalur)**:
-   - Mengevaluasi 4 skenario terkalibrasi (*Fast Resupply*, *Gradual Base-Case 26.200 KL*, *Prolonged Disruption*, dan *Second Wave Panic*).
-   - **Kriteria Krisis Mereda**: <10% SPBU kosong (&ge;90% ada stok) bertahan 48 jam berturut-turut.
-   - **Median Tanggal Pemulihan**: **Minggu, 18 Oktober 2026, 05:00 WITA**.
-   - Interval Kredibel 50% (17 Okt 09:00 – 19 Okt 07:00) dan 80% (17 Okt 03:00 – 22 Okt 07:00).
-   - Analisis Sensitivitas: Kapasitas armada truk darat merupakan faktor paling sensitif ($r = -0.745$).
+4. **Kajian Korelasi & Analisis Struktural (Target T1–T4)**:
+   - **Autokorelasi Spasial Moran's I**: $+0.1684$ ($p = 0.0007$, terbukti secara statistik antrean panjang terklaster di koridor arteri).
+   - **Jawaban Numerik 8 Pertanyaan Kritis**: Menjawab lead-time antrean (memimpin kehabisan fisik 90–120 menit), jeda transmisi tanker (36–48 jam), dan peran harga Pertamini sebagai katup pelepas kelangkaan.
+   - **Tipologi 3 Klaster Perilaku SPBU**: SPBU Cepat Habis (32.5%), SPBU Penyangga Stabil (45.2%), dan SPBU Korban Limpahan (22.3%).
 
-5. **Lapisan Otomasi & Publikasi Edge (Cloudflare Worker + R2 + GitHub Pages)**:
-   - **Pemicu**: Worker Cron Trigger setiap 10 menit memicu `.github/workflows/pipeline.yml` via GitHub API `workflow_dispatch`.
-   - **Data Board Publik**: Worker menyajikan `/latest/meta.json` (<2 KB), `/latest/summary.json`, `/latest/stations.json` (<1.5 MB), dan `/latest/history.json` dengan CORS dan ETag caching 60 detik.
-   - **State Persistence**: SQLite `balifuel.db` disimpan di R2 privat (`/state/balifuel.db`), diunduh di awal runner job, dipangkas retensi 14 hari + `VACUUM`, dan diunggah kembali di akhir job.
-   - **Frontend GitHub Pages**: Statis di direktori `docs/` (terminal developer-tool aesthetic dengan JetBrains Mono & aksen orange `#FF8A3D`), mengambil data via polling live 120–180 detik.
+5. **12 Eksperimen Inovasi Model (Out-of-Time Benchmark)**:
+   - **Baseline Hari-0**: Persistence Brier = 0.4566, Markov Day-0 Brier = 0.3180, ROC-AUC = 0.6087.
+   - **Gradient Boosting Spatio-Temporal Ensemble**: Brier Score **0.2839** (Gain +10.7% vs Hari-0) dan ROC-AUC **0.7480**.
+   - **Hawkes Self-Exciting Process**: Branching ratio $0.417$ (kepanikan subkritis meluruh teratur).
+   - **M/M/c Queueing Model**: Estimasi antrean dinamis berbasis kapasitas nosel pompa riil.
+   - **Calibrated Conformal Prediction**: Cakupan empiris pita kredibel 80% mencapai **80.0% tepat**.
+   - **Deteksi Dini CUSUM**: Mendeteksi anomali kepanikan 3.5 jam sebelum antrean fisik memuncak.
+
+6. **7 Kontrak Data Publikasi Cloudflare Worker & R2**:
+   - `meta.json` (<2.5 KB), `summary.json` (<160 KB), `stations.json` (<1.55 MB), `history.json` (<50 KB).
+   - **3 Kontrak Baru**: `panic.json` (<150 KB), `correlations.json` (<150 KB), `sources.json` (<50 KB).
+
+7. **Dasbor Interaktif Modular (GitHub Pages)**:
+   - Statis di direktori `docs/` (CSS dan JS modular murni).
+   - 7 Tab Analisis Interaktif:
+     1. `[ 01 // PETA REAL-TIME (LEAFLET) ]` (dengan Inspektor Prediksi 72 Jam per SPBU langsung di bawah peta).
+     2. `[ 02 // 14 AREA MAKRO ]` (Analisis CSI & tabel wilayah).
+     3. `[ 03 // SIMULASI MONTE CARLO ]` (10.000 jalur fan chart & histogram pemulihan).
+     4. `[ 04 // 20 HOTSPOT RENTAN ]` (Peringkat SPBU paling rentan).
+     5. `[ 05 // INTELIJEN PANIK & KORELASI ]` (Jawaban 8 pertanyaan kritis & uji stres intervensi kuota).
+     6. `[ 06 // SUMBER DATA & EKSPERIMEN ]` (Registri 42 sumber & log 12 eksperimen model).
+     7. `[ 07 // PANDUAN WARGA & TIMELINE ]` (Rekomendasi jam aman & kronologi fakta lapangan).
 
 ---
 
@@ -46,81 +65,84 @@ Dokumentasi arsitektur, diagram alur, konfigurasi Cloudflare Worker, dan estimas
 
 ```text
 balifuel-analyst/
-├── .github/
-│   └── workflows/
-│       ├── pipeline.yml           # Runner komputasi data (trigger: workflow_dispatch)
-│       └── pages.yml              # Deploy GitHub Pages saat docs/** berubah
-├── worker/                        # Cloudflare Worker data board & cron trigger
-│   ├── src/index.js               # Route /latest, /ingest, /state, & scheduled handler
-│   ├── wrangler.toml              # Konfigurasi R2 bucket balifuel-storage & cron 10m
-│   └── package.json
-├── docs/                          # Frontend GitHub Pages (terminal developer-tool aesthetic)
-│   ├── index.html                 # Halaman utama ramping (aset relatif)
-│   ├── style.css                  # Desain sistem monospace terminal
-│   ├── app.js                     # Controller live polling, map Leaflet, Plotly chart
-│   ├── config.js                  # Konfigurasi FEED_URL (disuntikkan di CI)
-│   └── fallback.json              # Data cadangan darurat jika Worker offline
+├── .github/workflows/
+│   ├── pipeline.yml              # Runner data loop permanen (tiap 2 menit, hingga 350 menit)
+│   └── pages.yml                 # Deploy otomatis GitHub Pages saat docs/ berubah
+├── analysis/
+│   └── correlations/             # Matriks korelasi CSV per target (T1, T2, T3, T4)
 ├── data/
-│   ├── ENDPOINTS.md               # Dokumentasi endpoint API, parameter, & cache policy
-│   ├── external_context.json      # Catatan fakta, berita resmi, & parameter logistik
-│   └── clean/                     # Berkas artefak bersih
+│   ├── balifuel.db               # Database SQLite lokal (retensi rolling 14 hari + VACUUM)
+│   ├── external_context.json     # Konteks logistik tanker, kuota terminal, dan timeline krisis
+│   ├── clean/                    # Data bersih & fitur rekayasa (features_master.parquet)
+│   ├── master/                   # spbu.parquet (1.042 entitas kanonik) & review.csv
+│   └── sources/                  # registry.csv (42 sumber) & CATALOG.md
+├── docs/                         # Dasbor UI Publik GitHub Pages (Modular)
+│   ├── index.html                # Markup HTML tunggal
+│   ├── fallback.json             # Data cadangan lokal jika worker offline
+│   ├── css/style.css             # Terminal developer-tool aesthetic (Dark & Light Mode)
+│   └── js/                       # Modul JavaScript mandiri (config, theme, api, map, charts, app)
+├── experiments/
+│   └── LOG.md                    # Dokumentasi lengkap protokol 12 eksperimen model
+├── output/
+│   ├── dashboard.html            # Monolitik lokal mandiri (bisa dibuka file://)
+│   ├── laporan.md                # Laporan komprehensif analisis krisis
+│   ├── laporan_korelasi.md       # Laporan analisis korelasi & jawaban 8 pertanyaan krisis
+│   ├── panic_model_card.md       # Model Card resmi evaluasi ilmiah & etika
+│   ├── feature_dictionary.md     # Kamus 32 fitur rekayasa
+│   └── spbu_coverage_report.json # Laporan cakupan SPBU resmi Bali
 ├── src/
-│   ├── collector.py               # Polling endpoint data, cuaca maritim Open-Meteo & BMKG
-│   ├── cleaner.py                 # Pembobotan waktu, spam filter, imputasi spasial
-│   ├── metrics.py                 # Perhitungan CSI, analisis 14 area, CUSUM change-point
-│   ├── markov_model.py            # Pemodelan Markov, Kaplan-Meier, & rolling backtest
-│   ├── simulation.py              # Engine Monte Carlo 10.000 jalur & distribusi waktu
-│   ├── forecast.py                # Proyeksi 72 jam per SPBU & ranking 20 hotspot rentan
-│   ├── visualizer.py              # Generator visualisasi SVG/PNG per SPBU (lokal)
-│   ├── publish.py                 # Bundler 4 kontrak data & sinkronisasi state R2
-│   └── dashboard_builder.py       # Pembangun dashboard lokal (output/) & pages (docs/)
-├── output/                        # Artefak lokal (dashboard.html monolitik, spbu/*.svg, laporan.md)
-├── run_pipeline.py                # Runner master eksekusi seluruh sistem
-├── ARSITEKTUR.md                  # Dokumentasi arsitektur, diagram alur, & kuota gratis
-└── README.md                      # Dokumentasi teknis & panduan reproduksi
+│   ├── collectors/               # 6 modul data collector mandiri + collector_manager.py
+│   ├── benchmark_day0.py         # Evaluasi out-of-time Baseline Hari-0
+│   ├── discover_sources.py       # Engine penelusuran & verifikasi 42 sumber data
+│   ├── entity_resolver.py        # Resolusi entitas kanonik & deteksi ambiguitas
+│   ├── feature_engineering.py    # Ekstraksi 32 fitur spasial-temporal
+│   ├── correlation_analyzer.py   # Analisis korelasi, Moran's I, dan 8 pertanyaan kritis
+│   ├── innovative_models.py      # Implementasi 12 model inovasi (Hawkes, M/M/c, Bass, dsb)
+│   ├── cleaner.py                # Pembersihan data & imputasi k-NN IDW
+│   ├── metrics.py                # Perhitungan CSI pulau dan 14 area
+│   ├── markov_model.py           # Mesin rantai Markov 2-status
+│   ├── simulation.py             # Simulasi Monte Carlo 10.000 jalur
+│   ├── forecast.py               # Peramalan 72 jam per SPBU
+│   ├── dashboard_builder.py      # Pembangun dasbor lokal dan aset GitHub Pages
+│   └── publish.py                # Pembundel 7 kontrak publikasi ke Cloudflare Edge
+├── worker/                       # Cloudflare Worker API & Smart Watchdog (Cron 10m)
+└── run_pipeline.py               # Master Pipeline Runner satu-perintah
 ```
 
 ---
 
-## ⚡ Cara Menjalankan
+## ⚡ Panduan Menjalankan Sistem
 
-### 1. Menjalankan Analisis Lokal Lengkap
+### 1. Instalasi Dependensi
 ```bash
+pip install -r requirements.txt
+```
+
+### 2. Menjalankan Seluruh Siklus Riset (One-Step Execution)
+```bash
+# 1. Jalankan penemuan & verifikasi 42 sumber data
+python src/discover_sources.py
+
+# 2. Bangun master SPBU kanonik & entity resolution
+python src/entity_resolver.py
+
+# 3. Jalankan 6 collector mandiri
+python src/collectors/collector_manager.py
+
+# 4. Ekstrak 32 fitur spasial-temporal
+python src/feature_engineering.py
+
+# 5. Jalankan analisis korelasi, Moran's I, dan jawaban 8 pertanyaan krisis
+python src/correlation_analyzer.py
+
+# 6. Jalankan 12 eksperimen inovasi model out-of-time
+python src/innovative_models.py
+
+# 7. Jalankan pipeline master & bangun dashboard
 python run_pipeline.py
 ```
-Membuka dashboard hasil build lokal:
-- Windows: `start output/dashboard.html`
-- macOS: `open output/dashboard.html`
-- Linux: `xdg-open output/dashboard.html`
 
-### 2. Menjalankan Pipeline Mode Publikasi (Dry-Run / Live)
-```bash
-# Uji coba pembuatan 4 kontrak data tanpa unggah (ke ./publish_out)
-python run_pipeline.py --dry-run
-
-# Publikasi ke Cloudflare Worker lokal / produksi
-python run_pipeline.py --publish --worker-url "http://127.0.0.1:8787" --token "TOKEN_ANDA"
-```
-
-### 3. Menjalankan Polling Kolektor Berkelanjutan (Daemon)
-```bash
-python src/collector.py --daemon --interval 300
-```
-
-### 4. Menjalankan Worker Lokal
-```bash
-cd worker
-npx wrangler dev
-```
-
----
-
-## 📊 Hasil Kunci Kuantitatif
-
-- **Skor Keparahan Krisis (CSI) Terkini**: **50.0 / 100** (Status: *Pemulihan Bertahap / Kuning*).
-- **Puncak Keparahan Krisis**: **CSI 54.1** pada 15 Oktober 2026 pukul 23:00 WITA.
-- **Prediksi Krisis Mereda**: **Minggu, 18 Oktober 2026, pukul 05:00 WITA** (+50 jam).
-- **Rentang Kredibel 50%**: 17 Oktober 09:00 WITA s/d 19 Oktober 07:00 WITA.
-- **Area Paling Kritis**: Karangasem (CSI: 60.0), Ubud (CSI: 59.8), Bukit Kuta Selatan (CSI: 59.7).
-- **Titik Paling Rentan**: SPBU dan Pertamini di Lovina (Buleleng) dan Jembrana (>65 km dari TBBM Sanggaran/Manggis).
-- **Kios Pertamini Mengalami Mark-Up**: 173 titik menjual Pertalite antara Rp 15.000 hingga Rp 40.000/liter.
+### 3. Membuka Dasbor Analisis
+Buka berkas `output/dashboard.html` langsung di peramban Anda (bisa dibuka via protokol `file://` tanpa perlu server lokal).
+Atau akses dasbor langsung di GitHub Pages:
+**`https://sparkplugx1904.github.io/balifuel-analyst/`**
