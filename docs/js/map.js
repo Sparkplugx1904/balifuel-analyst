@@ -138,16 +138,40 @@
       const priceText = s.price ? `Rp ${Number(s.price).toLocaleString()}/L` : (isSpbu ? "Rp 10.000/L (HET)" : "-");
 
       const popupHtml = `
-        <div style="font-size:11px; line-height:1.5;">
+        <div style="font-size:11px; line-height:1.5; min-width:215px; font-family:var(--f-mono);">
           <div style="font-weight:700; color:var(--accent); font-size:12px; margin-bottom:2px;">${s.name || 'SPBU'}</div>
           <div style="color:var(--ink-3); margin-bottom:6px;">${area} \u00B7 [${kind.toUpperCase()}]</div>
-          <div style="border-top:1px solid var(--line-strong); padding-top:6px;">
-            <div>PELUANG STOK: <b style="color:${color}">${Math.round(p * 100)}%</b></div>
-            <div>EST. ANTREAN: <b>${qText}</b></div>
-            <div>HARGA: <b>${priceText}</b></div>
+          <div style="border-top:1px solid var(--line-strong); padding:6px 0;">
+            <div>Peluang ada bensin: <b style="color:${color}">${Math.round(p * 100)}% (sekitar ${Math.round(p * 10)} dari 10)</b></div>
+            <div>Waktu antre: <b>${s.queue != null ? `${s.queue} menit` : "Belum ada antrean dilaporkan"}</b></div>
+            <div>Harga Pertalite: <b>${priceText}</b></div>
           </div>
-          <button id="popBtn_${s.id}" style="margin-top:8px; width:100%; height:26px; background:var(--accent); color:#000; border:0; border-radius:3px; font-weight:700; font-size:10px; cursor:pointer;">
-            INSPEKSI GRAFIK 72 JAM
+          <!-- FORM SURVEY WARGA -->
+          <div style="border-top:1px dashed var(--line-strong); margin-top:6px; padding-top:6px;">
+            <div style="font-weight:700; color:var(--ink); font-size:10px; margin-bottom:4px;">
+              \uD83D\uDCE2 Anda sedang di SPBU ini? \u2014 Pertalite
+            </div>
+            <div style="display:flex; gap:4px; margin-bottom:5px;">
+              <button id="pAvailYes_${s.id}" type="button" style="flex:1; padding:3px 0; font-size:10px; background:var(--surface); border:1px solid var(--line-strong); color:var(--ink); border-radius:3px; cursor:pointer;">
+                \uD83D\uDC4D Ada
+              </button>
+              <button id="pAvailNo_${s.id}" type="button" style="flex:1; padding:3px 0; font-size:10px; background:var(--surface); border:1px solid var(--line-strong); color:var(--ink); border-radius:3px; cursor:pointer;">
+                \u274C Tidak ada
+              </button>
+            </div>
+            <div style="font-size:9px; color:var(--ink-3); margin-bottom:3px;">Waktu tunggu (opsional):</div>
+            <div style="display:flex; gap:3px; margin-bottom:6px;">
+              <button id="pWait0_${s.id}" type="button" style="flex:1; padding:2px; font-size:9px; background:var(--surface); border:1px solid var(--line-strong); color:var(--ink); border-radius:2px; cursor:pointer;">Singkat</button>
+              <button id="pWait1_${s.id}" type="button" style="flex:1; padding:2px; font-size:9px; background:var(--surface); border:1px solid var(--line-strong); color:var(--ink); border-radius:2px; cursor:pointer;">Lama (&lt;2j)</button>
+              <button id="pWait2_${s.id}" type="button" style="flex:1; padding:2px; font-size:9px; background:var(--surface); border:1px solid var(--line-strong); color:var(--ink); border-radius:2px; cursor:pointer;">Sangat Lama (&lt;5j)</button>
+            </div>
+            <button id="pSend_${s.id}" type="button" style="width:100%; height:24px; background:var(--accent); color:#000; border:0; border-radius:3px; font-weight:700; font-size:10px; cursor:pointer;">
+              Kirim Laporan Bensin
+            </button>
+            <div id="pFeed_${s.id}" style="font-size:9px; margin-top:4px; text-align:center; display:none;"></div>
+          </div>
+          <button id="popBtn_${s.id}" style="margin-top:6px; width:100%; height:24px; background:transparent; color:var(--ink-2); border:1px solid var(--line-strong); border-radius:3px; font-size:10px; cursor:pointer;">
+            Lihat Perkiraan 3 Hari ke Depan \u2193
           </button>
         </div>
       `;
@@ -157,8 +181,66 @@
         if (window.BaliCharts && window.BaliCharts.selectStation) {
           window.BaliCharts.selectStation(s, HOURS_DATA);
         }
+        if (window.BaliSurvey) {
+          window.BaliSurvey.setStationId(s.id);
+        }
       });
       marker.on("popupopen", () => {
+        let popAvail = null;
+        let popWait = null;
+        const btnYes = document.getElementById(`pAvailYes_${s.id}`);
+        const btnNo = document.getElementById(`pAvailNo_${s.id}`);
+        const btnW0 = document.getElementById(`pWait0_${s.id}`);
+        const btnW1 = document.getElementById(`pWait1_${s.id}`);
+        const btnW2 = document.getElementById(`pWait2_${s.id}`);
+        const btnSend = document.getElementById(`pSend_${s.id}`);
+        const feedEl = document.getElementById(`pFeed_${s.id}`);
+
+        if (btnYes && btnNo) {
+          btnYes.onclick = () => {
+            btnYes.style.background = "var(--accent)";
+            btnYes.style.color = "#000";
+            btnNo.style.background = "var(--surface)";
+            btnNo.style.color = "var(--ink)";
+            popAvail = true;
+          };
+          btnNo.onclick = () => {
+            btnNo.style.background = "var(--accent)";
+            btnNo.style.color = "#000";
+            btnYes.style.background = "var(--surface)";
+            btnYes.style.color = "var(--ink)";
+            popAvail = false;
+          };
+        }
+
+        [btnW0, btnW1, btnW2].forEach((b, idx) => {
+          if (b) {
+            b.onclick = () => {
+              [btnW0, btnW1, btnW2].forEach(x => { if (x) { x.style.background = "var(--surface)"; x.style.color = "var(--ink)"; } });
+              b.style.background = "var(--accent-soft)";
+              b.style.color = "var(--accent)";
+              popWait = idx;
+            };
+          }
+        });
+
+        if (btnSend) {
+          btnSend.onclick = () => {
+            if (popAvail === null) {
+              if (feedEl) {
+                feedEl.style.display = "block";
+                feedEl.style.color = "var(--danger)";
+                feedEl.textContent = "Pilih Ada / Tidak ada dulu.";
+              }
+              return;
+            }
+            if (window.submitPopupSurvey) {
+              if (feedEl) feedEl.style.display = "block";
+              window.submitPopupSurvey(s.id, popAvail, popWait, `pFeed_${s.id}`);
+            }
+          };
+        }
+
         const btn = document.getElementById(`popBtn_${s.id}`);
         if (btn) {
           btn.onclick = () => {

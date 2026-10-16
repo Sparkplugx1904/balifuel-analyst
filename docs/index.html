@@ -55,94 +55,94 @@
     <!-- HEADER / HERO SECTION -->
     <section class="channel-header">
       <div class="channel-title-row">
-        <h1 class="channel-name">BALI FUEL CRISIS ANALYST</h1>
+        <h1 class="channel-name">PANTAU BENSIN BALI</h1>
         <span class="verified-badge" title="Terkalibrasi Data Riil">✓</span>
       </div>
       <div class="channel-stats">
-        <span>STATUS: <b style="color:var(--warning)" id="hdrStatus">MEMUAT...</b> <span class="tip-badge"><span class="tip-popover">Skor CSI (Crisis Severity Index): Indeks keparahan gabungan dari persentase SPBU kosong, durasi antrean, dan rasio kepanikan. &lt;25 Normal, 25-50 Pemulihan, &gt;50 Kritis.</span>?</span></span>
+        <span>KONDISI: <b style="color:var(--warning)" id="hdrStatus">MEMUAT...</b> <span class="tip-badge"><span class="tip-popover">Tingkat kesulitan bensin di Bali saat ini. Hijau = Normal, Kuning = Sedang membaik, Merah = Masih sulit.</span>?</span></span>
         <span>•</span>
-        <span>EST. PULIH: <b style="color:var(--accent)" id="hdrRecovery">-</b> <span class="tip-badge"><span class="tip-popover">Tanggal median krisis mereda dari simulasi Monte Carlo 10.000 jalur (&ge;90% SPBU ada stok selama 48 jam stabil).</span>?</span></span>
+        <span>PERKIRAAN TENANG: <b style="color:var(--accent)" id="hdrRecovery">-</b> <span class="tip-badge"><span class="tip-popover">Waktu saat sebagian besar SPBU (sekitar 9 dari 10) sudah terisi bensin lagi dan antrean habis.</span>?</span></span>
         <span>•</span>
-        <span>SPBU KOSONG: <b style="color:var(--danger)" id="hdrEmptyPct">-</b> <span class="tip-badge"><span class="tip-popover">Perkiraan persentase SPBU resmi Pertamina di Bali yang saat ini mengalami kekosongan nosel.</span>?</span></span>
+        <span>SPBU KOSONG: <b style="color:var(--danger)" id="hdrEmptyPct">-</b> <span class="tip-badge"><span class="tip-popover">Perkiraan berapa banyak SPBU resmi yang saat ini belum dapat giliran kiriman bensin.</span>?</span></span>
         <span>•</span>
-        <span>MONTE CARLO: <b>10.000 JALUR</b></span>
+        <span>HITUNGAN PERKIRAAN: <b>10.000 KALI COBA</b></span>
       </div>
     </section>
 
     <!-- TERMINAL HERO COMMAND BOX -->
     <div class="terminal-card">
-      <div class="term-prompt">simulation --horizon=384h --samples=10000 --rule="empty &lt; 10% sustained 48h"</div>
+      <div class="term-prompt">Prakiraan Pemulihan Bensin Bali · Hitungan Coba-coba 10.000 Kali</div>
       <div class="term-grid">
         <div class="term-stat-item">
           <div class="term-stat-label">
-            Prediksi Tanggal Mereda (Median)
-            <span class="tip-badge"><span class="tip-popover">Waktu saat &ge;90% SPBU diproyeksikan memiliki stok stabil selama 48 jam berturut-turut.</span>?</span>
+            Kapan Bensin Kembali Tenang?
+            <span class="tip-badge"><span class="tip-popover">Titik tengah perkiraan saat bensin sudah ada di sebagian besar SPBU.</span>?</span>
           </div>
           <div class="term-stat-value" style="color:var(--accent)" id="boxMedianDate">Menghitung...</div>
-          <div class="term-stat-desc" id="boxMedianDesc">Estimasi titik balik ketersediaan BBM</div>
+          <div class="term-stat-desc" id="boxMedianDesc">Titik tengah perkiraan dari ribuan hitungan</div>
         </div>
         <div class="term-stat-item">
           <div class="term-stat-label">
-            50% Credible Interval (P25 - P75)
-            <span class="tip-badge"><span class="tip-popover">Rentang tanggal probabilitas 50% di mana krisis diproyeksikan mereda.</span>?</span>
+            Paling Mungkin Terjadi Pada
+            <span class="tip-badge"><span class="tip-popover">Rentang waktu yang kemungkinan terbesarnya terjadi (sekitar 5 dari 10 kali).</span>?</span>
           </div>
           <div class="term-stat-value" id="boxCi50">-</div>
-          <div class="term-stat-desc">Rentang probabilitas mayoritas (48 jam)</div>
+          <div class="term-stat-desc">Rentang kemungkinan terbesar (sekitar 5 dari 10)</div>
         </div>
         <div class="term-stat-item">
           <div class="term-stat-label">
-            80% Credible Interval (P10 - P90)
-            <span class="tip-badge"><span class="tip-popover">Rentang tanggal dengan tingkat keyakinan 80% mempertimbangkan variasi cuaca & keterlambatan kapal.</span>?</span>
+            Rentang Aman (8 dari 10)
+            <span class="tip-badge"><span class="tip-popover">Rentang waktu yang memperhitungkan kemungkinan kapal terlambat atau kendala cuaca.</span>?</span>
           </div>
           <div class="term-stat-value" id="boxCi80">-</div>
-          <div class="term-stat-desc">Cakupan variabilitas cuaca & logistik</div>
+          <div class="term-stat-desc">Memperhitungkan kemungkinan kapal terlambat atau hujan</div>
         </div>
         <div class="term-stat-item">
           <div class="term-stat-label">
-            Bottleneck Kritis Saat Ini
-            <span class="tip-badge"><span class="tip-popover">Kapasitas ritase armada mobil tangki darat adalah kendala utama setelah stok kapal sandar di depot.</span>?</span>
+            Kendala Terbesar Saat Ini
+            <span class="tip-badge"><span class="tip-popover">Bensin di gudang sudah ada, namun butuh waktu truk mengantar sampai ke semua SPBU.</span>?</span>
           </div>
-          <div class="term-stat-value" style="color:var(--warning)">Truk Tangki Darat</div>
-          <div class="term-stat-desc">Kapasitas 2.700 KL/hari vs antrean nosel</div>
+          <div class="term-stat-value" style="color:var(--warning)">Truk Bensin di Jalan</div>
+          <div class="term-stat-desc">Bensin ada di gudang, tapi truk butuh waktu mengantar</div>
         </div>
       </div>
       <div class="section-note" style="margin-top:14px; margin-bottom:0;">
         <span class="section-note-icon">💡</span>
         <div>
-          <b>Panduan Membaca Angka:</b> Angka di atas merupakan hasil simulasi stok fisik Pulau Bali. Stok di terminal sudah dipulihkan oleh tanker 26.200 KL, namun penguraian antrean di nosel membutuhkan waktu putar mobil tangki (36–48 jam) untuk merata ke seluruh pelosok.
+          <b>Cara membaca angka ini:</b> angka di atas adalah hitungan perkiraan berapa bensin yang benar-benar ada di Bali. Gudang bensin sudah terisi lagi karena kapal membawa sekitar 26 juta liter. Namun bensin itu masih harus diantar truk ke setiap SPBU. Satu kali keliling butuh sekitar 1,5 sampai 2 hari. Jadi antrean baru berkurang pelan-pelan, terutama di daerah yang jauh dari gudang bensin.
         </div>
       </div>
     </div>
 
     <!-- TAB / USER PILLS BAR -->
     <nav class="user-pills-bar">
-      <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA REAL-TIME (LEAFLET) ] <small id="pillCount">876 Titik</small></button>
-      <button class="user-pill" onclick="switchTab('tabAreas')">[ 02 // 14 AREA MAKRO ] <small>Analisis CSI</small></button>
-      <button class="user-pill" onclick="switchTab('tabSimulation')">[ 03 // SIMULASI MONTE CARLO ] <small>Fan Chart</small></button>
-      <button class="user-pill" onclick="switchTab('tabHotspots')">[ 04 // 20 HOTSPOT RENTAN ] <small>Ranking</small></button>
-      <button class="user-pill" onclick="switchTab('tabPanicCorr')">[ 05 // INTELIJEN PANIK & KORELASI ] <small>8 Jawaban Kritis</small></button>
-      <button class="user-pill" onclick="switchTab('tabSourcesExp')">[ 06 // SUMBER DATA & EKSPERIMEN ] <small>42 Sumber · 12 Model</small></button>
-      <button class="user-pill" onclick="switchTab('tabGuide')">[ 07 // PANDUAN WARGA & TIMELINE ] <small>Praktis</small></button>
+      <button class="user-pill active" onclick="switchTab('tabMap')">[ 01 // PETA SPBU & CEK BENSIN ] <small id="pillCount">876 Titik</small></button>
+      <button class="user-pill" onclick="switchTab('tabAreas')">[ 02 // KONDISI TIAP WILAYAH ] <small>14 Area</small></button>
+      <button class="user-pill" onclick="switchTab('tabSimulation')">[ 03 // KAPAN BENSIN NORMAL LAGI? ] <small>Perkiraan Waktu</small></button>
+      <button class="user-pill" onclick="switchTab('tabHotspots')">[ 04 // SPBU YANG PALING RAWAN HABIS ] <small>Daftar 20 Titik</small></button>
+      <button class="user-pill" onclick="switchTab('tabPanicCorr')">[ 05 // MENGAPA ORANG PANIK BELI BENSIN? ] <small>8 Jawaban Warga</small></button>
+      <button class="user-pill" onclick="switchTab('tabSourcesExp')">[ 06 // ASAL DATA & BUKTI HITUNGAN ] <small>42 Sumber · 12 Uji Coba</small></button>
+      <button class="user-pill" onclick="switchTab('tabGuide')">[ 07 // TIPS AMAN UNTUK WARGA ] <small>Saran Praktis</small></button>
     </nav>
 
     <!-- TAB 1: PETA LEAFLET -->
     <div id="tabMap" class="tab-content dash-section">
       <div class="section-header">
         <h2 class="section-title">
-          SEBARAN SPBU & KIOS PERTAMINI REAL-TIME SE-BALI (LEAFLET)
-          <span class="tip-badge"><span class="tip-popover">Peta interaktif Leaflet bebas API Key. Klik titik untuk popup detail dan arah ke grafik 72 jam.</span>?</span>
+          PETA KETERSEDIAAN BENSIN DI SPBU SE-BALI
+          <span class="tip-badge"><span class="tip-popover">Peta sebaran bensin di seluruh Bali. Klik titik SPBU untuk melihat perkiraan dan mengisi laporan warga.</span>?</span>
         </h2>
-        <p class="section-desc">Peta sebaran stasiun bahan bakar di seluruh Bali dengan estimasi ketersediaan stok nosel dan antrean.</p>
+        <p class="section-desc">Cari tahu SPBU mana yang masih ada bensin dan perkiraan panjang antreannya.</p>
       </div>
 
       <div class="section-note">
         <span class="section-note-icon">ℹ️</span>
         <div>
-          <b>Panduan Fitur Peta:</b>
-          <p>• <b>Arti Warna Titik:</b> <span style="color:var(--success)">● Hijau</span> = Ada Stok (&ge;60%); <span style="color:var(--warning)">● Kuning/Oranye</span> = Kritis / Antre Panjang (35–60%); <span style="color:var(--danger)">● Merah</span> = Kosong (&lt;35%).</p>
-          <p>• <b>Ukuran Pin:</b> Lingkaran besar = SPBU Resmi Pertamina (212 titik); Lingkaran kecil = Kios Pertamini / Penjual Eceran (664 titik).</p>
-          <p>• <b>Pin Depot TBBM:</b> Pin berlabel oranye menunjukkan lokasi TBBM Sanggaran (Denpasar) dan TBBM Manggis (Karangasem).</p>
-          <p>• <b>Tombol Navigasi:</b> Gunakan tombol <code>📍 Lokasi Saya</code> untuk mendeteksi posisi GPS Anda, dan <code>⟲ Bali</code> untuk memusatkan kembali peta.</p>
+          <b>Panduan Warna Peta:</b>
+          <p>• <b>Arti Warna Titik:</b> <span style="color:var(--success)">● Hijau</span> = Kemungkinan besar ada bensin; <span style="color:var(--warning)">● Kuning</span> = Antrean panjang / bensin menipis; <span style="color:var(--danger)">● Merah</span> = Bensin habis.</p>
+          <p>• <b>Ukuran Titik:</b> Lingkaran besar = SPBU Resmi Pertamina (212 titik); Lingkaran kecil = Kios Bensin Eceran (664 titik).</p>
+          <p>• <b>Gudang Besar Bensin:</b> Titik oranye menunjukkan gudang bensin utama di Sanggaran (Denpasar) dan Manggis (Karangasem).</p>
+          <p>• <b>Tombol Navigasi:</b> Gunakan tombol <code>📍 Lokasi Saya</code> untuk mencari SPBU terdekat dari posisi Anda saat ini.</p>
         </div>
       </div>
 
@@ -182,19 +182,19 @@
       <div id="tabForecast" style="margin-top:28px;">
         <div class="section-header">
           <h2 class="section-title">
-            INSPEKTOR PREDIKSI 72 JAM PER SPBU (MARKOV KERNEL)
-            <span class="tip-badge"><span class="tip-popover">Model Markov memperhitungkan jam sibuk komuter, kapasitas tangki pendam, dan jarak depot.</span>?</span>
+            PERKIRAAN BENSIN 3 HARI KE DEPAN DI SPBU INI
+            <span class="tip-badge"><span class="tip-popover">Perkiraan jam demi jam apakah bensin masih ada di SPBU ini dalam 3 hari ke depan.</span>?</span>
           </h2>
-          <p class="section-desc">Pilih stasiun pada peta di atas atau gunakan pencarian untuk melihat probabilitas ketersediaan BBM, pita ketidakpastian 80%, dan estimasi antrean.</p>
+          <p class="section-desc">Pilih salah satu SPBU pada peta di atas untuk melihat peluang ketersediaan bensin dan perkiraan waktu antre.</p>
         </div>
 
         <div class="section-note">
           <span class="section-note-icon">ℹ️</span>
           <div>
-            <b>Panduan Membaca Grafik 72 Jam:</b>
-            <p>• <b>Garis Oranye (P50):</b> Median peluang ketersediaan stok (% ada BBM) jam demi jam selama 3 hari ke depan.</p>
-            <p>• <b>Pita Arsiran (P10 - P90):</b> Pita ketidakpastian 80%. Semakin sempit pita, semakin tinggi kepastian stok stabil.</p>
-            <p>• <b>Garis Putus-putus Abu-abu:</b> Estimasi waktu antrean dalam hitungan menit (sumbu kanan). Antrean akan melandai seiring pulihnya stok tangki pendam.</p>
+            <b>Cara Membaca Grafik 3 Hari:</b>
+            <p>• <b>Garis Oranye:</b> Titik tengah perkiraan peluang ada bensin (% ada bensin) jam demi jam.</p>
+            <p>• <b>Daerah Arsiran:</b> Rentang kemungkinan yang paling besar terjadi (sekitar 8 dari 10 kali).</p>
+            <p>• <b>Garis Abu-abu:</b> Perkiraan waktu antrean dalam hitungan menit (semakin ke kanan semakin turun).</p>
           </div>
         </div>
 
@@ -205,7 +205,7 @@
             PILIH SALAH SATU SPBU PADA PETA DI ATAS
           </h3>
           <p style="font-size:12px; color:var(--ink-2); max-width:540px; margin:0 auto 20px; line-height:1.6;">
-            Grafik 72 jam adalah proyeksi stok spesifik per <b>masing-masing SPBU</b> (bukan nilai rata-rata agregat pulau). Silakan klik salah satu penanda SPBU pada peta di atas dan pilih <b>[ INSPEKSI GRAFIK 72 JAM ]</b>, atau gunakan kotak pencarian di bilah navigasi atas.
+            Grafik 3 hari ini khusus untuk <b>masing-masing SPBU</b> (bukan nilai rata-rata seluruh pulau). Silakan klik salah satu titik SPBU pada peta di atas dan pilih <b>[ LIHAT PERKIRAAN 3 HARI ]</b>, atau ketik nama SPBU di kotak pencarian.
           </p>
           <button class="btn btn-outline btn-sm" onclick="document.getElementById('map').scrollIntoView({behavior:'smooth', block:'center'})">
             ⬆ Ke Peta di Atas untuk Memilih Titik
@@ -222,26 +222,58 @@
             <p id="cardAddress" style="font-size:11px; color:var(--ink-2); margin-bottom:14px;">-</p>
 
             <div class="spec-row">
-              <span class="spec-label">Peluang Stok Saat Ini: <span class="tip-badge"><span class="tip-popover">Probabilitas ketersediaan BBM di nosel saat ini berdasarkan laporan komunitas terkini.</span>?</span></span>
+              <span class="spec-label">Peluang Ada Bensin Sekarang: <span class="tip-badge"><span class="tip-popover">Perkiraan peluang tersedianya bensin di SPBU ini berdasarkan laporan warga terbaru.</span>?</span></span>
               <span class="spec-val" id="cardProb" style="color:var(--success);">-</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label">Estimasi Waktu Antre: <span class="tip-badge"><span class="tip-popover">Waktu antre kendaraan roda dua dan roda empat sebelum dilayani petugas nosel.</span>?</span></span>
+              <span class="spec-label">Perkiraan Waktu Antre: <span class="tip-badge"><span class="tip-popover">Berapa lama motor atau mobil harus mengantre sebelum sampai ke selang pompa.</span>?</span></span>
               <span class="spec-val" id="cardQueue" style="color:var(--warning);">-</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label">Jarak ke TBBM Suplai: <span class="tip-badge"><span class="tip-popover">Jarak tempuh armada mobil tangki dari terminal pasokan terdekat (Sanggaran atau Manggis).</span>?</span></span>
+              <span class="spec-label">Jarak dari Gudang Bensin: <span class="tip-badge"><span class="tip-popover">Jarak truk pengantar bensin dari gudang terdekat (Sanggaran atau Manggis).</span>?</span></span>
               <span class="spec-val" id="cardDist">-</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label">Prediksi Pulih Normal: <span class="tip-badge"><span class="tip-popover">Waktu saat peluang ketersediaan mencapai &ge;80% secara konsisten selama minimal 12 jam.</span>?</span></span>
+              <span class="spec-label">Perkiraan Bensin Normal: <span class="tip-badge"><span class="tip-popover">Waktu saat bensin diperkirakan kembali lancar dan antrean sudah habis.</span>?</span></span>
               <span class="spec-val" id="cardRecovery" style="color:var(--accent);">-</span>
             </div>
             <div class="spec-row">
-              <span class="spec-label">Harga Pertalite: <span class="tip-badge"><span class="tip-popover">Harga eceran terpantau (HET resmi Rp 10.000 untuk SPBU, Pertamini bervariasi).</span>?</span></span>
+              <span class="spec-label">Harga Bensin Pertalite: <span class="tip-badge"><span class="tip-popover">Harga bensin resmi Rp 10.000 per liter untuk SPBU. Kios eceran bisa berbeda.</span>?</span></span>
               <span class="spec-val" id="cardPrice">-</span>
             </div>
-          </div>
+
+            <!-- FORM LAPORAN WARGA (SURVEY) -->
+            <div class="survey-card" style="margin-top:14px; padding:12px; background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md);">
+              <div style="font-size:11px; font-weight:700; color:var(--accent); margin-bottom:6px;">
+                📢 Anda sedang di SPBU ini? — Pertalite
+              </div>
+              <div style="display:flex; gap:6px; margin-bottom:8px;">
+                <button type="button" class="btn btn-outline btn-sm btn-survey-avail" data-avail="true" style="flex:1; font-size:11px;">
+                  👍 Ada Bensin
+                </button>
+                <button type="button" class="btn btn-outline btn-sm btn-survey-avail" data-avail="false" style="flex:1; font-size:11px;">
+                  ❌ Bensin Habis
+                </button>
+              </div>
+              <div style="font-size:10px; color:var(--ink-2); margin-bottom:4px;">
+                Waktu tunggu (opsional):
+              </div>
+              <div style="display:flex; gap:4px; margin-bottom:10px;">
+                <button type="button" class="btn btn-outline btn-sm btn-survey-wait" data-wait="0" style="flex:1; font-size:9px; padding:3px 2px;">
+                  Singkat
+                </button>
+                <button type="button" class="btn btn-outline btn-sm btn-survey-wait" data-wait="1" style="flex:1; font-size:9px; padding:3px 2px;">
+                  Lama (&lt;2 jam)
+                </button>
+                <button type="button" class="btn btn-outline btn-sm btn-survey-wait" data-wait="2" style="flex:1; font-size:9px; padding:3px 2px;">
+                  Sangat Lama (&lt;5 jam)
+                </button>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" id="btnSubmitSurvey" style="width:100%; font-weight:700; font-size:11px;">
+                Kirim Laporan Bensin
+              </button>
+              <div id="surveyFeedback" style="font-size:11px; margin-top:6px; display:none; text-align:center;"></div>
+            </div>
 
           <div style="background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r-md); padding:12px;">
             <div id="spbuPlotlyChart" style="height: 380px; width:100%;"></div>
@@ -691,6 +723,6 @@
   <script src="./js/map.js?v=2.3.0" charset="utf-8"></script>
   <script src="./js/charts.js?v=2.3.0" charset="utf-8"></script>
   <script src="./js/api.js?v=2.3.0" charset="utf-8"></script>
+  <script src="./js/survey.js?v=2.3.0" charset="utf-8"></script>
   <script src="./js/app.js?v=2.3.0" charset="utf-8"></script>
-</body>
 </html>

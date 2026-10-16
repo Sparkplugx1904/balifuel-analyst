@@ -207,6 +207,19 @@ button { cursor: pointer; }
 .user-pill small { color: var(--ink-3); font-size: 10px; }
 .user-pill.locked { opacity: 0.72; }
 .user-pill.locked:hover { opacity: 1; color: var(--accent); }
+/* ---- Gaya Tombol Survey Warga ---- */
+.btn-survey-avail.selected {
+  background: var(--accent) !important;
+  color: #000 !important;
+  border-color: var(--accent) !important;
+  font-weight: 700 !important;
+}
+.btn-survey-wait.selected {
+  background: var(--accent-soft) !important;
+  color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  font-weight: 700 !important;
+}
 
 /* ---- Section Wrapper ---- */
 .dash-section {

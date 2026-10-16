@@ -120,7 +120,7 @@ def build_local_dashboard() -> str:
         css = f.read()
 
     # 2. Baca seluruh modul JavaScript dari docs/js/
-    js_modules = ["theme.js", "map.js", "charts.js", "api.js", "app.js"]
+    js_modules = ["theme.js", "map.js", "charts.js", "survey.js", "api.js", "app.js"]
     bundled_scripts = []
     for mod in js_modules:
         mod_path = os.path.join(DOCS_DIR, "js", mod)
@@ -160,8 +160,7 @@ def build_local_dashboard() -> str:
     html = html.replace('<script src="./js/map.js?v=2.3.0" charset="utf-8"></script>', '')
     html = html.replace('<script src="./js/charts.js?v=2.3.0" charset="utf-8"></script>', '')
     html = html.replace('<script src="./js/api.js?v=2.3.0" charset="utf-8"></script>', '')
-
-    # Satukan data tertanam + modul JS
+    html = html.replace('<script src="./js/survey.js?v=2.3.0" charset="utf-8"></script>', '')
     inline_script = (
         f"<script>\n"
         f"window.BALI_EMBEDDED_DATA = {embedded_json};\n"
